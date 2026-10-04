@@ -702,6 +702,32 @@
         createCalendar();
 
     </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+    const SUPABASE_URL = "https://qvetnbkzxybjvykjctzm.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_9I3Bhkgpga6yUp5zrYnKfw_xO5cDnQg";
+
+    const supabaseClient = supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+</script>
+<script>
+    async function testSupabase() {
+        const { data, error } = await supabaseClient
+            .from("memories")
+            .select("*")
+            .limit(1);
+
+        if (error) {
+            console.error("Supabase 연결 실패:", error);
+        } else {
+            console.log("Supabase 연결 성공:", data);
+        }
+    }
+
+    testSupabase();
+</script>
 </body>
 </html>
