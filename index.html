@@ -320,108 +320,135 @@
         // 달력 만들기
         // =========================
 
-        function createCalendar() {
+async function createCalendar() {
 
-            const daysContainer =
-                document.getElementById("days");
+    const daysContainer =
+        document.getElementById("days");
 
-            daysContainer.innerHTML = "";
+    daysContainer.innerHTML = "";
 
-
-            document.getElementById("monthTitle").innerText =
-                currentYear + "년 " +
-                (currentMonth + 1) + "월";
-
-
-            const firstDay =
-                new Date(
-                    currentYear,
-                    currentMonth,
-                    1
-                ).getDay();
+    document.getElementById("monthTitle").innerText =
+        currentYear + "년 " +
+        (currentMonth + 1) + "월";
 
 
-            const lastDate =
-                new Date(
-                    currentYear,
-                    currentMonth + 1,
-                    0
-                ).getDate();
+    // Supabase에서 이번 달 하트 가져오기
+    const monthStart =
+        currentYear + "-" +
+        String(currentMonth + 1).padStart(2, "0") +
+        "-01";
+
+    const monthEnd =
+        currentYear + "-" +
+        String(currentMonth + 1).padStart(2, "0") +
+        "-" +
+        String(
+            new Date(
+                currentYear,
+                currentMonth + 1,
+                0
+            ).getDate()
+        ).padStart(2, "0");
 
 
-            // 빈칸
-            for (let i = 0; i < firstDay; i++) {
-
-                const empty =
-                    document.createElement("div");
-
-                empty.className = "empty";
-
-                daysContainer.appendChild(empty);
-            }
+    const { data: supabaseData, error } =
+        await supabaseClient
+            .from("memories")
+            .select("date, heart")
+            .gte("date", monthStart)
+            .lte("date", monthEnd);
 
 
-            // 날짜
-            for (let day = 1; day <= lastDate; day++) {
-
-                const dayElement =
-                    document.createElement("div");
-
-                dayElement.className = "day";
+    if (error) {
+        console.error("하트 불러오기 실패:", error);
+    }
 
 
-                const number =
-                    document.createElement("span");
+    // 빈칸
+    const firstDay =
+        new Date(
+            currentYear,
+            currentMonth,
+            1
+        ).getDay();
 
-                number.innerText = day;
+    for (let i = 0; i < firstDay; i++) {
 
-                dayElement.appendChild(number);
+        const empty =
+            document.createElement("div");
 
+        empty.className = "empty";
 
-                const dateKey =
-                    currentYear + "-" +
-                    String(currentMonth + 1).padStart(2, "0") +
-                    "-" +
-                    String(day).padStart(2, "0");
-
-
-                const savedData =
-                    getMemory(dateKey);
-
-
-                // 하트 표시
-                if (savedData && savedData.heart) {
-
-    const heart =
-        document.createElement("span");
-
-    heart.className = "heart";
-
-    heart.innerText = "♡";
-
-    dayElement.appendChild(heart);
-} 
-                if (savedData && savedData.photos && savedData.photos.length > 0) {
-    const photoIcon =
-        document.createElement("span");
-
-    photoIcon.innerText = "📷";
-
-    dayElement.appendChild(photoIcon);
-}
-
-                // 날짜 클릭
-                dayElement.onclick = function() {
-
-                    openMemory(dateKey);
-
-                };
+        daysContainer.appendChild(empty);
+    }
 
 
-                daysContainer.appendChild(dayElement);
-            }
+    // 날짜
+    const lastDate =
+        new Date(
+            currentYear,
+            currentMonth + 1,
+            0
+        ).getDate();
+
+
+    for (let day = 1; day <= lastDate; day++) {
+
+        const dayElement =
+            document.createElement("div");
+
+        dayElement.className = "day";
+
+
+        const number =
+            document.createElement("span");
+
+        number.innerText = day;
+
+        dayElement.appendChild(number);
+
+
+        const dateKey =
+            currentYear + "-" +
+            String(currentMonth + 1).padStart(2, "0") +
+            "-" +
+            String(day).padStart(2, "0");
+
+
+        // Supabase에서 해당 날짜 찾기
+        const savedData =
+            supabaseData
+                ? supabaseData.find(
+                    item => item.date === dateKey
+                )
+                : null;
+
+
+        // 하트 표시
+        if (savedData && savedData.heart) {
+
+            const heart =
+                document.createElement("span");
+
+            heart.className = "heart";
+
+            heart.innerText = "♡";
+
+            dayElement.appendChild(heart);
         }
 
+
+        // 날짜 클릭
+        dayElement.onclick = function() {
+
+            openMemory(dateKey);
+
+        };
+
+
+        daysContainer.appendChild(dayElement);
+    }
+}
 
         // =========================
         // 이전 달
