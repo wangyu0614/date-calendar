@@ -628,47 +628,84 @@
         // 기록 저장
         // =========================
 
-        function saveMemory() {
+async function saveMemory() {
 
-            const text =
-                document.getElementById("memoryText")
-                    .value;
+    const text =
+        document.getElementById("memoryText")
+            .value;
 
+    const data = {
+        heart: heartActive,
+        text: text,
+        photos: selectedPhotos
+    };
 
-            const data = {
+    try {
 
-                heart: heartActive,
+        // 내 기기에도 저장
+        localStorage.setItem(
+            selectedDate,
+            JSON.stringify(data)
+        );
 
-                text: text,
+        // Supabase에서 같은 날짜가 있는지 확인
+        const { data: existing, error: selectError } =
+            await supabaseClient
+                .from("memories")
+                .select("id")
+                .eq("date", selectedDate)
+                .limit(1);
 
-                photos: selectedPhotos
+        if (selectError) {
+            console.error(selectError);
+            alert("Supabase 확인 실패");
+            return;
+        }
 
-            };
+        if (existing.length > 0) {
 
+            // 이미 있으면 수정
+            const { error } = await supabaseClient
+                .from("memories")
+                .update({
+                    heart: heartActive
+                })
+                .eq("id", existing[0].id);
 
-            try {
+            if (error) {
+                console.error(error);
+                alert("Supabase 저장 실패");
+                return;
+            }
 
-                localStorage.setItem(
+        } else {
 
-                    selectedDate,
+            // 없으면 새로 추가
+            const { error } = await supabaseClient
+                .from("memories")
+                .insert({
+                    date: selectedDate,
+                    heart: heartActive
+                });
 
-                    JSON.stringify(data)
-
-                );
-
-                alert("기록이 저장됐어요 ♡");
-
-                createCalendar();
-
-            } catch (error) {
-
-                alert(
-                    "사진 용량이 너무 커서 저장하지 못했어요.\n" +
-                    "사진 개수를 줄이거나 작은 사진을 사용해주세요."
-                );
-
+            if (error) {
+                console.error(error);
+                alert("Supabase 저장 실패");
+                return;
             }
         }
+
+        alert("기록이 저장됐어요 ♡");
+
+        createCalendar();
+
+    } catch (error) {
+
+        console.error(error);
+        alert("저장 중 오류가 발생했어요.");
+
+    }
+}
 
 
         // =========================
