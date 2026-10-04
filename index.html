@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Our Memories</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            font-family: Arial, sans-serif;
+            background-color: #fff7f8;
+            color: #333;
+        }
+
+        .calendar {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .title h1 {
+            margin-bottom: 8px;
+        }
+
+        .title p {
+            color: #888;
+            margin-top: 0;
+        }
+
+        .month {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .month h2 {
+            margin: 0;
+        }
+
+        .month button {
+            border: none;
+            background: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+
+        .month button:hover {
+            background-color: #fff0f2;
+        }
+
+        .weekdays,
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .weekdays div {
+            text-align: center;
+            font-size: 13px;
+            color: #999;
+            padding: 8px 0;
+        }
+
+        .day {
+            min-height: 55px;
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+        }
+
+        .day:hover {
+            background-color: #fff0f2;
+        }
+
+        .empty {
+            min-height: 55px;
+        }
+
+        .heart {
+    color: #e88;
+    font-size: 18px;
+    line-height: 1;
+}
+
+        /* 기록창 */
+        .memory-box {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .memory-box h3 {
+            margin-top: 0;
+        }
+
+        /* 하트 버튼 */
+        .heart-button {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background-color: #fff0f2;
+            color: #e88;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .heart-button.active {
+            background-color: #f3b6c0;
+            color: white;
+        }
+
+        /* 사진 업로드 */
+        .photo-title {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .photo-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            background-color: #fafafa;
+            cursor: pointer;
+        }
+
+        .photo-preview {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        /* 메모 */
+        .memory-label {
+            display: block;
+            margin-top: 18px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            resize: none;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        /* 저장 */
+        .save-button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background-color: #f3b6c0;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .save-button:hover {
+            background-color: #e9a5b1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="calendar">
+
+        <div class="title">
+            <h1>Our Memories ♡</h1>
+            <p>우리의 데이트 기록</p>
+        </div>
+
+
+        <!-- 월 이동 -->
+        <div class="month">
+
+            <button onclick="previousMonth()">‹</button>
+
+            <h2 id="monthTitle"></h2>
+
+            <button onclick="nextMonth()">›</button>
+
+        </div>
+
+
+        <!-- 요일 -->
+        <div class="weekdays">
+            <div>일</div>
+            <div>월</div>
+            <div>화</div>
+            <div>수</div>
+            <div>목</div>
+            <div>금</div>
+            <div>토</div>
+        </div>
+
+
+        <!-- 날짜 -->
+        <div class="days" id="days"></div>
+
+
+        <!-- 기록창 -->
+        <div class="memory-box" id="memoryBox">
+
+            <h3 id="selectedDate"></h3>
+
+
+            <!-- 하트 -->
+            <button
+                class="heart-button"
+                id="heartButton"
+                onclick="toggleHeart()">
+
+                ♡ 데이트한 날로 표시
+
+            </button>
+
+
+            <!-- 사진 -->
+            <label class="photo-title">
+                📷 사진
+            </label>
+
+            <input
+                class="photo-input"
+                type="file"
+                id="photoInput"
+                accept="image/*"
+                multiple
+                onchange="previewPhotos()"
+            >
+
+            <div
+                class="photo-preview"
+                id="photoPreview">
+            </div>
+
+
+            <!-- 메모 -->
+            <label class="memory-label">
+                📝 오늘의 기록
+            </label>
+
+            <textarea
+                id="memoryText"
+                placeholder="오늘의 데이트를 기록해보세요 ♡">
+            </textarea>
+
+
+            <!-- 저장 -->
+            <button
+                class="save-button"
+                onclick="saveMemory()">
+
+                기록 저장
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        // 현재 보고 있는 달
+        let currentYear = 2026;
+        let currentMonth = 9;
+
+        // 현재 선택한 날짜
+        let selectedDate = "";
+
+        // 하트 상태
+        let heartActive = false;
+
+        // 현재 선택한 사진들
+        let selectedPhotos = [];
+
+
+        // =========================
+        // 달력 만들기
+        // =========================
+
+        function createCalendar() {
+
+            const daysContainer =
+                document.getElementById("days");
+
+            daysContainer.innerHTML = "";
+
+
+            document.getElementById("monthTitle").innerText =
+                currentYear + "년 " +
+                (currentMonth + 1) + "월";
+
+
+            const firstDay =
+                new Date(
+                    currentYear,
+                    currentMonth,
+                    1
+                ).getDay();
+
+
+            const lastDate =
+                new Date(
+                    currentYear,
+                    currentMonth + 1,
+                    0
+                ).getDate();
+
+
+            // 빈칸
+            for (let i = 0; i < firstDay; i++) {
+
+                const empty =
+                    document.createElement("div");
+
+                empty.className = "empty";
+
+                daysContainer.appendChild(empty);
+            }
+
+
+            // 날짜
+            for (let day = 1; day <= lastDate; day++) {
+
+                const dayElement =
+                    document.createElement("div");
+
+                dayElement.className = "day";
+
+
+                const number =
+                    document.createElement("span");
+
+                number.innerText = day;
+
+                dayElement.appendChild(number);
+
+
+                const dateKey =
+                    currentYear + "-" +
+                    String(currentMonth + 1).padStart(2, "0") +
+                    "-" +
+                    String(day).padStart(2, "0");
+
+
+                const savedData =
+                    getMemory(dateKey);
+
+
+                // 하트 표시
+                if (savedData && savedData.heart) {
+
+    const heart =
+        document.createElement("span");
+
+    heart.className = "heart";
+
+    heart.innerText = "♡";
+
+    dayElement.appendChild(heart);
+} 
+                if (savedData && savedData.photos && savedData.photos.length > 0) {
+    const photoIcon =
+        document.createElement("span");
+
+    photoIcon.innerText = "📷";
+
+    dayElement.appendChild(photoIcon);
+}
+
+                // 날짜 클릭
+                dayElement.onclick = function() {
+
+                    openMemory(dateKey);
+
+                };
+
+
+                daysContainer.appendChild(dayElement);
+            }
+        }
+
+
+        // =========================
+        // 이전 달
+        // =========================
+
+        function previousMonth() {
+
+            currentMonth--;
+
+            if (currentMonth < 0) {
+
+                currentMonth = 11;
+
+                currentYear--;
+            }
+
+            createCalendar();
+        }
+
+
+        // =========================
+        // 다음 달
+        // =========================
+
+        function nextMonth() {
+
+            currentMonth++;
+
+            if (currentMonth > 11) {
+
+                currentMonth = 0;
+
+                currentYear++;
+            }
+
+            createCalendar();
+        }
+
+
+        // =========================
+        // 날짜 열기
+        // =========================
+
+        function openMemory(date) {
+
+            selectedDate = date;
+
+            document.getElementById("memoryBox")
+                .style.display = "block";
+
+
+            const dateParts =
+                date.split("-");
+
+
+            document.getElementById("selectedDate")
+                .innerText =
+                dateParts[0] + "년 " +
+                Number(dateParts[1]) + "월 " +
+                Number(dateParts[2]) + "일";
+
+
+            const savedData =
+                getMemory(date);
+
+
+            if (savedData) {
+
+                document.getElementById("memoryText")
+                    .value =
+                    savedData.text || "";
+
+                heartActive =
+                    savedData.heart || false;
+
+                selectedPhotos =
+                    savedData.photos || [];
+
+            } else {
+
+                document.getElementById("memoryText")
+                    .value = "";
+
+                heartActive = false;
+
+                selectedPhotos = [];
+            }
+
+
+            updateHeartButton();
+
+            showSavedPhotos();
+        }
+
+
+        // =========================
+        // 하트
+        // =========================
+
+        function toggleHeart() {
+
+            heartActive = !heartActive;
+
+            updateHeartButton();
+        }
+
+
+        function updateHeartButton() {
+
+            const button =
+                document.getElementById("heartButton");
+
+
+            if (heartActive) {
+
+                button.innerText =
+                    "♥ 데이트한 날로 표시됨";
+
+                button.classList.add("active");
+
+            } else {
+
+                button.innerText =
+                    "♡ 데이트한 날로 표시";
+
+                button.classList.remove("active");
+            }
+        }
+
+
+        // =========================
+        // 사진 미리보기
+        // =========================
+
+        function previewPhotos() {
+
+            const input =
+                document.getElementById("photoInput");
+
+
+            const files =
+                Array.from(input.files);
+
+
+            selectedPhotos = [];
+
+
+            files.forEach(function(file) {
+
+                const reader =
+                    new FileReader();
+
+
+                reader.onload = function(event) {
+
+                    selectedPhotos.push(
+                        event.target.result
+                    );
+
+
+                    showPhotos();
+
+                };
+
+
+                reader.readAsDataURL(file);
+
+            });
+        }
+
+
+        // 사진 화면에 보여주기
+        function showPhotos() {
+
+            const preview =
+                document.getElementById("photoPreview");
+
+
+            preview.innerHTML = "";
+
+
+            selectedPhotos.forEach(function(photo) {
+
+                const image =
+                    document.createElement("img");
+
+                image.src = photo;
+
+                preview.appendChild(image);
+
+            });
+        }
+
+
+        // 저장된 사진 보여주기
+        function showSavedPhotos() {
+
+            showPhotos();
+
+        }
+
+
+        // =========================
+        // 기록 저장
+        // =========================
+
+        function saveMemory() {
+
+            const text =
+                document.getElementById("memoryText")
+                    .value;
+
+
+            const data = {
+
+                heart: heartActive,
+
+                text: text,
+
+                photos: selectedPhotos
+
+            };
+
+
+            try {
+
+                localStorage.setItem(
+
+                    selectedDate,
+
+                    JSON.stringify(data)
+
+                );
+
+                alert("기록이 저장됐어요 ♡");
+
+                createCalendar();
+
+            } catch (error) {
+
+                alert(
+                    "사진 용량이 너무 커서 저장하지 못했어요.\n" +
+                    "사진 개수를 줄이거나 작은 사진을 사용해주세요."
+                );
+
+            }
+        }
+
+
+        // =========================
+        // 저장된 기록 가져오기
+        // =========================
+
+        function getMemory(date) {
+
+            const data =
+                localStorage.getItem(date);
+
+
+            if (!data) {
+
+                return null;
+            }
+
+
+            try {
+
+                return JSON.parse(data);
+
+            } catch {
+
+                return null;
+            }
+        }
+
+
+        // 처음 실행
+        createCalendar();
+
+    </script>
+
+</body>
+</html>
