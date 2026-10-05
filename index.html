@@ -547,20 +547,43 @@ async function createCalendar() {
     }
 
 
-    // 사진은 아직 기존 방식 유지
-    const savedData = getMemory(date);
+    // Supabase에 저장된 사진 불러오기
+const { data: memoryData, error: photoError } =
+    await supabaseClient
+        .from("memories")
+        .select("photos")
+        .eq("date", date)
+        .limit(1);
 
-    if (savedData) {
-        selectedPhotos =
-            savedData.photos || [];
-    } else {
-        selectedPhotos = [];
+if (photoError) {
+    console.error("사진 정보 불러오기 실패:", photoError);
+    selectedPhotos = [];
+} else if (memoryData && memoryData.length > 0) {
+    const photoNames = memoryData[0].photos || [];
+
+    selectedPhotos = [];
+
+    for (const fileName of photoNames) {
+        const { data: imageData, error: imageError } =
+            await supabaseClient
+                .storage
+                .from("photos")
+                .download(fileName);
+
+        if (imageError) {
+            console.error("사진 다운로드 실패:", imageError);
+            continue;
+        }
+
+        const imageUrl = URL.createObjectURL(imageData);
+        selectedPhotos.push(imageUrl);
     }
+} else {
+    selectedPhotos = [];
+}
 
-
-    updateHeartButton();
-
-    showSavedPhotos();
+updateHeartButton();
+showSavedPhotos();
 }
 
         function toggleHeart() {
