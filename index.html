@@ -679,10 +679,43 @@ async function saveMemory() {
     const data = {
         heart: heartActive,
         text: text,
-        photos: selectedPhotos
+        photos: uploadedPhotos
     };
 
     try {
+                // 사진을 Supabase Storage에 업로드
+        const uploadedPhotos = [];
+
+        console.log("사진 업로드 시작:", selectedPhotos.length);
+        for (let i = 0; i < selectedPhotos.length; i++) {
+
+            const photo = selectedPhotos[i];
+
+            const response = await fetch(photo);
+            const blob = await response.blob();
+
+            const fileName =
+                selectedDate + "-" +
+                Date.now() + "-" +
+                i + ".jpg";
+
+            const { error: uploadError } =
+                await supabaseClient
+                    .storage
+                    .from("photos")
+                    .upload(fileName, blob, {
+                        contentType: "image/jpeg",
+                        upsert: true
+                    });
+
+            if (uploadError) {
+                console.error(uploadError);
+                alert("사진 업로드 실패");
+                return;
+            }
+
+            uploadedPhotos.push(fileName);
+        }
 
         // 내 기기에도 저장
         localStorage.setItem(
