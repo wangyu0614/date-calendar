@@ -321,6 +321,17 @@
         SUPABASE_URL,
         SUPABASE_KEY
     );
+    async function checkUser() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (user) {
+        console.log("현재 사용자 ID:", user.id);
+    } else {
+        console.log("로그인한 사용자가 없습니다.");
+    }
+}
+
+checkUser();
     async function login() {
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
