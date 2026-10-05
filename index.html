@@ -201,7 +201,16 @@
 </head>
 
 <body>
+    <div id="loginBox">
+    <h2>Our Memories ♡</h2>
 
+    <input type="email" id="loginEmail" placeholder="이메일">
+    <input type="password" id="loginPassword" placeholder="비밀번호">
+
+    <button onclick="login()">로그인</button>
+
+    <p id="loginMessage"></p>
+</div>
     <div class="calendar">
 
         <div class="title">
@@ -309,6 +318,27 @@
         SUPABASE_URL,
         SUPABASE_KEY
     );
+    async function login() {
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        console.error(error);
+        document.getElementById("loginMessage").textContent =
+            "이메일 또는 비밀번호가 맞지 않아요.";
+        return;
+    }
+
+    console.log("로그인 성공:", data);
+
+    document.getElementById("loginBox").style.display = "none";
+    document.querySelector(".calendar").style.display = "block";
+}
 </script>
     <script>
 
