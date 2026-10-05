@@ -671,24 +671,13 @@ async function createCalendar() {
         // =========================
 
 async function saveMemory() {
-
-    const text =
-        document.getElementById("memoryText")
-            .value;
-
-    const data = {
-        heart: heartActive,
-        text: text,
-        photos: uploadedPhotos
-    };
+    const text = document.getElementById("memoryText").value;
 
     try {
-                // 사진을 Supabase Storage에 업로드
+        // 1. 사진을 Supabase Storage에 업로드
         const uploadedPhotos = [];
 
-        console.log("사진 업로드 시작:", selectedPhotos.length);
         for (let i = 0; i < selectedPhotos.length; i++) {
-
             const photo = selectedPhotos[i];
 
             const response = await fetch(photo);
@@ -717,13 +706,19 @@ async function saveMemory() {
             uploadedPhotos.push(fileName);
         }
 
-        // 내 기기에도 저장
+        // 2. 내 기기에도 저장
+        const data = {
+            heart: heartActive,
+            text: text,
+            photos: selectedPhotos
+        };
+
         localStorage.setItem(
             selectedDate,
             JSON.stringify(data)
         );
 
-        // Supabase에서 같은 날짜가 있는지 확인
+        // 3. 기존 기록이 있는지 확인
         const { data: existing, error: selectError } =
             await supabaseClient
                 .from("memories")
@@ -737,16 +732,18 @@ async function saveMemory() {
             return;
         }
 
+        // 4. 기존 기록이면 수정
         if (existing.length > 0) {
 
-            // 이미 있으면 수정
-            const { error } = await supabaseClient
-                .from("memories")
-                .update({
-                    heart: heartActive,
-                    text: text
-                })
-                .eq("id", existing[0].id);
+            const { error } =
+                await supabaseClient
+                    .from("memories")
+                    .update({
+                        heart: heartActive,
+                        text: text,
+                        photos: uploadedPhotos
+                    })
+                    .eq("id", existing[0].id);
 
             if (error) {
                 console.error(error);
@@ -756,14 +753,16 @@ async function saveMemory() {
 
         } else {
 
-            // 없으면 새로 추가
-            const { error } = await supabaseClient
-                .from("memories")
-                .insert({
-                    date: selectedDate,
-                    heart: heartActive,
-                    text: text
-                })
+            // 5. 새 기록이면 추가
+            const { error } =
+                await supabaseClient
+                    .from("memories")
+                    .insert({
+                        date: selectedDate,
+                        heart: heartActive,
+                        text: text,
+                        photos: uploadedPhotos
+                    });
 
             if (error) {
                 console.error(error);
@@ -773,17 +772,13 @@ async function saveMemory() {
         }
 
         alert("기록이 저장됐어요 ♡");
-
         createCalendar();
 
     } catch (error) {
-
         console.error(error);
         alert("저장 중 오류가 발생했어요.");
-
     }
 }
-
 
         // =========================
         // 저장된 기록 가져오기
