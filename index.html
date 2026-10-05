@@ -705,7 +705,8 @@ async function saveMemory() {
             const { error } = await supabaseClient
                 .from("memories")
                 .update({
-                    heart: heartActive
+                    heart: heartActive,
+                    text: text
                 })
                 .eq("id", existing[0].id);
 
@@ -722,8 +723,9 @@ async function saveMemory() {
                 .from("memories")
                 .insert({
                     date: selectedDate,
-                    heart: heartActive
-                });
+                    heart: heartActive,
+                    text: text
+                })
 
             if (error) {
                 console.error(error);
