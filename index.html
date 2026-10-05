@@ -349,7 +349,7 @@ checkUser();
     }
 
     console.log("로그인 성공:", data);
-
+    console.log("현재 사용자 ID:", data.user.id);
     document.getElementById("loginBox").style.display = "none";
     document.querySelector(".calendar").style.display = "block";
 }
