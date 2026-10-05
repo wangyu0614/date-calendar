@@ -564,6 +564,7 @@ async function createCalendar() {
             .from("memories")
             .select("text, heart")
             .eq("date", date)
+            .eq("user_id", (await supabaseClient.auth.getUser()).data.user.id)
             .limit(1);
 
     if (error) {
@@ -773,9 +774,15 @@ async function saveMemory() {
 
             uploadedPhotos.push(fileName);
         }
+        const { data: { user } } = await supabaseClient.auth.getUser();
 
+if (!user) {
+    alert("로그인이 필요해요.");
+    return;
+}
         // 2. 내 기기에도 저장
         const data = {
+            user_id: user.id,
             heart: heartActive,
             text: text,
             photos: selectedPhotos
@@ -811,7 +818,8 @@ async function saveMemory() {
                         text: text,
                         photos: uploadedPhotos
                     })
-                    .eq("id", existing[0].id);
+                    .eq("id", existing[0].id)
+.eq("user_id", user.id);
 
             if (error) {
                 console.error(error);
@@ -827,6 +835,7 @@ async function saveMemory() {
                     .from("memories")
                     .insert({
                         date: selectedDate,
+                        user_id: user.id,
                         heart: heartActive,
                         text: text,
                         photos: uploadedPhotos
