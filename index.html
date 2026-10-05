@@ -497,66 +497,71 @@ async function createCalendar() {
             createCalendar();
         }
 
+        async function openMemory(date) {
 
-        // =========================
-        // 날짜 열기
-        // =========================
+    selectedDate = date;
 
-        function openMemory(date) {
+    document.getElementById("memoryBox")
+        .style.display = "block";
 
-            selectedDate = date;
+    const dateParts =
+        date.split("-");
 
-            document.getElementById("memoryBox")
-                .style.display = "block";
-
-
-            const dateParts =
-                date.split("-");
-
-
-            document.getElementById("selectedDate")
-                .innerText =
-                dateParts[0] + "년 " +
-                Number(dateParts[1]) + "월 " +
-                Number(dateParts[2]) + "일";
+    document.getElementById("selectedDate")
+        .innerText =
+        dateParts[0] + "년 " +
+        Number(dateParts[1]) + "월 " +
+        Number(dateParts[2]) + "일";
 
 
-            const savedData =
-                getMemory(date);
+    // Supabase에서 해당 날짜의 메모 불러오기
+    const { data, error } =
+        await supabaseClient
+            .from("memories")
+            .select("text, heart")
+            .eq("date", date)
+            .limit(1);
+
+    if (error) {
+        console.error("메모 불러오기 실패:", error);
+        alert("메모를 불러오지 못했어요.");
+        return;
+    }
 
 
-            if (savedData) {
+    if (data && data.length > 0) {
 
-                document.getElementById("memoryText")
-                    .value =
-                    savedData.text || "";
+        document.getElementById("memoryText")
+            .value =
+            data[0].text || "";
 
-                heartActive =
-                    savedData.heart || false;
+        heartActive =
+            data[0].heart || false;
 
-                selectedPhotos =
-                    savedData.photos || [];
+    } else {
 
-            } else {
+        document.getElementById("memoryText")
+            .value = "";
 
-                document.getElementById("memoryText")
-                    .value = "";
-
-                heartActive = false;
-
-                selectedPhotos = [];
-            }
+        heartActive = false;
+    }
 
 
-            updateHeartButton();
+    // 사진은 아직 기존 방식 유지
+    const savedData = getMemory(date);
 
-            showSavedPhotos();
-        }
+    if (savedData) {
+        selectedPhotos =
+            savedData.photos || [];
+    } else {
+        selectedPhotos = [];
+    }
 
 
-        // =========================
-        // 하트
-        // =========================
+    updateHeartButton();
+
+    showSavedPhotos();
+}
 
         function toggleHeart() {
 
