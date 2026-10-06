@@ -564,7 +564,6 @@ async function createCalendar() {
             .from("memories")
             .select("text, heart")
             .eq("date", date)
-            .eq("user_id", (await supabaseClient.auth.getUser()).data.user.id)
             .limit(1);
 
     if (error) {
