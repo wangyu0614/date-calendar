@@ -393,6 +393,7 @@ checkUser();
 
     document.getElementById("loginBox").style.display = "none";
     document.querySelector(".calendar").style.display = "block";
+    document.getElementById("mapButtonSection").style.display = "block";
 }
 </script>
     <script>
@@ -1078,7 +1079,8 @@ if (!user) {
 
     </script>
 <!-- 데이트 장소 지도 -->
-<div style="text-align: center; margin: 25px 0;">
+<div id="mapButtonSection"
+     style="text-align: center; margin: 25px 0; display: none;">
     <button
         type="button"
         onclick="showMap()"
@@ -1120,98 +1122,155 @@ if (!user) {
     ></div>
 </div>
 <script>
-    // 데이트 장소 지도 보여주기
-    async function showMap() {
+async function showMap() {
 
-        const mapSection =
-            document.getElementById("mapSection");
+    const mapSection =
+        document.getElementById("mapSection");
 
-        mapSection.style.display = "block";
+    mapSection.style.display = "block";
 
-        // 지도 기본 위치
-        const mapContainer =
-            document.getElementById("dateMap");
+    const mapContainer =
+        document.getElementById("dateMap");
 
-        const mapOption = {
-            center: new kakao.maps.LatLng(37.5665, 126.9780),
-            level: 8
-        };
+    const mapOption = {
+        center: new kakao.maps.LatLng(37.5665, 126.9780),
+        level: 8
+    };
 
-        const map =
-            new kakao.maps.Map(
-                mapContainer,
-                mapOption
+    const map =
+        new kakao.maps.Map(
+            mapContainer,
+            mapOption
+        );
+
+    // 현재 열려 있는 정보창
+    let openInfoWindow = null;
+
+    // Supabase에서 장소 가져오기
+    const { data, error } =
+        await supabaseClient
+            .from("memories")
+            .select(
+                "date, place_name, place_address, latitude, longitude"
+            )
+            .not("latitude", "is", null)
+            .not("longitude", "is", null);
+
+    if (error) {
+        console.error("장소 불러오기 실패:", error);
+        alert("장소를 불러오지 못했어요.");
+        return;
+    }
+
+    console.log("지도에 표시할 장소:", data);
+
+    // 저장된 장소가 없을 때
+    if (!data || data.length === 0) {
+        alert("저장된 데이트 장소가 아직 없어요.");
+        return;
+    }
+
+    const bounds = new kakao.maps.LatLngBounds();
+
+    // 장소마다 마커 만들기
+    data.forEach(function(place) {
+
+        const position =
+            new kakao.maps.LatLng(
+                Number(place.latitude),
+                Number(place.longitude)
             );
 
-        // Supabase에서 장소 가져오기
-        const { data, error } =
-            await supabaseClient
-                .from("memories")
-                .select(
-                    "date, place_name, place_address, latitude, longitude"
-                )
-                .not("latitude", "is", null)
-                .not("longitude", "is", null);
+        bounds.extend(position);
 
-        if (error) {
-            console.error("장소 불러오기 실패:", error);
-            alert("장소를 불러오지 못했어요.");
-            return;
-        }
+        const marker =
+            new kakao.maps.Marker({
+                map: map,
+                position: position
+            });
 
-        console.log("지도에 표시할 장소:", data);
+        const infoWindow =
+            new kakao.maps.InfoWindow({
+                content: `
+                    <div
+                        onclick="moveToDate('${place.date}')"
+                        style="
+                            padding:12px;
+                            font-size:13px;
+                            min-width:170px;
+                            cursor:pointer;
+                        "
+                    >
+                        <strong>${place.place_name}</strong>
+                        <br>
+                        <span style="color:#888;">
+                            ${place.place_address || ""}
+                        </span>
+                        <br>
+                        <span style="
+                            color:#f3a6b5;
+                            display:inline-block;
+                            margin-top:5px;
+                        ">
+                            ${place.date}
+                        </span>
+                        <br>
+                        <span style="
+                            color:#aaa;
+                            font-size:11px;
+                        ">
+                            클릭하면 해당 날짜로 이동
+                        </span>
+                    </div>
+                `
+            });
 
-        // 장소마다 마커 만들기
-        data.forEach(function(place) {
+        kakao.maps.event.addListener(
+            marker,
+            "click",
+            function() {
 
-            const position =
-                new kakao.maps.LatLng(
-                    Number(place.latitude),
-                    Number(place.longitude)
+                // 다른 정보창 닫기
+                if (openInfoWindow) {
+                    openInfoWindow.close();
+                }
+
+                infoWindow.open(
+                    map,
+                    marker
                 );
 
-            const marker =
-                new kakao.maps.Marker({
-                    map: map,
-                    position: position
-                });
+                openInfoWindow = infoWindow;
+            }
+        );
+    });
 
-            const infoWindow =
-                new kakao.maps.InfoWindow({
-                    content: `
-                        <div style="
-                            padding:10px;
-                            font-size:13px;
-                            min-width:160px;
-                        ">
-                            <strong>${place.place_name}</strong>
-                            <br>
-                            <span style="color:#888;">
-                                ${place.place_address || ""}
-                            </span>
-                            <br>
-                            <span style="color:#f3a6b5;">
-                                ${place.date}
-                            </span>
-                        </div>
-                    `
-                });
+    // 모든 장소가 한 화면에 들어오도록 조정
+    map.setBounds(bounds);
 
-            kakao.maps.event.addListener(
-                marker,
-                "click",
-                function() {
+    // 지도 다른 곳을 클릭하면 정보창 닫기
+    kakao.maps.event.addListener(
+        map,
+        "click",
+        function() {
 
-                    infoWindow.open(
-                        map,
-                        marker
-                    );
+            if (openInfoWindow) {
+                openInfoWindow.close();
+                openInfoWindow = null;
+            }
 
-                }
-            );
+        }
+    );
+}
+function moveToDate(date) {
 
-        });
-    }
+    // 지도 화면 숨기기
+    document.getElementById("mapSection")
+        .style.display = "none";
+
+    // 해당 날짜 기록 열기
+    openMemory(date);
+}
 </script>
 <script>
     async function testSupabase() {
