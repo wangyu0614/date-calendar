@@ -294,7 +294,47 @@
             <label class="memory-label">
                 📝 오늘의 기록
             </label>
+            <!-- 장소 -->
+<label class="memory-label">데이트 장소</label>
 
+<div style="display: flex; gap: 8px;">
+    <input
+        type="text"
+        id="placeSearch"
+        placeholder="장소를 검색해보세요 ♡"
+        style="
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+        "
+    >
+
+    <button
+        type="button"
+        onclick="searchPlace()"
+        style="
+            padding: 0 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: #f3b6c0;
+            color: white;
+            cursor: pointer;
+        "
+    >
+        검색
+    </button>
+</div>
+
+<div
+    id="placeResults"
+    style="
+        margin-top: 10px;
+        display: none;
+    "
+></div>
             <textarea
                 id="memoryText"
                 placeholder="오늘의 데이트를 기록해보세요 ♡">
