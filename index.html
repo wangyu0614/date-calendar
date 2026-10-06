@@ -198,7 +198,7 @@
         .save-button:hover {
             background-color: #e9a5b1;
         }
-     </style>
+    </style>
     <script type="text/javascript"
     src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=eccaea6437ab3e7d2ff10bb39fd3b19c&libraries=services">
 </script>
@@ -608,7 +608,7 @@ async function createCalendar() {
     const { data, error } =
         await supabaseClient
             .from("memories")
-            .select("text, heart")
+            .select("text, heart, place_name, place_address, latitude, longitude")
             .eq("date", date)
             .limit(1);
 
@@ -621,21 +621,81 @@ async function createCalendar() {
 
     if (data && data.length > 0) {
 
-        document.getElementById("memoryText")
-            .value =
-            data[0].text || "";
+    document.getElementById("memoryText")
+        .value =
+        data[0].text || "";
 
-        heartActive =
-            data[0].heart || false;
+    heartActive =
+        data[0].heart || false;
+
+    // 저장된 장소 불러오기
+    selectedPlaceName =
+        data[0].place_name || "";
+
+    selectedPlaceAddress =
+        data[0].place_address || "";
+
+    selectedLatitude =
+        data[0].latitude || null;
+
+    selectedLongitude =
+        data[0].longitude || null;
+
+    // 장소 검색창에 표시
+    document.getElementById("placeSearch")
+        .value = selectedPlaceName;
+
+    const placeResults =
+        document.getElementById("placeResults");
+
+    if (selectedPlaceName) {
+
+        placeResults.style.display = "block";
+
+        placeResults.innerHTML = `
+            <div style="
+                padding:12px;
+                background:#fff7f8;
+                border-radius:10px;
+            ">
+                <strong>${selectedPlaceName}</strong><br>
+                <span style="
+                    font-size:13px;
+                    color:#888;
+                ">
+                    ${selectedPlaceAddress}
+                </span>
+            </div>
+        `;
 
     } else {
 
-        document.getElementById("memoryText")
-            .value = "";
-
-        heartActive = false;
+        placeResults.innerHTML = "";
+        placeResults.style.display = "none";
     }
 
+} else {
+
+    document.getElementById("memoryText")
+        .value = "";
+
+    heartActive = false;
+
+    // 장소 초기화
+    selectedPlaceName = "";
+    selectedPlaceAddress = "";
+    selectedLatitude = null;
+    selectedLongitude = null;
+
+    document.getElementById("placeSearch")
+        .value = "";
+
+    document.getElementById("placeResults")
+        .innerHTML = "";
+
+    document.getElementById("placeResults")
+        .style.display = "none";
+}
 
     // Supabase에 저장된 사진 불러오기
 const { data: memoryData, error: photoError } =
@@ -936,10 +996,14 @@ if (!user) {
                 await supabaseClient
                     .from("memories")
                     .update({
-                        heart: heartActive,
-                        text: text,
-                        photos: uploadedPhotos
-                    })
+    heart: heartActive,
+    text: text,
+    photos: uploadedPhotos,
+    place_name: selectedPlaceName,
+    place_address: selectedPlaceAddress,
+    latitude: selectedLatitude,
+    longitude: selectedLongitude
+})
                     .eq("id", existing[0].id)
 
             if (error) {
@@ -955,12 +1019,16 @@ if (!user) {
                 await supabaseClient
                     .from("memories")
                     .insert({
-                        date: selectedDate,
-                        user_id: user.id,
-                        heart: heartActive,
-                        text: text,
-                        photos: uploadedPhotos
-                    });
+    date: selectedDate,
+    user_id: user.id,
+    heart: heartActive,
+    text: text,
+    photos: uploadedPhotos,
+    place_name: selectedPlaceName,
+    place_address: selectedPlaceAddress,
+    latitude: selectedLatitude,
+    longitude: selectedLongitude
+});
 
             if (error) {
                 console.error(error);
