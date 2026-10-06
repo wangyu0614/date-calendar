@@ -15,13 +15,11 @@
             color: #333;
         }
 
-        
         .calendar {
     display: none;
     max-width: 500px;
     margin: 0 auto;
 }
-
 
         .title {
             text-align: center;
@@ -202,7 +200,7 @@
         }
     </style>
     <script type="text/javascript"
-    src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=eccaea6437ab3e7d2ff10bb39fd3b19c">
+    src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=eccaea6437ab3e7d2ff10bb39fd3b19c&libraries=services">
 </script>
 </head>
 
@@ -392,7 +390,7 @@ checkUser();
     }
 
     console.log("로그인 성공:", data);
-    console.log("현재 사용자 ID:", data.user.id);
+
     document.getElementById("loginBox").style.display = "none";
     document.querySelector(".calendar").style.display = "block";
 }
@@ -411,6 +409,11 @@ checkUser();
 
         // 현재 선택한 사진들
         let selectedPhotos = [];
+        // 현재 선택한 장소
+let selectedPlaceName = "";
+let selectedPlaceAddress = "";
+let selectedLatitude = null;
+let selectedLongitude = null;
 
 
         // =========================
@@ -779,7 +782,84 @@ showSavedPhotos();
         // =========================
         // 기록 저장
         // =========================
+// 카카오 장소 검색
+function searchPlace() {
+    const keyword = document.getElementById("placeSearch").value.trim();
 
+    if (!keyword) {
+        alert("장소를 입력해주세요.");
+        return;
+    }
+
+    const ps = new kakao.maps.services.Places();
+
+    ps.keywordSearch(keyword, function(data, status) {
+
+        const results = document.getElementById("placeResults");
+        results.innerHTML = "";
+        results.style.display = "block";
+
+        if (status === kakao.maps.services.Status.ZERO_RESULT) {
+            results.innerHTML = "<p>검색 결과가 없어요.</p>";
+            return;
+        }
+
+        if (status !== kakao.maps.services.Status.OK) {
+            results.innerHTML = "<p>장소 검색에 실패했어요.</p>";
+            return;
+        }
+
+        data.slice(0, 5).forEach(function(place) {
+
+            const item = document.createElement("div");
+
+            item.style.padding = "12px";
+            item.style.borderBottom = "1px solid #eee";
+            item.style.cursor = "pointer";
+
+            item.innerHTML = `
+                <strong>${place.place_name}</strong>
+                <br>
+                <span style="font-size:13px; color:#888;">
+                    ${place.road_address_name || place.address_name}
+                </span>
+            `;
+
+            item.onclick = function() {
+                selectedPlaceName = place.place_name;
+                selectedPlaceAddress =
+                    place.road_address_name || place.address_name;
+                selectedLatitude = Number(place.y);
+                selectedLongitude = Number(place.x);
+
+                document.getElementById("placeSearch").value =
+                    selectedPlaceName;
+
+                results.innerHTML = `
+                    <div style="
+                        padding:12px;
+                        background:#fff7f8;
+                        border-radius:10px;
+                    ">
+                        <strong>${selectedPlaceName}</strong><br>
+                        <span style="font-size:13px; color:#888;">
+                            ${selectedPlaceAddress}
+                        </span>
+                    </div>
+                `;
+
+                console.log("선택한 장소:", {
+                    name: selectedPlaceName,
+                    address: selectedPlaceAddress,
+                    latitude: selectedLatitude,
+                    longitude: selectedLongitude
+                });
+            };
+
+            results.appendChild(item);
+        });
+    });
+}
 async function saveMemory() {
     console.log("사진 저장 함수 실행됨", selectedPhotos.length);
     const text = document.getElementById("memoryText").value;
@@ -861,7 +941,6 @@ if (!user) {
                         photos: uploadedPhotos
                     })
                     .eq("id", existing[0].id)
-.eq("user_id", user.id);
 
             if (error) {
                 console.error(error);
