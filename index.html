@@ -219,6 +219,62 @@
 
         <div class="title">
             <h1>Our Memories ♡</h1>
+
+<!-- 메뉴 -->
+<div
+    id="mainMenu"
+    style="
+        display: none;
+        justify-content: center;
+        gap: 8px;
+        margin: 20px 0;
+    "
+>
+    <button
+        type="button"
+        onclick="showSection('calendar')"
+        style="
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            background: #f3b6c0;
+            color: white;
+            cursor: pointer;
+        "
+    >
+        📅 캘린더
+    </button>
+
+    <button
+        type="button"
+        onclick="showSection('map')"
+        style="
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            background: #eee;
+            color: #555;
+            cursor: pointer;
+        "
+    >
+        🗺️ 장소
+    </button>
+
+    <button
+        type="button"
+        onclick="showSection('bucket')"
+        style="
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            background: #eee;
+            color: #555;
+            cursor: pointer;
+        "
+    >
+        🎯 버킷리스트
+    </button>
+</div>
             <p>우리의 데이트 기록</p>
         </div>
 
@@ -393,9 +449,7 @@ checkUser();
 
     document.getElementById("loginBox").style.display = "none";
     document.querySelector(".calendar").style.display = "block";
-    document.getElementById("mapButtonSection").style.display = "block";
-    document.getElementById("bucketSection").style.display = "block"; 
-    loadBucketList();
+    document.getElementById("mainMenu").style.display = "flex";
 }
 </script>
     <script>
@@ -1168,7 +1222,7 @@ async function addBucketItem() {
 
     if (error) {
         console.error("버킷리스트 추가 실패:", error);
-        alert("추가하지 못했어요.");
+        alert(error.message);
         return;
     }
 
@@ -1212,6 +1266,44 @@ async function deleteBucketItem(id) {
 
     loadBucketList();
 }
+async function deleteBucketItem(id) {
+
+    const { error } =
+        await supabaseClient
+            .from("date_bucket_list")
+            .delete()
+            .eq("id", id);
+
+    if (error) {
+        console.error("버킷리스트 삭제 실패:", error);
+        return;
+    }
+
+    loadBucketList();
+}
+
+
+function showSection(section) {
+
+    document.querySelector(".calendar").style.display =
+        section === "calendar" ? "block" : "none";
+
+    document.getElementById("mapSection").style.display =
+        section === "map" ? "block" : "none";
+
+    document.getElementById("bucketSection").style.display =
+        section === "bucket" ? "block" : "none";
+
+    if (section === "map") {
+        showMap();
+    }
+
+    if (section === "bucket") {
+        loadBucketList();
+    }
+}
+
+</script>
     </script>
     <!-- 데이트 버킷리스트 -->
 <div
@@ -1262,8 +1354,7 @@ async function deleteBucketItem(id) {
     <div id="bucketList" style="margin-top: 15px;"></div>
 </div>
 <!-- 데이트 장소 지도 -->
-<div id="mapButtonSection"
-     style="text-align: center; margin: 25px 0; display: none;">
+
     <button
         type="button"
         onclick="showMap()"
