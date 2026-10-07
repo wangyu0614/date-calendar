@@ -1531,11 +1531,7 @@ async function showMap() {
 }
 function moveToDate(date) {
 
-    // 지도 화면 숨기기
-    document.getElementById("mapSection")
-        .style.display = "none";
-
-    // 해당 날짜 기록 열기
+    showSection("calendar");
     openMemory(date);
 }
 </script>
