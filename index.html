@@ -1316,6 +1316,8 @@ function showSection(section) {
 
     document.getElementById("bucketSection").style.display =
         section === "bucket" ? "block" : "none";
+    document.getElementById("statsSection").style.display =
+        section === "stats" ? "block" : "none";
 
     if (section === "map") {
         showMap();
@@ -1324,8 +1326,143 @@ function showSection(section) {
     if (section === "bucket") {
         loadBucketList();
     }
+    if (section === "stats") {
+    loadMonthlyStats();
+    }
 }
+let statsYear = new Date().getFullYear();
+let statsMonth = new Date().getMonth();
 
+async function loadMonthlyStats() {
+
+    const monthStart =
+        statsYear + "-" +
+        String(statsMonth + 1).padStart(2, "0") +
+        "-01";
+
+    const lastDay =
+        new Date(
+            statsYear,
+            statsMonth + 1,
+            0
+        ).getDate();
+
+    const monthEnd =
+        statsYear + "-" +
+        String(statsMonth + 1).padStart(2, "0") +
+        "-" +
+        String(lastDay).padStart(2, "0");
+
+
+    // 화면의 월 표시
+    document.getElementById("statsMonthTitle").innerText =
+        statsYear + "년 " +
+        (statsMonth + 1) + "월";
+
+
+    // Supabase에서 해당 월 기록 가져오기
+    const { data, error } =
+        await supabaseClient
+            .from("memories")
+            .select(
+                "date, heart, place_name, photos, text"
+            )
+            .gte("date", monthStart)
+            .lte("date", monthEnd);
+
+
+    if (error) {
+        console.error("월별 추억 불러오기 실패:", error);
+        return;
+    }
+
+
+    // 데이트한 날
+    const dateCount =
+        data.filter(item => item.heart).length;
+
+
+    // 장소가 기록된 날
+    const placeData =
+        data.filter(item =>
+            item.place_name
+        );
+
+    const placeCount =
+        new Set(
+            placeData.map(item => item.place_name)
+        ).size;
+
+
+    // 사진이 있는 날
+    const photoCount =
+        data.filter(item =>
+            item.photos &&
+            item.photos.length > 0
+        ).length;
+
+
+    // 메모가 있는 날
+    const memoCount =
+        data.filter(item =>
+            item.text &&
+            item.text.trim() !== ""
+        ).length;
+
+
+    // 숫자 표시
+    document.getElementById("statsDateCount")
+        .innerText = dateCount + "일";
+
+    document.getElementById("statsPlaceCount")
+        .innerText = placeCount + "곳";
+
+    document.getElementById("statsPhotoCount")
+        .innerText = photoCount + "일";
+
+    document.getElementById("statsMemoCount")
+        .innerText = memoCount + "일";
+
+
+    // 장소 목록
+    const placesElement =
+        document.getElementById("statsPlaces");
+
+    const uniquePlaces =
+        [...new Set(
+            placeData.map(item => item.place_name)
+        )];
+
+
+    if (uniquePlaces.length === 0) {
+
+        placesElement.innerText =
+            "아직 기록된 장소가 없어요.";
+
+    } else {
+
+        placesElement.innerHTML =
+            uniquePlaces
+                .map(place => "📍 " + place)
+                .join("<br>");
+    }
+}
+function changeStatsMonth(direction) {
+
+    statsMonth += direction;
+
+    if (statsMonth < 0) {
+        statsMonth = 11;
+        statsYear--;
+    }
+
+    if (statsMonth > 11) {
+        statsMonth = 0;
+        statsYear++;
+    }
+
+    loadMonthlyStats();
+}
 </script>
     </script>
     <!-- 데이트 버킷리스트 -->
@@ -1401,6 +1538,195 @@ function showSection(section) {
             overflow: hidden;
         "
     ></div>
+</div>
+<!-- 월별 추억 -->
+<div
+    id="statsSection"
+    style="
+        display: none;
+        max-width: 700px;
+        margin: 30px auto;
+        padding: 20px;
+        box-sizing: border-box;
+    "
+>
+    <h2 style="text-align: center;">
+        📊 월별 추억
+    </h2>
+
+    <!-- 월 이동 -->
+    <div
+        style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin: 25px 0;
+        "
+    >
+        <button
+            type="button"
+            onclick="changeStatsMonth(-1)"
+            style="
+                border: none;
+                background: none;
+                font-size: 28px;
+                cursor: pointer;
+            "
+        >
+            ‹
+        </button>
+
+        <h3
+            id="statsMonthTitle"
+            style="margin: 0;"
+        ></h3>
+
+        <button
+            type="button"
+            onclick="changeStatsMonth(1)"
+            style="
+                border: none;
+                background: none;
+                font-size: 28px;
+                cursor: pointer;
+            "
+        >
+            ›
+        </button>
+    </div>
+
+    <!-- 통계 -->
+    <div
+        style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        "
+    >
+
+        <div
+            style="
+                padding: 20px;
+                background: #fff7f8;
+                border-radius: 15px;
+                text-align: center;
+            "
+        >
+            <div style="font-size: 24px;">❤️</div>
+            <div
+                id="statsDateCount"
+                style="
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin-top: 8px;
+                "
+            >
+                0일
+            </div>
+            <div style="color: #888;">
+                데이트한 날
+            </div>
+        </div>
+
+        <div
+            style="
+                padding: 20px;
+                background: #fff7f8;
+                border-radius: 15px;
+                text-align: center;
+            "
+        >
+            <div style="font-size: 24px;">📍</div>
+            <div
+                id="statsPlaceCount"
+                style="
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin-top: 8px;
+                "
+            >
+                0곳
+            </div>
+            <div style="color: #888;">
+                방문한 장소
+            </div>
+        </div>
+
+        <div
+            style="
+                padding: 20px;
+                background: #fff7f8;
+                border-radius: 15px;
+                text-align: center;
+            "
+        >
+            <div style="font-size: 24px;">📷</div>
+            <div
+                id="statsPhotoCount"
+                style="
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin-top: 8px;
+                "
+            >
+                0일
+            </div>
+            <div style="color: #888;">
+                사진을 남긴 날
+            </div>
+        </div>
+
+        <div
+            style="
+                padding: 20px;
+                background: #fff7f8;
+                border-radius: 15px;
+                text-align: center;
+            "
+        >
+            <div style="font-size: 24px;">📝</div>
+            <div
+                id="statsMemoCount"
+                style="
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin-top: 8px;
+                "
+            >
+                0일
+            </div>
+            <div style="color: #888;">
+                기록을 남긴 날
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 방문한 장소 -->
+    <div
+        style="
+            margin-top: 20px;
+            padding: 20px;
+            background: #fff7f8;
+            border-radius: 15px;
+        "
+    >
+        <h3 style="margin-top: 0;">
+            📍 이번 달 우리가 간 곳
+        </h3>
+
+        <div
+            id="statsPlaces"
+            style="
+                color: #666;
+                line-height: 1.8;
+            "
+        >
+            아직 기록된 장소가 없어요.
+        </div>
+    </div>
+
 </div>
 <script>
 async function showMap() {
