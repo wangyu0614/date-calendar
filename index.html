@@ -1169,34 +1169,40 @@ async function saveMemory() {
         // 1. 사진을 Supabase Storage에 업로드
         const uploadedPhotos = [];
 
-        for (let i = 0; i < selectedPhotos.length; i++) {
-            const photo = selectedPhotos[i];
+        for (let i = 0; i < selectedPhotoFiles.length; i++) {
 
-            const response = await fetch(photo);
-            const blob = await response.blob();
+    const file = selectedPhotoFiles[i];
 
-            const fileName =
-                selectedDate + "-" +
-                Date.now() + "-" +
-                i + ".jpg";
+    const extension =
+        file.name.split(".").pop().toLowerCase();
 
-            const { error: uploadError } =
-                await supabaseClient
-                    .storage
-                    .from("photos")
-                    .upload(fileName, blob, {
-                        contentType: "image/jpeg",
-                        upsert: true
-                    });
+    const fileName =
+        selectedDate + "-" +
+        Date.now() + "-" +
+        i + "." +
+        extension;
 
-            if (uploadError) {
-                console.error(uploadError);
-                alert("사진 업로드 실패");
-                return;
-            }
+    const { error: uploadError } =
+        await supabaseClient
+            .storage
+            .from("photos")
+            .upload(fileName, file, {
+                contentType: file.type,
+                upsert: true
+            });
 
-            uploadedPhotos.push(fileName);
-        }
+    if (uploadError) {
+        console.error(
+            "사진 업로드 실패:",
+            uploadError
+        );
+
+        alert("사진 업로드 실패");
+        return;
+    }
+
+    uploadedPhotos.push(fileName);
+}
         const { data: { user } } = await supabaseClient.auth.getUser();
 
 if (!user) {
