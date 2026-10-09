@@ -1018,47 +1018,37 @@ showSavedPhotos();
         }
 
 
-        // =========================
-        // 사진 미리보기
-        // =========================
-
         function previewPhotos() {
 
-            const input =
-                document.getElementById("photoInput");
+    const input =
+        document.getElementById("photoInput");
 
+    const files =
+        Array.from(input.files);
 
-            const files =
-                Array.from(input.files);
+    // 원본 파일 저장
+    selectedPhotoFiles = files;
 
+    // 미리보기용 사진 초기화
+    selectedPhotos = [];
 
-            selectedPhotos = [];
+    files.forEach(function(file) {
 
+        const reader =
+            new FileReader();
 
-            files.forEach(function(file) {
+        reader.onload = function(event) {
 
-                const reader =
-                    new FileReader();
+            selectedPhotos.push(
+                event.target.result
+            );
 
+            showPhotos();
+        };
 
-                reader.onload = function(event) {
-
-                    selectedPhotos.push(
-                        event.target.result
-                    );
-
-
-                    showPhotos();
-
-                };
-
-
-                reader.readAsDataURL(file);
-
-            });
-        }
-
-
+        reader.readAsDataURL(file);
+    });
+}
         // 사진 화면에 보여주기
         function showPhotos() {
 
