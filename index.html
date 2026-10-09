@@ -1290,9 +1290,17 @@ if (!user) {
         alert("기록이 저장됐어요 ♡");
         createCalendar();
 
-   } catch (error) {
-    console.error(error);
-    alert("저장 중 오류가 발생했어요.");
+  } catch (error) {
+    console.error("저장 오류:", error);
+
+    alert(
+        "저장 중 오류가 발생했어요.\n\n" +
+        "오류 내용: " +
+        (error && error.message
+            ? error.message
+            : String(error))
+    );
+}
 }
         // =========================
         // 저장된 기록 가져오기
