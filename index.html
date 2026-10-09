@@ -354,17 +354,32 @@
             Jinny ♡ Wangyu
         </h1>
 
-        <p
-            style="
-                margin-top: 18px;
-                color: #999;
-                font-size: 15px;
-                line-height: 1.7;
-            "
-        >
-            우리가 함께한 순간들을<br>
-            하나씩 기록해두는 공간
-        </p>
+        <div
+    style="
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 25px;
+    "
+>
+    <div style="
+        font-size: 15px;
+        color: #888;
+        margin-bottom: 7px;
+    ">
+        ❤️ 우리가 함께한 지
+    </div>
+
+    <div
+        id="dDayCount"
+        style="
+            font-size: 32px;
+            font-weight: bold;
+            color: #f3a6b5;
+        "
+    >
+        0일
+    </div>
+</div>
 
         <div
             style="
@@ -1468,7 +1483,27 @@ async function deleteBucketItem(id) {
 
     loadBucketList();
 }
+function updateDDay() {
 
+    const startDate = new Date(2026, 1, 19);
+    const today = new Date();
+
+    startDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const difference =
+        today.getTime() - startDate.getTime();
+
+    const days =
+        Math.floor(
+            difference / (1000 * 60 * 60 * 24)
+        ) + 1;
+
+    document.getElementById("dDayCount")
+        .innerText = days + "일";
+}
+
+updateDDay();
 
 function showSection(section) {
 
