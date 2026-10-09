@@ -838,9 +838,12 @@ async function createCalendar() {
             createCalendar();
         }
 
-        async function openMemory(date) {
+async function openMemory(date) {
 
     selectedDate = date;
+                // 새로 선택한 사진 파일 초기화
+    selectedPhotoFiles = [];
+
 
     document.getElementById("memoryBox")
         .style.display = "block";
