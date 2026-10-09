@@ -1212,18 +1212,6 @@ if (!user) {
     alert("로그인이 필요해요.");
     return;
 }
-        // 2. 내 기기에도 저장
-        const data = {
-            user_id: user.id,
-            heart: heartActive,
-            text: text,
-            photos: selectedPhotos
-        };
-
-        localStorage.setItem(
-            selectedDate,
-            JSON.stringify(data)
-        );
 
         // 3. 기존 기록이 있는지 확인
         const { data: existing, error: selectError } =
