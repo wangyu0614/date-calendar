@@ -659,7 +659,6 @@ document.getElementById("mainMenu").style.display = "flex";
 
         // 현재 선택한 사진들
         let selectedPhotos = [];
-        let selectedPhotoFiles = [];
         // 현재 선택한 장소
 let selectedPlaceName = "";
 let selectedPlaceAddress = "";
@@ -841,9 +840,6 @@ async function createCalendar() {
         async function openMemory(date) {
 
     selectedDate = date;
-                // 새로 선택한 사진 파일 초기화
-    selectedPhotoFiles = [];
-
 
     document.getElementById("memoryBox")
         .style.display = "block";
@@ -1021,37 +1017,47 @@ showSavedPhotos();
         }
 
 
+        // =========================
+        // 사진 미리보기
+        // =========================
+
         function previewPhotos() {
 
-    const input =
-        document.getElementById("photoInput");
+            const input =
+                document.getElementById("photoInput");
 
-    const files =
-        Array.from(input.files);
 
-    // 원본 파일 저장
-    selectedPhotoFiles = files;
+            const files =
+                Array.from(input.files);
 
-    // 미리보기용 사진 초기화
-    selectedPhotos = [];
 
-    files.forEach(function(file) {
+            selectedPhotos = [];
 
-        const reader =
-            new FileReader();
 
-        reader.onload = function(event) {
+            files.forEach(function(file) {
 
-            selectedPhotos.push(
-                event.target.result
-            );
+                const reader =
+                    new FileReader();
 
-            showPhotos();
-        };
 
-        reader.readAsDataURL(file);
-    });
-}
+                reader.onload = function(event) {
+
+                    selectedPhotos.push(
+                        event.target.result
+                    );
+
+
+                    showPhotos();
+
+                };
+
+
+                reader.readAsDataURL(file);
+
+            });
+        }
+
+
         // 사진 화면에 보여주기
         function showPhotos() {
 
@@ -1172,40 +1178,34 @@ async function saveMemory() {
         // 1. 사진을 Supabase Storage에 업로드
         const uploadedPhotos = [];
 
-        for (let i = 0; i < selectedPhotoFiles.length; i++) {
+        for (let i = 0; i < selectedPhotos.length; i++) {
+            const photo = selectedPhotos[i];
 
-    const file = selectedPhotoFiles[i];
+            const response = await fetch(photo);
+            const blob = await response.blob();
 
-    const extension =
-        file.name.split(".").pop().toLowerCase();
+            const fileName =
+                selectedDate + "-" +
+                Date.now() + "-" +
+                i + ".jpg";
 
-    const fileName =
-        selectedDate + "-" +
-        Date.now() + "-" +
-        i + "." +
-        extension;
+            const { error: uploadError } =
+                await supabaseClient
+                    .storage
+                    .from("photos")
+                    .upload(fileName, blob, {
+                        contentType: "image/jpeg",
+                        upsert: true
+                    });
 
-    const { error: uploadError } =
-        await supabaseClient
-            .storage
-            .from("photos")
-            .upload(fileName, file, {
-                contentType: file.type,
-                upsert: true
-            });
+            if (uploadError) {
+                console.error(uploadError);
+                alert("사진 업로드 실패");
+                return;
+            }
 
-    if (uploadError) {
-        console.error(
-            "사진 업로드 실패:",
-            uploadError
-        );
-
-        alert("사진 업로드 실패");
-        return;
-    }
-
-    uploadedPhotos.push(fileName);
-}
+            uploadedPhotos.push(fileName);
+        }
         const { data: { user } } = await supabaseClient.auth.getUser();
 
 if (!user) {
@@ -1291,13 +1291,9 @@ if (!user) {
         createCalendar();
 
     } catch (error) {
-    console.error("저장 오류:", error);
-
-    alert(
-        "저장 중 오류가 발생했어요.\n\n" +
-        "오류 내용: " +
-        (error.message || error)
-    );
+        console.error(error);
+        alert("저장 중 오류가 발생했어요.");
+    }
 }
 
         // =========================
