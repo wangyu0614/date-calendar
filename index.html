@@ -597,6 +597,83 @@
         display: none;
     "
 ></div>
+<!-- 맛집 기록 -->
+<div style="margin-top: 20px;">
+
+    <div style="
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    ">
+        🍽️ 오늘의 맛집
+    </div>
+
+    <div style="display: flex; gap: 8px;">
+        <input
+            type="text"
+            id="restaurantSearch"
+            placeholder="맛집을 검색해보세요 ♡"
+            style="
+                flex: 1;
+                padding: 12px;
+                border: 1px solid #eee;
+                border-radius: 10px;
+                font-size: 14px;
+                box-sizing: border-box;
+            "
+        >
+
+        <button
+            type="button"
+            onclick="searchRestaurant()"
+            style="
+                padding: 0 15px;
+                border: none;
+                border-radius: 10px;
+                background-color: #f3b6c0;
+                color: white;
+                cursor: pointer;
+            "
+        >
+            검색
+        </button>
+    </div>
+
+    <div
+        id="restaurantResults"
+        style="
+            margin-top: 10px;
+            display: none;
+        "
+    ></div>
+
+    <div style="margin-top: 12px;">
+        <span style="font-size: 14px;">⭐ 우리의 별점</span>
+
+        <select
+            id="restaurantRating"
+            style="
+                margin-left: 8px;
+                padding: 7px 10px;
+                border: 1px solid #eee;
+                border-radius: 8px;
+            "
+        >
+            <option value="">선택</option>
+            <option value="0.5">0.5</option>
+            <option value="1">1.0</option>
+            <option value="1.5">1.5</option>
+            <option value="2">2.0</option>
+            <option value="2.5">2.5</option>
+            <option value="3">3.0</option>
+            <option value="3.5">3.5</option>
+            <option value="4">4.0</option>
+            <option value="4.5">4.5</option>
+            <option value="5">5.0</option>
+        </select>
+    </div>
+
+</div>
             <textarea
                 id="memoryText"
                 placeholder="오늘의 데이트를 기록해보세요 ♡">
@@ -679,6 +756,13 @@ let selectedPlaceName = "";
 let selectedPlaceAddress = "";
 let selectedLatitude = null;
 let selectedLongitude = null;
+
+// 현재 선택한 맛집
+let selectedRestaurantName = "";
+let selectedRestaurantAddress = "";
+let selectedRestaurantRating = null;
+let selectedRestaurantLatitude = null;
+let selectedRestaurantLongitude = null;
 
 
         // =========================
@@ -873,8 +957,7 @@ async function createCalendar() {
     const { data, error } =
         await supabaseClient
             .from("memories")
-            .select("text, heart, place_name, place_address, latitude, longitude")
-            .eq("date", date)
+            .select("text, heart, place_name, place_address, latitude, longitude, restaurant_name, restaurant_address, restaurant_rating, restaurant_latitude, restaurant_longitude")            .eq("date", date)
             .limit(1);
 
     if (error) {
@@ -905,6 +988,63 @@ async function createCalendar() {
 
     selectedLongitude =
         data[0].longitude || null;
+
+    // 저장된 맛집 불러오기
+selectedRestaurantName =
+    data[0].restaurant_name || "";
+
+selectedRestaurantAddress =
+    data[0].restaurant_address || "";
+
+selectedRestaurantRating =
+    data[0].restaurant_rating || null;
+
+selectedRestaurantLatitude =
+    data[0].restaurant_latitude || null;
+
+selectedRestaurantLongitude =
+    data[0].restaurant_longitude || null;
+
+
+// 맛집 검색창에 표시
+document.getElementById("restaurantSearch").value =
+    selectedRestaurantName;
+
+
+// 별점 표시
+document.getElementById("restaurantRating").value =
+    selectedRestaurantRating || "";
+
+
+// 선택된 맛집 표시
+const restaurantResults =
+    document.getElementById("restaurantResults");
+
+if (selectedRestaurantName) {
+
+    restaurantResults.style.display = "block";
+
+    restaurantResults.innerHTML = `
+        <div style="
+            padding:12px;
+            background:#fff7f8;
+            border-radius:10px;
+        ">
+            <strong>${selectedRestaurantName}</strong><br>
+            <span style="
+                font-size:13px;
+                color:#888;
+            ">
+                ${selectedRestaurantAddress}
+            </span>
+        </div>
+    `;
+
+} else {
+
+    restaurantResults.innerHTML = "";
+    restaurantResults.style.display = "none";
+}
 
     // 장소 검색창에 표시
     document.getElementById("placeSearch")
@@ -960,6 +1100,24 @@ async function createCalendar() {
 
     document.getElementById("placeResults")
         .style.display = "none";
+    // 맛집 초기화
+selectedRestaurantName = "";
+selectedRestaurantAddress = "";
+selectedRestaurantRating = null;
+selectedRestaurantLatitude = null;
+selectedRestaurantLongitude = null;
+
+document.getElementById("restaurantSearch")
+    .value = "";
+
+document.getElementById("restaurantRating")
+    .value = "";
+
+document.getElementById("restaurantResults")
+    .innerHTML = "";
+
+document.getElementById("restaurantResults")
+    .style.display = "none";
 }
 
     // Supabase에 저장된 사진 불러오기
@@ -1185,6 +1343,98 @@ function searchPlace() {
         });
     });
 }
+// 카카오 맛집 검색
+function searchRestaurant() {
+
+    const keyword =
+        document.getElementById("restaurantSearch")
+            .value.trim();
+
+    if (!keyword) {
+        alert("맛집을 입력해주세요.");
+        return;
+    }
+
+    const ps =
+        new kakao.maps.services.Places();
+
+    ps.keywordSearch(keyword, function(data, status) {
+
+        const results =
+            document.getElementById("restaurantResults");
+
+        results.innerHTML = "";
+        results.style.display = "block";
+
+        if (status === kakao.maps.services.Status.ZERO_RESULT) {
+            results.innerHTML =
+                "<p>검색 결과가 없어요.</p>";
+            return;
+        }
+
+        if (status !== kakao.maps.services.Status.OK) {
+            results.innerHTML =
+                "<p>맛집 검색에 실패했어요.</p>";
+            return;
+        }
+
+        data.slice(0, 5).forEach(function(place) {
+
+            const item =
+                document.createElement("div");
+
+            item.style.padding = "12px";
+            item.style.borderBottom = "1px solid #eee";
+            item.style.cursor = "pointer";
+
+            item.innerHTML = `
+                <strong>${place.place_name}</strong>
+                <br>
+                <span style="font-size:13px; color:#888;">
+                    ${place.road_address_name || place.address_name}
+                </span>
+            `;
+
+            item.onclick = function() {
+
+                selectedRestaurantName =
+                    place.place_name;
+
+                selectedRestaurantAddress =
+                    place.road_address_name ||
+                    place.address_name;
+
+                selectedRestaurantLatitude =
+                    Number(place.y);
+
+                selectedRestaurantLongitude =
+                    Number(place.x);
+
+                document.getElementById("restaurantSearch")
+                    .value = selectedRestaurantName;
+
+                results.innerHTML = `
+                    <div style="
+                        padding:12px;
+                        background:#fff7f8;
+                        border-radius:10px;
+                    ">
+                        <strong>${selectedRestaurantName}</strong>
+                        <br>
+                        <span style="
+                            font-size:13px;
+                            color:#888;
+                        ">
+                            ${selectedRestaurantAddress}
+                        </span>
+                    </div>
+                `;
+            };
+
+            results.appendChild(item);
+        });
+    });
+}
 async function saveMemory() {
     console.log("사진 저장 함수 실행됨", selectedPhotos.length);
     const text = document.getElementById("memoryText").value;
@@ -1252,10 +1502,20 @@ if (!user) {
     heart: heartActive,
     text: text,
     photos: uploadedPhotos,
+
     place_name: selectedPlaceName,
     place_address: selectedPlaceAddress,
     latitude: selectedLatitude,
-    longitude: selectedLongitude
+    longitude: selectedLongitude,
+
+    restaurant_name: selectedRestaurantName,
+    restaurant_address: selectedRestaurantAddress,
+    restaurant_rating:
+        document.getElementById("restaurantRating").value
+            ? Number(document.getElementById("restaurantRating").value)
+            : null,
+    restaurant_latitude: selectedRestaurantLatitude,
+    restaurant_longitude: selectedRestaurantLongitude
 })
                     .eq("id", existing[0].id)
 
@@ -1277,10 +1537,20 @@ if (!user) {
     heart: heartActive,
     text: text,
     photos: uploadedPhotos,
+
     place_name: selectedPlaceName,
     place_address: selectedPlaceAddress,
     latitude: selectedLatitude,
-    longitude: selectedLongitude
+    longitude: selectedLongitude,
+
+    restaurant_name: selectedRestaurantName,
+    restaurant_address: selectedRestaurantAddress,
+    restaurant_rating:
+        document.getElementById("restaurantRating").value
+            ? Number(document.getElementById("restaurantRating").value)
+            : null,
+    restaurant_latitude: selectedRestaurantLatitude,
+    restaurant_longitude: selectedRestaurantLongitude
 });
 
             if (error) {
