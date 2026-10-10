@@ -1694,6 +1694,13 @@ async function loadBucketList() {
 
         const div =
             document.createElement("div");
+        let writerName = "";
+
+if (item.user_id === "JINNY의-실제-UUID") {
+    writerName = "Jinny";
+} else if (item.user_id === "WANGYU의-실제-UUID") {
+    writerName = "Wangyu";
+}
 
         div.style.cssText = `
             display: flex;
@@ -1950,8 +1957,8 @@ async function loadTodayMessages() {
         message.style.background = "#fff7f8";
         message.style.borderRadius = "10px";
 
-        message.textContent = item.message;
-
+        message.textContent =
+            writerName + " : " + item.message;
         box.appendChild(message);
     });
 }
