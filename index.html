@@ -3134,31 +3134,57 @@ card.innerHTML = `
         : ""
     }
 
-    <div style="
-        text-align: right;
-        margin-top: 12px;
-    ">
-        <button
-            type="button"
-            onclick="toggleDatePlanCompleted(
-                ${plan.id},
-                ${plan.completed}
-            )"
-            style="
-                border: none;
-                background: none;
-                color: #f3a6b5;
-                font-size: 13px;
-                cursor: pointer;
-                padding: 4px;
-            "
-        >
-            ${plan.completed
-                ? "↩️ 완료 취소"
-                : "✓ 다녀왔어요"
-            }
-        </button>
-    </div>
+<div style="
+    text-align: right;
+    margin-top: 12px;
+">
+    <button
+        type="button"
+        onclick="toggleDatePlanCompleted(${plan.id}, ${plan.completed})"
+        style="
+            border: none;
+            background: none;
+            color: #f3a6b5;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px;
+            margin-right: 8px;
+        "
+    >
+        ${plan.completed ? "↩️ 완료 취소" : "✓ 다녀왔어요"}
+    </button>
+
+    <button
+        type="button"
+        onclick="editDatePlan(${plan.id})"
+        style="
+            border: none;
+            background: none;
+            color: #888;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px;
+            margin-right: 6px;
+        "
+    >
+        수정
+    </button>
+
+    <button
+        type="button"
+        onclick="deleteDatePlan(${plan.id})"
+        style="
+            border: none;
+            background: none;
+            color: #aaa;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px;
+        "
+    >
+        삭제
+    </button>
+</div>
 `;
         list.appendChild(card);
     });
