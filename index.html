@@ -2009,6 +2009,9 @@ function showSection(section) {
     if (section === "datePlan") {
     loadDatePlans();
 }
+    if (section === "watched") {
+    loadWatchedContents();
+}
 
     if (section === "bucket") {
         loadBucketList();
@@ -3447,7 +3450,7 @@ async function editDatePlan(id) {
             block: "center"
         });
 }
-
+let editingWatchedContentId = null;
 async function saveWatchedContent() {
 
     const watchDate =
@@ -3489,7 +3492,27 @@ async function saveWatchedContent() {
         return;
     }
 
-    const { error } =
+let error;
+
+if (editingWatchedContentId !== null) {
+
+    const result =
+        await supabaseClient
+            .from("watched_contents")
+            .update({
+                watch_date: watchDate,
+                title: title,
+                content_type: contentType,
+                rating: rating ? Number(rating) : null,
+                review: review || null
+            })
+            .eq("id", editingWatchedContentId);
+
+    error = result.error;
+
+} else {
+
+    const result =
         await supabaseClient
             .from("watched_contents")
             .insert({
@@ -3501,12 +3524,29 @@ async function saveWatchedContent() {
                 user_id: user.id
             });
 
+    error = result.error;
+}
+
     if (error) {
         console.error("같이 본 것 저장 실패:", error);
         alert("저장 중 오류가 발생했어요.");
         return;
     }
-    await loadWatchedContents();
+    const wasEditing =
+    editingWatchedContentId !== null;
+
+editingWatchedContentId = null;
+
+document.getElementById("watchDate").value = "";
+document.getElementById("contentType").value = "";
+document.getElementById("contentTitle").value = "";
+document.getElementById("contentRating").value = "";
+document.getElementById("contentReview").value = "";
+await loadWatchedContents();
+
+if (wasEditing) {
+    alert("같이 본 기록을 수정했어요 ♡");
+} else {
     alert("같이 본 기록을 저장했어요 ♡");
 }
 async function loadWatchedContents() {
@@ -3589,10 +3629,108 @@ async function loadWatchedContents() {
                     `
                     : ""
             }
+            <div style="
+    text-align: right;
+    margin-top: 12px;
+">
+    <button
+        type="button"
+        onclick="editWatchedContent(${content.id})"
+        style="
+            border: none;
+            background: none;
+            color: #888;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px;
+            margin-right: 6px;
+        "
+    >
+        수정
+    </button>
+
+    <button
+        type="button"
+        onclick="deleteWatchedContent(${content.id})"
+        style="
+            border: none;
+            background: none;
+            color: #aaa;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px;
+        "
+    >
+        삭제
+    </button>
+</div>
         `;
 
         list.appendChild(card);
     });
+}
+async function deleteWatchedContent(id) {
+
+    const confirmed =
+        confirm("이 기록을 삭제할까요?");
+
+    if (!confirmed) {
+        return;
+    }
+
+    const { error } =
+        await supabaseClient
+            .from("watched_contents")
+            .delete()
+            .eq("id", id);
+
+    if (error) {
+        console.error("같이 본 기록 삭제 실패:", error);
+        alert("삭제 중 오류가 발생했어요.");
+        return;
+    }
+
+    await loadWatchedContents();
+
+    alert("기록을 삭제했어요.");
+}
+async function editWatchedContent(id) {
+
+    const { data, error } =
+        await supabaseClient
+            .from("watched_contents")
+            .select("*")
+            .eq("id", id)
+            .single();
+
+    if (error) {
+        console.error("같이 본 기록 불러오기 실패:", error);
+        alert("기록을 불러오지 못했어요.");
+        return;
+    }
+
+    editingWatchedContentId = id;
+
+    document.getElementById("watchDate").value =
+        data.watch_date;
+
+    document.getElementById("contentType").value =
+        data.content_type || "";
+
+    document.getElementById("contentTitle").value =
+        data.title || "";
+
+    document.getElementById("contentRating").value =
+        data.rating ?? "";
+
+    document.getElementById("contentReview").value =
+        data.review || "";
+
+    document.getElementById("watchDate")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
 }
 async function showRestaurantMap() {
 
