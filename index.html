@@ -2804,6 +2804,75 @@ function searchRestaurantPage() {
         });
     });
 }
+async function saveRestaurantPage() {
+
+    const visitDate =
+        document.getElementById("restaurantDate").value;
+
+    const rating =
+        document.getElementById("restaurantPageRating").value;
+
+    const review =
+        document.getElementById("restaurantReview").value.trim();
+
+    if (!visitDate) {
+        alert("방문 날짜를 선택해주세요.");
+        return;
+    }
+
+    if (!restaurantPageName) {
+        alert("맛집을 검색해서 선택해주세요.");
+        return;
+    }
+
+    if (!rating) {
+        alert("별점을 선택해주세요.");
+        return;
+    }
+
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+        alert("로그인이 필요해요.");
+        return;
+    }
+
+    const { error } =
+        await supabaseClient
+            .from("restaurants")
+            .insert({
+                visit_date: visitDate,
+                name: restaurantPageName,
+                address: restaurantPageAddress,
+                latitude: restaurantPageLatitude,
+                longitude: restaurantPageLongitude,
+                rating: Number(rating),
+                review: review,
+                user_id: user.id
+            });
+
+    if (error) {
+        console.error("맛집 저장 실패:", error);
+        alert("맛집 저장 중 오류가 발생했어요.");
+        return;
+    }
+
+    alert("맛집을 저장했어요 ♡");
+
+    document.getElementById("restaurantDate").value = "";
+    document.getElementById("restaurantPageSearch").value = "";
+    document.getElementById("restaurantPageRating").value = "";
+    document.getElementById("restaurantReview").value = "";
+    document.getElementById("restaurantPageResults").innerHTML = "";
+    document.getElementById("restaurantPageResults").style.display = "none";
+
+    restaurantPageName = "";
+    restaurantPageAddress = "";
+    restaurantPageLatitude = null;
+    restaurantPageLongitude = null;
+}
 async function showRestaurantMap() {
 
     const mapSection =
