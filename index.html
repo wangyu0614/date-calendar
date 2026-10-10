@@ -948,7 +948,7 @@ async function createCalendar() {
     const { data, error } =
         await supabaseClient
             .from("memories")
-            .select("text, heart, place_name, place_address, latitude, longitude, restaurant_name, restaurant_address, restaurant_rating, restaurant_latitude, restaurant_longitude")            .eq("date", date)
+            .select("text, heart, place_name, place_address, latitude, longitude")
             .limit(1);
 
     if (error) {
