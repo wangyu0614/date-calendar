@@ -3232,6 +3232,44 @@ async function deleteDatePlan(id) {
 
     alert("데이트 계획을 삭제했어요.");
 }
+async function editDatePlan(id) {
+
+    const { data, error } =
+        await supabaseClient
+            .from("date_plans")
+            .select("*")
+            .eq("id", id)
+            .single();
+
+    if (error) {
+        console.error("데이트 계획 불러오기 실패:", error);
+        alert("데이트 계획을 불러오지 못했어요.");
+        return;
+    }
+
+    editingDatePlanId = id;
+
+    document.getElementById("planDate").value =
+        data.plan_date;
+
+    document.getElementById("planTitle").value =
+        data.title || "";
+
+    document.getElementById("planPlace").value =
+        data.place || "";
+
+    document.getElementById("planMemo").value =
+        data.memo || "";
+
+    document.getElementById("planBudget").value =
+        data.budget ?? "";
+
+    document.getElementById("planDate")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+}
 async function showRestaurantMap() {
 
     const mapSection =
