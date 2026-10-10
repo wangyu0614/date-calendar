@@ -2841,30 +2841,60 @@ async function saveRestaurantPage() {
         return;
     }
 
-    const { error } =
-        await supabaseClient
-            .from("restaurants")
-            .insert({
-                visit_date: visitDate,
-                name: restaurantPageName,
-                address: restaurantPageAddress,
-                latitude: restaurantPageLatitude,
-                longitude: restaurantPageLongitude,
-                rating: Number(rating),
-                review: review,
-                user_id: user.id
-            });
+    let error;
+
+    // 수정 중이면 UPDATE
+    if (editingRestaurantId !== null) {
+
+        const result =
+            await supabaseClient
+                .from("restaurants")
+                .update({
+                    visit_date: visitDate,
+                    name: restaurantPageName,
+                    address: restaurantPageAddress,
+                    latitude: restaurantPageLatitude,
+                    longitude: restaurantPageLongitude,
+                    rating: Number(rating),
+                    review: review
+                })
+                .eq("id", editingRestaurantId);
+
+        error = result.error;
+
+    } else {
+
+        // 새 맛집이면 INSERT
+        const result =
+            await supabaseClient
+                .from("restaurants")
+                .insert({
+                    visit_date: visitDate,
+                    name: restaurantPageName,
+                    address: restaurantPageAddress,
+                    latitude: restaurantPageLatitude,
+                    longitude: restaurantPageLongitude,
+                    rating: Number(rating),
+                    review: review,
+                    user_id: user.id
+                });
+
+        error = result.error;
+    }
 
     if (error) {
         console.error("맛집 저장 실패:", error);
         alert("맛집 저장 중 오류가 발생했어요.");
         return;
     }
-    await loadRestaurantList();
-    await showRestaurantMap();
-    
-    alert("맛집을 저장했어요 ♡");
 
+    const wasEditing =
+        editingRestaurantId !== null;
+
+    // 수정 상태 종료
+    editingRestaurantId = null;
+
+    // 입력창 초기화
     document.getElementById("restaurantDate").value = "";
     document.getElementById("restaurantPageSearch").value = "";
     document.getElementById("restaurantPageRating").value = "";
@@ -2876,6 +2906,16 @@ async function saveRestaurantPage() {
     restaurantPageAddress = "";
     restaurantPageLatitude = null;
     restaurantPageLongitude = null;
+
+    // 목록 + 지도 바로 갱신
+    await loadRestaurantList();
+    await showRestaurantMap();
+
+    if (wasEditing) {
+        alert("맛집 기록을 수정했어요 ♡");
+    } else {
+        alert("맛집을 저장했어요 ♡");
+    }
 }
 async function loadRestaurantList() {
 
