@@ -2148,6 +2148,9 @@ function showSection(section) {
 
     document.getElementById("lettersSection").style.display =
     section === "letters" ? "block" : "none";
+
+    document.getElementById("photoboothSection").style.display =
+    section === "photobooth" ? "block" : "none";
     
     document.getElementById("bucketSection").style.display =
         section === "bucket" ? "block" : "none";
@@ -2174,6 +2177,9 @@ function showSection(section) {
 }
     if (section === "letters") {
     loadLetters();
+}
+    if (section === "photobooth") {
+    loadPhotobooth();
 }
 
     if (section === "bucket") {
@@ -3860,6 +3866,337 @@ async function deleteLetter(id) {
     await loadLetters();
 
     alert("편지를 삭제했어요.");
+}
+let editingPhotoboothId = null;
+let editingPhotoboothPhotoPath = null;
+ async function savePhotobooth() {
+
+    const photoDate =
+        document.getElementById("photoboothDate").value;
+
+    const title =
+        document.getElementById("photoboothTitle").value.trim();
+
+    const memo =
+        document.getElementById("photoboothMemo").value.trim();
+
+    const file =
+        document.getElementById("photoboothPhoto").files[0];
+
+    if (!photoDate || !title) {
+        alert("날짜와 제목을 입력해주세요.");
+        return;
+    }
+
+    if (editingPhotoboothId === null && !file) {
+        alert("사진을 선택해주세요.");
+        return;
+    }
+
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+        alert("로그인이 필요해요.");
+        return;
+    }
+
+    let photoPath = editingPhotoboothPhotoPath;
+
+    // 새 사진을 선택한 경우
+    if (file) {
+
+        const extension =
+            file.name.split(".").pop();
+
+        const fileName =
+            `photobooth-${Date.now()}.${extension}`;
+
+        const { error: uploadError } =
+            await supabaseClient.storage
+                .from("photos")
+                .upload(fileName, file);
+
+        if (uploadError) {
+            console.error("사진 업로드 실패:", uploadError);
+            alert("사진 업로드 중 오류가 발생했어요.");
+            return;
+        }
+
+        photoPath = fileName;
+    }
+
+    let error;
+
+    if (editingPhotoboothId !== null) {
+
+        const result =
+            await supabaseClient
+                .from("photobooth")
+                .update({
+                    photo_date: photoDate,
+                    title: title,
+                    photo_path: photoPath,
+                    memo: memo || null
+                })
+                .eq("id", editingPhotoboothId);
+
+        error = result.error;
+
+    } else {
+
+        const result =
+            await supabaseClient
+                .from("photobooth")
+                .insert({
+                    photo_date: photoDate,
+                    title: title,
+                    photo_path: photoPath,
+                    memo: memo || null,
+                    user_id: user.id
+                });
+
+        error = result.error;
+    }
+
+    if (error) {
+        console.error("포토부스 저장 실패:", error);
+        alert("저장 중 오류가 발생했어요.");
+        return;
+    }
+
+    // 사진을 교체했다면 기존 사진 삭제
+    if (
+        editingPhotoboothId !== null &&
+        file &&
+        editingPhotoboothPhotoPath &&
+        editingPhotoboothPhotoPath !== photoPath
+    ) {
+        await supabaseClient.storage
+            .from("photos")
+            .remove([editingPhotoboothPhotoPath]);
+    }
+
+    const wasEditing =
+        editingPhotoboothId !== null;
+
+    editingPhotoboothId = null;
+    editingPhotoboothPhotoPath = null;
+
+    document.getElementById("photoboothDate").value = "";
+    document.getElementById("photoboothTitle").value = "";
+    document.getElementById("photoboothPhoto").value = "";
+    document.getElementById("photoboothMemo").value = "";
+
+    await loadPhotobooth();
+
+    if (wasEditing) {
+        alert("포토부스 기록을 수정했어요 ♡");
+    } else {
+        alert("포토부스 사진을 저장했어요 ♡");
+    }
+}
+async function loadPhotobooth() {
+
+    const { data, error } =
+        await supabaseClient
+            .from("photobooth")
+            .select("*")
+            .order("photo_date", { ascending: false });
+
+    if (error) {
+        console.error("포토부스 불러오기 실패:", error);
+        return;
+    }
+
+    const list =
+        document.getElementById("photoboothList");
+
+    list.innerHTML = "";
+
+    if (!data || data.length === 0) {
+        list.innerHTML = `
+            <div style="
+                text-align:center;
+                color:#999;
+                padding:30px;
+            ">
+                아직 포토부스 사진이 없어요 📸
+            </div>
+        `;
+        return;
+    }
+
+    for (const photo of data) {
+
+        const { data: signedData, error: signedError } =
+            await supabaseClient.storage
+                .from("photos")
+                .createSignedUrl(photo.photo_path, 3600);
+
+        if (signedError) {
+            console.error("사진 URL 생성 실패:", signedError);
+            continue;
+        }
+
+        const card =
+            document.createElement("div");
+
+        card.style.cssText = `
+            background:white;
+            padding:18px;
+            margin-bottom:15px;
+            border-radius:15px;
+        `;
+
+        card.innerHTML = `
+            <img
+                src="${signedData.signedUrl}"
+                style="
+                    width:100%;
+                    max-height:500px;
+                    object-fit:contain;
+                    border-radius:12px;
+                "
+            >
+
+            <div style="
+                font-size:18px;
+                font-weight:bold;
+                margin-top:12px;
+            ">
+                ${photo.title}
+            </div>
+
+            <div style="
+                font-size:13px;
+                color:#888;
+                margin-top:5px;
+            ">
+                ${photo.photo_date}
+            </div>
+
+            ${
+                photo.memo
+                    ? `
+                        <div style="
+                            margin-top:10px;
+                            white-space:pre-wrap;
+                        ">
+                            ${photo.memo}
+                        </div>
+                    `
+                    : ""
+            }
+            <div style="
+    text-align:right;
+    margin-top:12px;
+">
+    <button
+        type="button"
+        onclick="editPhotobooth(${photo.id})"
+        style="
+            border:none;
+            background:none;
+            color:#888;
+            cursor:pointer;
+            margin-right:6px;
+        "
+    >
+        수정
+    </button>
+
+    <button
+        type="button"
+        onclick="deletePhotobooth(${photo.id}, '${photo.photo_path}')"
+        style="
+            border:none;
+            background:none;
+            color:#aaa;
+            cursor:pointer;
+        "
+    >
+        삭제
+    </button>
+</div>
+        `;
+
+        list.appendChild(card);
+    }
+}
+async function editPhotobooth(id) {
+
+    const { data, error } =
+        await supabaseClient
+            .from("photobooth")
+            .select("*")
+            .eq("id", id)
+            .single();
+
+    if (error) {
+        console.error("포토부스 불러오기 실패:", error);
+        alert("기록을 불러오지 못했어요.");
+        return;
+    }
+
+    editingPhotoboothId = id;
+    editingPhotoboothPhotoPath = data.photo_path;
+
+    document.getElementById("photoboothDate").value =
+        data.photo_date;
+
+    document.getElementById("photoboothTitle").value =
+        data.title || "";
+
+    document.getElementById("photoboothMemo").value =
+        data.memo || "";
+
+    document.getElementById("photoboothPhoto").value = "";
+
+    document.getElementById("photoboothDate")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+}
+
+
+async function deletePhotobooth(id, photoPath) {
+
+    const confirmed =
+        confirm("이 포토부스 기록을 삭제할까요?");
+
+    if (!confirmed) {
+        return;
+    }
+
+    const { error } =
+        await supabaseClient
+            .from("photobooth")
+            .delete()
+            .eq("id", id);
+
+    if (error) {
+        console.error("포토부스 삭제 실패:", error);
+        alert("삭제 중 오류가 발생했어요.");
+        return;
+    }
+
+    if (photoPath) {
+        const { error: storageError } =
+            await supabaseClient.storage
+                .from("photos")
+                .remove([photoPath]);
+
+        if (storageError) {
+            console.error("사진 파일 삭제 실패:", storageError);
+        }
+    }
+
+    await loadPhotobooth();
+
+    alert("포토부스 기록을 삭제했어요.");
 }
 async function saveWatchedContent() {
 
