@@ -2965,25 +2965,41 @@ async function loadRestaurantList() {
             : ""
     }
 
-    <div style="
-        text-align: right;
-        margin-top: 12px;
-    ">
-        <button
-            type="button"
-            onclick="deleteRestaurant(${restaurant.id})"
-            style="
-                border: none;
-                background: none;
-                color: #aaa;
-                font-size: 12px;
-                cursor: pointer;
-                padding: 4px;
-            "
-        >
-            삭제
-        </button>
-    </div>
+<div style="
+    text-align: right;
+    margin-top: 12px;
+">
+    <button
+        type="button"
+        onclick="editRestaurant(${restaurant.id})"
+        style="
+            border: none;
+            background: none;
+            color: #888;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px;
+            margin-right: 6px;
+        "
+    >
+        수정
+    </button>
+
+    <button
+        type="button"
+        onclick="deleteRestaurant(${restaurant.id})"
+        style="
+            border: none;
+            background: none;
+            color: #aaa;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px;
+        "
+    >
+        삭제
+    </button>
+</div>
 `;
         list.appendChild(card);
     });
