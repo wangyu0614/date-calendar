@@ -3104,37 +3104,62 @@ async function loadDatePlans() {
             border-radius: 15px;
         `;
 
-        card.innerHTML = `
-            <div style="
-                font-size: 18px;
-                font-weight: bold;
-                margin-bottom: 8px;
-            ">
-                ${plan.completed ? "✅" : "💕"}
-                ${plan.title}
-            </div>
+card.innerHTML = `
+    <div style="
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    ">
+        ${plan.completed ? "✅" : "💕"}
+        ${plan.title}
+    </div>
 
-            <div>📅 ${plan.plan_date}</div>
+    <div>📅 ${plan.plan_date}</div>
 
-            ${plan.place
-                ? `<div>📍 ${plan.place}</div>`
-                : ""
+    ${plan.place
+        ? `<div>📍 ${plan.place}</div>`
+        : ""
+    }
+
+    ${plan.budget !== null
+        ? `<div>💰 ${Number(plan.budget).toLocaleString()}원</div>`
+        : ""
+    }
+
+    ${plan.memo
+        ? `<div style="
+            margin-top: 10px;
+            color: #666;
+        ">${plan.memo}</div>`
+        : ""
+    }
+
+    <div style="
+        text-align: right;
+        margin-top: 12px;
+    ">
+        <button
+            type="button"
+            onclick="toggleDatePlanCompleted(
+                ${plan.id},
+                ${plan.completed}
+            )"
+            style="
+                border: none;
+                background: none;
+                color: #f3a6b5;
+                font-size: 13px;
+                cursor: pointer;
+                padding: 4px;
+            "
+        >
+            ${plan.completed
+                ? "↩️ 완료 취소"
+                : "✓ 다녀왔어요"
             }
-
-            ${plan.budget !== null
-                ? `<div>💰 ${Number(plan.budget).toLocaleString()}원</div>`
-                : ""
-            }
-
-            ${plan.memo
-                ? `<div style="
-                    margin-top: 10px;
-                    color: #666;
-                ">${plan.memo}</div>`
-                : ""
-            }
-        `;
-
+        </button>
+    </div>
+`;
         list.appendChild(card);
     });
 }
