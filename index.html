@@ -2213,6 +2213,19 @@ function showSection(section) {
     if (section === "stats") {
         loadMonthlyStats();
     }
+// 선택한 메뉴 버튼을 화면 중앙으로 이동
+const activeButton =
+    document.querySelector(
+        `#mainMenu button[onclick="showSection('${section}')"]`
+    );
+
+if (activeButton) {
+    activeButton.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest"
+    });
+}
 }
 let statsYear = new Date().getFullYear();
 let statsMonth = new Date().getMonth();
