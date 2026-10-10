@@ -3040,7 +3040,27 @@ async function saveDatePlan() {
         return;
     }
 
-    const { error } =
+let error;
+
+if (editingDatePlanId !== null) {
+
+    const result =
+        await supabaseClient
+            .from("date_plans")
+            .update({
+                plan_date: planDate,
+                title: title,
+                place: place || null,
+                memo: memo || null,
+                budget: budget ? Number(budget) : null
+            })
+            .eq("id", editingDatePlanId);
+
+    error = result.error;
+
+} else {
+
+    const result =
         await supabaseClient
             .from("date_plans")
             .insert({
@@ -3052,6 +3072,9 @@ async function saveDatePlan() {
                 completed: false,
                 user_id: user.id
             });
+
+    error = result.error;
+}
 
     if (error) {
         console.error("데이트 계획 저장 실패:", error);
