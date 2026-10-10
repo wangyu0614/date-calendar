@@ -2874,6 +2874,98 @@ async function saveRestaurantPage() {
     restaurantPageLatitude = null;
     restaurantPageLongitude = null;
 }
+async function loadRestaurantList() {
+
+    const { data, error } =
+        await supabaseClient
+            .from("restaurants")
+            .select("*")
+            .order("rating", { ascending: false })
+            .order("visit_date", { ascending: false });
+
+    if (error) {
+        console.error("맛집 목록 불러오기 실패:", error);
+        return;
+    }
+
+    const list =
+        document.getElementById("restaurantList");
+
+    list.innerHTML = "";
+
+    if (!data || data.length === 0) {
+        list.innerHTML = `
+            <div style="
+                text-align: center;
+                color: #aaa;
+                padding: 25px;
+            ">
+                아직 저장된 맛집이 없어요 ♡
+            </div>
+        `;
+        return;
+    }
+
+    data.forEach(function(restaurant) {
+
+        const card =
+            document.createElement("div");
+
+        card.style.cssText = `
+            background: white;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 15px;
+        `;
+
+        card.innerHTML = `
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+            ">
+                <strong>
+                    ${restaurant.name}
+                </strong>
+
+                <span>
+                    ⭐ ${restaurant.rating}
+                </span>
+            </div>
+
+            <div style="
+                margin-top: 6px;
+                font-size: 13px;
+                color: #888;
+            ">
+                ${restaurant.visit_date}
+            </div>
+
+            <div style="
+                margin-top: 4px;
+                font-size: 13px;
+                color: #aaa;
+            ">
+                ${restaurant.address || ""}
+            </div>
+
+            ${
+                restaurant.review
+                    ? `
+                        <div style="
+                            margin-top: 10px;
+                            font-size: 14px;
+                        ">
+                            ${restaurant.review}
+                        </div>
+                    `
+                    : ""
+            }
+        `;
+
+        list.appendChild(card);
+    });
+}
 async function showRestaurantMap() {
 
     const mapSection =
