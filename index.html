@@ -2922,50 +2922,69 @@ async function loadRestaurantList() {
         `;
 
         card.innerHTML = `
-            <div style="
-                display: flex;
-                justify-content: space-between;
-                gap: 10px;
-            ">
-                <strong>
-                    ${restaurant.name}
-                </strong>
+    <div style="
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+    ">
+        <strong>
+            ${restaurant.name}
+        </strong>
 
-                <span>
-                    ⭐ ${restaurant.rating}
-                </span>
-            </div>
+        <span>
+            ⭐ ${restaurant.rating}
+        </span>
+    </div>
 
-            <div style="
-                margin-top: 6px;
-                font-size: 13px;
-                color: #888;
-            ">
-                ${restaurant.visit_date}
-            </div>
+    <div style="
+        margin-top: 6px;
+        font-size: 13px;
+        color: #888;
+    ">
+        ${restaurant.visit_date}
+    </div>
 
-            <div style="
-                margin-top: 4px;
-                font-size: 13px;
+    <div style="
+        margin-top: 4px;
+        font-size: 13px;
+        color: #aaa;
+    ">
+        ${restaurant.address || ""}
+    </div>
+
+    ${
+        restaurant.review
+            ? `
+                <div style="
+                    margin-top: 10px;
+                    font-size: 14px;
+                ">
+                    ${restaurant.review}
+                </div>
+            `
+            : ""
+    }
+
+    <div style="
+        text-align: right;
+        margin-top: 12px;
+    ">
+        <button
+            type="button"
+            onclick="deleteRestaurant(${restaurant.id})"
+            style="
+                border: none;
+                background: none;
                 color: #aaa;
-            ">
-                ${restaurant.address || ""}
-            </div>
-
-            ${
-                restaurant.review
-                    ? `
-                        <div style="
-                            margin-top: 10px;
-                            font-size: 14px;
-                        ">
-                            ${restaurant.review}
-                        </div>
-                    `
-                    : ""
-            }
-        `;
-
+                font-size: 12px;
+                cursor: pointer;
+                padding: 4px;
+            "
+        >
+            삭제
+        </button>
+    </div>
+`;
         list.appendChild(card);
     });
 }
