@@ -2703,6 +2703,107 @@ async function showMap() {
         }
     );
 }
+let restaurantPageName = "";
+let restaurantPageAddress = "";
+let restaurantPageLatitude = null;
+let restaurantPageLongitude = null;
+
+
+function searchRestaurantPage() {
+
+    const keyword =
+        document.getElementById("restaurantPageSearch")
+            .value.trim();
+
+    if (!keyword) {
+        alert("맛집을 입력해주세요.");
+        return;
+    }
+
+    const ps = new kakao.maps.services.Places();
+
+    ps.keywordSearch(keyword, function(data, status) {
+
+        const results =
+            document.getElementById("restaurantPageResults");
+
+        results.innerHTML = "";
+        results.style.display = "block";
+
+        if (status === kakao.maps.services.Status.ZERO_RESULT) {
+            results.innerHTML =
+                "<p>검색 결과가 없어요.</p>";
+            return;
+        }
+
+        if (status !== kakao.maps.services.Status.OK) {
+            results.innerHTML =
+                "<p>맛집 검색에 실패했어요.</p>";
+            return;
+        }
+
+        data.slice(0, 5).forEach(function(place) {
+
+            const item =
+                document.createElement("div");
+
+            item.style.padding = "12px";
+            item.style.borderBottom =
+                "1px solid #eee";
+            item.style.cursor = "pointer";
+
+            item.innerHTML = `
+                <strong>${place.place_name}</strong>
+                <br>
+                <span style="
+                    font-size: 13px;
+                    color: #888;
+                ">
+                    ${place.road_address_name || place.address_name}
+                </span>
+            `;
+
+            item.onclick = function() {
+
+                restaurantPageName =
+                    place.place_name;
+
+                restaurantPageAddress =
+                    place.road_address_name ||
+                    place.address_name;
+
+                restaurantPageLatitude =
+                    Number(place.y);
+
+                restaurantPageLongitude =
+                    Number(place.x);
+
+                document
+                    .getElementById("restaurantPageSearch")
+                    .value = restaurantPageName;
+
+                results.innerHTML = `
+                    <div style="
+                        padding: 12px;
+                        background: #fff7f8;
+                        border-radius: 10px;
+                    ">
+                        <strong>${restaurantPageName}</strong>
+                        <br>
+                        <span style="
+                            font-size: 13px;
+                            color: #888;
+                        ">
+                            ${restaurantPageAddress}
+                        </span>
+                    </div>
+                `;
+            };
+
+            results.appendChild(item);
+        });
+    });
+}
 async function showRestaurantMap() {
 
     const mapSection =
