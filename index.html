@@ -1026,24 +1026,6 @@ async function createCalendar() {
 
     document.getElementById("placeResults")
         .style.display = "none";
-    // 맛집 초기화
-selectedRestaurantName = "";
-selectedRestaurantAddress = "";
-selectedRestaurantRating = null;
-selectedRestaurantLatitude = null;
-selectedRestaurantLongitude = null;
-
-document.getElementById("restaurantSearch")
-    .value = "";
-
-document.getElementById("restaurantRating")
-    .value = "";
-
-document.getElementById("restaurantResults")
-    .innerHTML = "";
-
-document.getElementById("restaurantResults")
-    .style.display = "none";
 }
 
     // Supabase에 저장된 사진 불러오기
