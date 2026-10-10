@@ -278,7 +278,7 @@
         >
             🗺️ 장소
         </button>
-        
+
         <button
     type="button"
     onclick="showSection('restaurantMap')"
@@ -395,7 +395,59 @@
         0일
     </div>
 </div>
+<!-- 오늘의 한마디 -->
+<div
+    style="
+        margin: 25px auto;
+        max-width: 420px;
+        padding: 20px;
+        background: white;
+        border-radius: 15px;
+        text-align: center;
+    "
+>
+    <div style="
+        font-size: 17px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    ">
+        💬 오늘의 한마디
+    </div>
 
+    <div id="todayMessages" style="margin-bottom: 15px;">
+        아직 오늘의 한마디가 없어요 ♡
+    </div>
+
+    <div style="display: flex; gap: 8px;">
+        <input
+            type="text"
+            id="todayMessageInput"
+            maxlength="100"
+            placeholder="오늘 하고 싶은 말을 남겨보세요"
+            style="
+                flex: 1;
+                padding: 11px;
+                border: 1px solid #eee;
+                border-radius: 10px;
+            "
+        >
+
+        <button
+            type="button"
+            onclick="saveTodayMessage()"
+            style="
+                border: none;
+                border-radius: 10px;
+                padding: 0 15px;
+                background: #f3b6c0;
+                color: white;
+                cursor: pointer;
+            "
+        >
+            남기기
+        </button>
+    </div>
+</div>
         <div
             style="
                 margin-top: 35px;
@@ -750,6 +802,7 @@ document.getElementById("loginBox").style.display = "none";
 document.getElementById("homeSection").style.display = "block";
 document.querySelector(".calendar").style.display = "none";
 document.getElementById("mainMenu").style.display = "flex";
+loadTodayMessages();
 }
 </script>
     <script>
@@ -1789,6 +1842,119 @@ function updateDDay() {
 }
 
 updateDDay();
+
+async function saveTodayMessage() {
+    const input =
+        document.getElementById("todayMessageInput");
+
+    const message = input.value.trim();
+
+    if (!message) {
+        alert("한마디를 입력해주세요 ♡");
+        return;
+    }
+
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+        alert("로그인이 필요해요.");
+        return;
+    }
+
+    const today =
+        new Date().toLocaleDateString("en-CA");
+
+    const { data: existing, error: selectError } =
+        await supabaseClient
+            .from("daily_messages")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("message_date", today)
+            .maybeSingle();
+
+    if (selectError) {
+        console.error(selectError);
+        alert("저장 중 오류가 발생했어요.");
+        return;
+    }
+
+    let error;
+
+    if (existing) {
+        const result =
+            await supabaseClient
+                .from("daily_messages")
+                .update({
+                    message: message
+                })
+                .eq("id", existing.id);
+
+        error = result.error;
+    } else {
+        const result =
+            await supabaseClient
+                .from("daily_messages")
+                .insert({
+                    user_id: user.id,
+                    message: message,
+                    message_date: today
+                });
+
+        error = result.error;
+    }
+
+    if (error) {
+        console.error(error);
+        alert("저장 중 오류가 발생했어요.");
+        return;
+    }
+    input.value = "";
+    await loadTodayMessages();
+    alert("오늘의 한마디를 남겼어요 ♡");
+}
+async function loadTodayMessages() {
+    const today =
+        new Date().toLocaleDateString("en-CA");
+
+    const { data, error } =
+        await supabaseClient
+            .from("daily_messages")
+            .select("user_id, message")
+            .eq("message_date", today)
+            .order("created_at", { ascending: true });
+
+    if (error) {
+        console.error("오늘의 한마디 불러오기 실패:", error);
+        return;
+    }
+
+    const box =
+        document.getElementById("todayMessages");
+
+    if (!data || data.length === 0) {
+        box.innerHTML =
+            "아직 오늘의 한마디가 없어요 ♡";
+        return;
+    }
+
+    box.innerHTML = "";
+
+    data.forEach(function(item) {
+        const message =
+            document.createElement("div");
+
+        message.style.marginBottom = "8px";
+        message.style.padding = "10px";
+        message.style.background = "#fff7f8";
+        message.style.borderRadius = "10px";
+
+        message.textContent = item.message;
+
+        box.appendChild(message);
+    });
+}
 
 function showSection(section) {
 
