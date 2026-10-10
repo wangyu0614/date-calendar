@@ -2988,6 +2988,32 @@ async function loadRestaurantList() {
         list.appendChild(card);
     });
 }
+async function deleteRestaurant(id) {
+
+    const confirmed =
+        confirm("이 맛집 기록을 삭제할까요?");
+
+    if (!confirmed) {
+        return;
+    }
+
+    const { error } =
+        await supabaseClient
+            .from("restaurants")
+            .delete()
+            .eq("id", id);
+
+    if (error) {
+        console.error("맛집 삭제 실패:", error);
+        alert("삭제 중 오류가 발생했어요.");
+        return;
+    }
+
+    await loadRestaurantList();
+    await showRestaurantMap();
+
+    alert("맛집 기록을 삭제했어요.");
+}
 async function showRestaurantMap() {
 
     const mapSection =
