@@ -1389,15 +1389,6 @@ if (!user) {
     place_address: selectedPlaceAddress,
     latitude: selectedLatitude,
     longitude: selectedLongitude,
-
-    restaurant_name: selectedRestaurantName,
-    restaurant_address: selectedRestaurantAddress,
-    restaurant_rating:
-        document.getElementById("restaurantRating").value
-            ? Number(document.getElementById("restaurantRating").value)
-            : null,
-    restaurant_latitude: selectedRestaurantLatitude,
-    restaurant_longitude: selectedRestaurantLongitude
 })
                     .eq("id", existing[0].id)
 
@@ -1425,14 +1416,6 @@ if (!user) {
     latitude: selectedLatitude,
     longitude: selectedLongitude,
 
-    restaurant_name: selectedRestaurantName,
-    restaurant_address: selectedRestaurantAddress,
-    restaurant_rating:
-        document.getElementById("restaurantRating").value
-            ? Number(document.getElementById("restaurantRating").value)
-            : null,
-    restaurant_latitude: selectedRestaurantLatitude,
-    restaurant_longitude: selectedRestaurantLongitude
 });
 
             if (error) {
