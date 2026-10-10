@@ -338,6 +338,127 @@
     📊 추억
 </button>
     </div>
+
+<!-- 데이트 플래너 -->
+<div
+    id="datePlanSection"
+    style="
+        display: none;
+        max-width: 700px;
+        margin: 30px auto;
+        padding: 0 15px;
+        box-sizing: border-box;
+    "
+>
+    <h2 style="text-align: center;">
+        🗓️ 우리의 데이트 플래너 ♡
+    </h2>
+
+    <div
+        style="
+            margin-top: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+        "
+    >
+        <input
+            type="date"
+            id="planDate"
+            style="
+                width: 100%;
+                padding: 11px;
+                margin-bottom: 12px;
+                border: 1px solid #eee;
+                border-radius: 10px;
+                box-sizing: border-box;
+            "
+        >
+
+        <input
+            type="text"
+            id="planTitle"
+            placeholder="데이트 제목 ♡"
+            maxlength="100"
+            style="
+                width: 100%;
+                padding: 11px;
+                margin-bottom: 12px;
+                border: 1px solid #eee;
+                border-radius: 10px;
+                box-sizing: border-box;
+            "
+        >
+
+        <input
+            type="text"
+            id="planPlace"
+            placeholder="어디서 만날까요?"
+            maxlength="100"
+            style="
+                width: 100%;
+                padding: 11px;
+                margin-bottom: 12px;
+                border: 1px solid #eee;
+                border-radius: 10px;
+                box-sizing: border-box;
+            "
+        >
+
+        <textarea
+            id="planMemo"
+            placeholder="하고 싶은 것, 일정 등을 적어보세요 ♡"
+            maxlength="500"
+            style="
+                width: 100%;
+                min-height: 100px;
+                padding: 11px;
+                margin-bottom: 12px;
+                border: 1px solid #eee;
+                border-radius: 10px;
+                resize: vertical;
+                box-sizing: border-box;
+                font-family: inherit;
+            "
+        ></textarea>
+
+        <input
+            type="number"
+            id="planBudget"
+            placeholder="예상 예산 (원)"
+            min="0"
+            style="
+                width: 100%;
+                padding: 11px;
+                margin-bottom: 12px;
+                border: 1px solid #eee;
+                border-radius: 10px;
+                box-sizing: border-box;
+            "
+        >
+
+        <button
+            type="button"
+            onclick="saveDatePlan()"
+            style="
+                width: 100%;
+                padding: 12px;
+                border: none;
+                border-radius: 10px;
+                background: #f3b6c0;
+                color: white;
+                cursor: pointer;
+            "
+        >
+            데이트 계획 저장하기 ♡
+        </button>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <h3>💕 우리의 데이트 계획</h3>
+        <div id="datePlanList"></div>
+    </div>
+</div>
 <!-- 첫 화면 -->
 <div
     id="homeSection"
