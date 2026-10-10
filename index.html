@@ -3207,6 +3207,31 @@ async function toggleDatePlanCompleted(id, currentCompleted) {
 
     await loadDatePlans();
 }
+async function deleteDatePlan(id) {
+
+    const confirmed =
+        confirm("이 데이트 계획을 삭제할까요?");
+
+    if (!confirmed) {
+        return;
+    }
+
+    const { error } =
+        await supabaseClient
+            .from("date_plans")
+            .delete()
+            .eq("id", id);
+
+    if (error) {
+        console.error("데이트 계획 삭제 실패:", error);
+        alert("삭제 중 오류가 발생했어요.");
+        return;
+    }
+
+    await loadDatePlans();
+
+    alert("데이트 계획을 삭제했어요.");
+}
 async function showRestaurantMap() {
 
     const mapSection =
