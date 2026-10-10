@@ -980,23 +980,6 @@ async function createCalendar() {
     selectedLongitude =
         data[0].longitude || null;
 
-    // 저장된 맛집 불러오기
-selectedRestaurantName =
-    data[0].restaurant_name || "";
-
-selectedRestaurantAddress =
-    data[0].restaurant_address || "";
-
-selectedRestaurantRating =
-    data[0].restaurant_rating || null;
-
-selectedRestaurantLatitude =
-    data[0].restaurant_latitude || null;
-
-selectedRestaurantLongitude =
-    data[0].restaurant_longitude || null;
-
-
 // 맛집 검색창에 표시
 document.getElementById("restaurantSearch").value =
     selectedRestaurantName;
