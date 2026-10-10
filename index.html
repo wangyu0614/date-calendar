@@ -3055,7 +3055,7 @@ async function saveDatePlan() {
         alert("저장 중 오류가 발생했어요.");
         return;
     }
-
+    await loadDatePlans();
     alert("데이트 계획을 저장했어요 ♡");
 }
 async function loadDatePlans() {
