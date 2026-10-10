@@ -198,6 +198,30 @@
         .save-button:hover {
             background-color: #e9a5b1;
         }
+        /* 상단 메뉴 가로 슬라이드 */
+#mainMenu {
+    display: none;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 10px;
+    padding: 8px 12px 14px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+#mainMenu::-webkit-scrollbar {
+    display: none;
+}
+
+#mainMenu button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    min-width: 105px;
+    padding: 12px 18px !important;
+    font-size: 15px;
+}
     </style>
     <script type="text/javascript"
     src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=eccaea6437ab3e7d2ff10bb39fd3b19c&libraries=services">
