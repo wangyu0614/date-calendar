@@ -3447,6 +3447,68 @@ async function editDatePlan(id) {
             block: "center"
         });
 }
+
+async function saveWatchedContent() {
+
+    const watchDate =
+        document.getElementById("watchDate").value;
+
+    const contentType =
+        document.getElementById("contentType").value;
+
+    const title =
+        document.getElementById("contentTitle").value.trim();
+
+    const rating =
+        document.getElementById("contentRating").value;
+
+    const review =
+        document.getElementById("contentReview").value.trim();
+
+    if (!watchDate) {
+        alert("같이 본 날짜를 선택해주세요.");
+        return;
+    }
+
+    if (!contentType) {
+        alert("종류를 선택해주세요.");
+        return;
+    }
+
+    if (!title) {
+        alert("제목을 입력해주세요.");
+        return;
+    }
+
+    const {
+        data: { user }
+    } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+        alert("로그인이 필요해요.");
+        return;
+    }
+
+    const { error } =
+        await supabaseClient
+            .from("watched_contents")
+            .insert({
+                watch_date: watchDate,
+                title: title,
+                content_type: contentType,
+                rating: rating ? Number(rating) : null,
+                review: review || null,
+                user_id: user.id
+            });
+
+    if (error) {
+        console.error("같이 본 것 저장 실패:", error);
+        alert("저장 중 오류가 발생했어요.");
+        return;
+    }
+
+    alert("같이 본 기록을 저장했어요 ♡");
+}
 async function showRestaurantMap() {
 
     const mapSection =
