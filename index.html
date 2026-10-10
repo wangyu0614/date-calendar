@@ -3090,8 +3090,13 @@ document.getElementById("planTitle").value = "";
 document.getElementById("planPlace").value = "";
 document.getElementById("planMemo").value = "";
 document.getElementById("planBudget").value = "";
-    await loadDatePlans();
+await loadDatePlans();
+
+if (wasEditing) {
+    alert("데이트 계획을 수정했어요 ♡");
+} else {
     alert("데이트 계획을 저장했어요 ♡");
+}
 }
 async function loadDatePlans() {
 
