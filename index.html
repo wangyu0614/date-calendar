@@ -3004,6 +3004,66 @@ async function loadRestaurantList() {
         list.appendChild(card);
     });
 }
+async function editRestaurant(id) {
+
+    const { data, error } =
+        await supabaseClient
+            .from("restaurants")
+            .select("*")
+            .eq("id", id)
+            .single();
+
+    if (error) {
+        console.error("맛집 불러오기 실패:", error);
+        alert("맛집 정보를 불러오지 못했어요.");
+        return;
+    }
+
+    editingRestaurantId = id;
+
+    restaurantPageName = data.name;
+    restaurantPageAddress = data.address;
+    restaurantPageLatitude = data.latitude;
+    restaurantPageLongitude = data.longitude;
+
+    document.getElementById("restaurantDate").value =
+        data.visit_date;
+
+    document.getElementById("restaurantPageSearch").value =
+        data.name;
+
+    document.getElementById("restaurantPageRating").value =
+        data.rating;
+
+    document.getElementById("restaurantReview").value =
+        data.review || "";
+
+    document.getElementById("restaurantPageResults").innerHTML = `
+        <div style="
+            padding: 12px;
+            background: #fff7f8;
+            border-radius: 10px;
+        ">
+            <strong>${data.name}</strong>
+            <br>
+            <span style="
+                font-size: 13px;
+                color: #888;
+            ">
+                ${data.address || ""}
+            </span>
+        </div>
+    `;
+
+    document.getElementById("restaurantPageResults")
+        .style.display = "block";
+
+    document.getElementById("restaurantDate")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+}
 async function deleteRestaurant(id) {
 
     const confirmed =
