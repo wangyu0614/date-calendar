@@ -472,6 +472,130 @@
         <div id="datePlanList"></div>
     </div>
 </div>
+
+<!-- 같이 본 것 -->
+<div
+    id="watchedSection"
+    style="
+        display: none;
+        max-width: 700px;
+        margin: 30px auto;
+        padding: 0 15px;
+        box-sizing: border-box;
+    "
+>
+    <h2 style="text-align: center;">
+        🎬 같이 본 것 ♡
+    </h2>
+
+    <div
+        style="
+            margin-top: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+        "
+    >
+        <input
+            type="date"
+            id="watchDate"
+            style="
+                width: 100%;
+                padding: 11px;
+                margin-bottom: 12px;
+                box-sizing: border-box;
+            "
+        >
+
+        <select
+            id="contentType"
+            style="
+                width: 100%;
+                padding: 11px;
+                margin-bottom: 12px;
+                box-sizing: border-box;
+            "
+        >
+            <option value="">종류 선택</option>
+            <option value="영화">🎬 영화</option>
+            <option value="드라마">📺 드라마</option>
+            <option value="애니">🌸 애니</option>
+            <option value="예능">😂 예능</option>
+            <option value="기타">💿 기타</option>
+        </select>
+
+        <input
+            type="text"
+            id="contentTitle"
+            placeholder="제목"
+            maxlength="100"
+            style="
+                width: 100%;
+                padding: 11px;
+                margin-bottom: 12px;
+                box-sizing: border-box;
+            "
+        >
+
+        <select
+            id="contentRating"
+            style="
+                width: 100%;
+                padding: 11px;
+                margin-bottom: 12px;
+                box-sizing: border-box;
+            "
+        >
+            <option value="">별점 선택 ⭐</option>
+            <option value="5">⭐ 5.0</option>
+            <option value="4.5">⭐ 4.5</option>
+            <option value="4">⭐ 4.0</option>
+            <option value="3.5">⭐ 3.5</option>
+            <option value="3">⭐ 3.0</option>
+            <option value="2.5">⭐ 2.5</option>
+            <option value="2">⭐ 2.0</option>
+            <option value="1.5">⭐ 1.5</option>
+            <option value="1">⭐ 1.0</option>
+            <option value="0.5">⭐ 0.5</option>
+        </select>
+
+        <textarea
+            id="contentReview"
+            placeholder="같이 본 소감이나 한줄평을 남겨보세요 ♡"
+            maxlength="500"
+            style="
+                width: 100%;
+                min-height: 100px;
+                padding: 11px;
+                margin-bottom: 12px;
+                box-sizing: border-box;
+                resize: vertical;
+                font-family: inherit;
+            "
+        ></textarea>
+
+        <button
+            type="button"
+            onclick="saveWatchedContent()"
+            style="
+                width: 100%;
+                padding: 12px;
+                border: none;
+                border-radius: 10px;
+                background: #f3b6c0;
+                color: white;
+                cursor: pointer;
+            "
+        >
+            기록 저장하기 ♡
+        </button>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <h3>🍿 우리가 같이 본 것들</h3>
+        <div id="watchedList"></div>
+    </div>
+</div>
 <!-- 첫 화면 -->
 <div
     id="homeSection"
