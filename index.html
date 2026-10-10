@@ -2860,7 +2860,9 @@ async function saveRestaurantPage() {
         alert("맛집 저장 중 오류가 발생했어요.");
         return;
     }
-
+    await loadRestaurantList();
+    await showRestaurantMap();
+    
     alert("맛집을 저장했어요 ♡");
 
     document.getElementById("restaurantDate").value = "";
