@@ -611,6 +611,71 @@
         <div id="watchedList"></div>
     </div>
 </div>
+
+<!-- 편지 -->
+<div
+    id="lettersSection"
+    style="
+        display: none;
+        max-width: 700px;
+        margin: 20px auto;
+    "
+>
+    <h2 style="text-align:center;">
+        💌 우리의 편지
+    </h2>
+
+    <div style="
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+    ">
+
+        <input
+            type="date"
+            id="letterDate"
+            style="width:100%; margin-bottom:10px;"
+        >
+
+        <select
+            id="letterWriter"
+            style="width:100%; margin-bottom:10px;"
+        >
+            <option value="">작성자 선택</option>
+            <option value="Jinny">Jinny</option>
+            <option value="Wangyu">Wangyu</option>
+        </select>
+
+        <input
+            type="text"
+            id="letterTitle"
+            placeholder="편지 제목"
+            style="width:100%; margin-bottom:10px;"
+        >
+
+        <textarea
+            id="letterContent"
+            placeholder="마음을 담아 편지를 써보세요 ♡"
+            style="
+                width:100%;
+                min-height:180px;
+                margin-bottom:10px;
+            "
+        ></textarea>
+
+        <button
+            type="button"
+            onclick="saveLetter()"
+        >
+            💌 편지 저장
+        </button>
+
+    </div>
+
+    <div id="lettersList"></div>
+</div>
+    
 <!-- 첫 화면 -->
 <div
     id="homeSection"
