@@ -3506,8 +3506,93 @@ async function saveWatchedContent() {
         alert("저장 중 오류가 발생했어요.");
         return;
     }
-
+    await loadWatchedContents();
     alert("같이 본 기록을 저장했어요 ♡");
+}
+async function loadWatchedContents() {
+
+    const { data, error } =
+        await supabaseClient
+            .from("watched_contents")
+            .select("*")
+            .order("watch_date", { ascending: false });
+
+    if (error) {
+        console.error("같이 본 기록 불러오기 실패:", error);
+        return;
+    }
+
+    const list =
+        document.getElementById("watchedList");
+
+    list.innerHTML = "";
+
+    if (!data || data.length === 0) {
+        list.innerHTML = `
+            <div style="
+                text-align: center;
+                color: #999;
+                padding: 30px;
+            ">
+                아직 같이 본 기록이 없어요 ♡
+            </div>
+        `;
+        return;
+    }
+
+    data.forEach(content => {
+
+        const card =
+            document.createElement("div");
+
+        card.style.cssText = `
+            background: white;
+            padding: 18px;
+            margin-bottom: 12px;
+            border-radius: 15px;
+        `;
+
+        card.innerHTML = `
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+            ">
+                <strong>
+                    ${content.title}
+                </strong>
+
+                ${
+                    content.rating !== null
+                        ? `<span>⭐ ${content.rating}</span>`
+                        : ""
+                }
+            </div>
+
+            <div style="
+                margin-top: 6px;
+                font-size: 13px;
+                color: #888;
+            ">
+                ${content.content_type} · ${content.watch_date}
+            </div>
+
+            ${
+                content.review
+                    ? `
+                        <div style="
+                            margin-top: 10px;
+                            font-size: 14px;
+                        ">
+                            ${content.review}
+                        </div>
+                    `
+                    : ""
+            }
+        `;
+
+        list.appendChild(card);
+    });
 }
 async function showRestaurantMap() {
 
