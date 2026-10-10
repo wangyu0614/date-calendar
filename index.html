@@ -3058,7 +3058,83 @@ async function saveDatePlan() {
 
     alert("데이트 계획을 저장했어요 ♡");
 }
-    
+async function loadDatePlans() {
+
+    const { data, error } =
+        await supabaseClient
+            .from("date_plans")
+            .select("*")
+            .order("plan_date", { ascending: true });
+
+    if (error) {
+        console.error("데이트 계획 불러오기 실패:", error);
+        return;
+    }
+
+    const list =
+        document.getElementById("datePlanList");
+
+    list.innerHTML = "";
+
+    if (!data || data.length === 0) {
+        list.innerHTML = `
+            <div style="
+                text-align: center;
+                color: #999;
+                padding: 30px;
+            ">
+                아직 데이트 계획이 없어요 ♡
+            </div>
+        `;
+        return;
+    }
+
+    data.forEach(plan => {
+
+        const card =
+            document.createElement("div");
+
+        card.style.cssText = `
+            background: white;
+            padding: 18px;
+            margin-bottom: 12px;
+            border-radius: 15px;
+        `;
+
+        card.innerHTML = `
+            <div style="
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 8px;
+            ">
+                ${plan.completed ? "✅" : "💕"}
+                ${plan.title}
+            </div>
+
+            <div>📅 ${plan.plan_date}</div>
+
+            ${plan.place
+                ? `<div>📍 ${plan.place}</div>`
+                : ""
+            }
+
+            ${plan.budget !== null
+                ? `<div>💰 ${Number(plan.budget).toLocaleString()}원</div>`
+                : ""
+            }
+
+            ${plan.memo
+                ? `<div style="
+                    margin-top: 10px;
+                    color: #666;
+                ">${plan.memo}</div>`
+                : ""
+            }
+        `;
+
+        list.appendChild(card);
+    });
+}
 async function showRestaurantMap() {
 
     const mapSection =
