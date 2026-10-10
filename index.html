@@ -972,46 +972,6 @@ async function createCalendar() {
     selectedLongitude =
         data[0].longitude || null;
 
-// 맛집 검색창에 표시
-document.getElementById("restaurantSearch").value =
-    selectedRestaurantName;
-
-
-// 별점 표시
-document.getElementById("restaurantRating").value =
-    selectedRestaurantRating || "";
-
-
-// 선택된 맛집 표시
-const restaurantResults =
-    document.getElementById("restaurantResults");
-
-if (selectedRestaurantName) {
-
-    restaurantResults.style.display = "block";
-
-    restaurantResults.innerHTML = `
-        <div style="
-            padding:12px;
-            background:#fff7f8;
-            border-radius:10px;
-        ">
-            <strong>${selectedRestaurantName}</strong><br>
-            <span style="
-                font-size:13px;
-                color:#888;
-            ">
-                ${selectedRestaurantAddress}
-            </span>
-        </div>
-    `;
-
-} else {
-
-    restaurantResults.innerHTML = "";
-    restaurantResults.style.display = "none";
-}
-
     // 장소 검색창에 표시
     document.getElementById("placeSearch")
         .value = selectedPlaceName;
