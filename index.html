@@ -3081,6 +3081,15 @@ if (editingDatePlanId !== null) {
         alert("저장 중 오류가 발생했어요.");
         return;
     }
+    const wasEditing = editingDatePlanId !== null;
+
+editingDatePlanId = null;
+
+document.getElementById("planDate").value = "";
+document.getElementById("planTitle").value = "";
+document.getElementById("planPlace").value = "";
+document.getElementById("planMemo").value = "";
+document.getElementById("planBudget").value = "";
     await loadDatePlans();
     alert("데이트 계획을 저장했어요 ♡");
 }
