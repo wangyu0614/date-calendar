@@ -1694,13 +1694,6 @@ async function loadBucketList() {
 
         const div =
             document.createElement("div");
-        let writerName = "";
-
-if (item.user_id === "dc099596-d847-492c-953b-ef785f20dc56") {
-    writerName = "Jinny";
-} else if (item.user_id === "9ba029ee-bbf3-4dd6-948b-7c72460e0ccc") {
-    writerName = "Wangyu";
-}
 
         div.style.cssText = `
             display: flex;
@@ -1949,6 +1942,13 @@ async function loadTodayMessages() {
     box.innerHTML = "";
 
     data.forEach(function(item) {
+        let writerName = "";
+
+if (item.user_id === "dc099596-d847-492c-953b-ef785f20dc56") {
+    writerName = "Jinny";
+} else if (item.user_id === "9ba029ee-bbf3-4dd6-948b-7c72460e0ccc") {
+    writerName = "Wangyu";
+}
         const message =
             document.createElement("div");
 
