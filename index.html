@@ -3163,6 +3163,24 @@ card.innerHTML = `
         list.appendChild(card);
     });
 }
+async function toggleDatePlanCompleted(id, currentCompleted) {
+
+    const { error } =
+        await supabaseClient
+            .from("date_plans")
+            .update({
+                completed: !currentCompleted
+            })
+            .eq("id", id);
+
+    if (error) {
+        console.error("데이트 완료 상태 변경 실패:", error);
+        alert("변경 중 오류가 발생했어요.");
+        return;
+    }
+
+    await loadDatePlans();
+}
 async function showRestaurantMap() {
 
     const mapSection =
