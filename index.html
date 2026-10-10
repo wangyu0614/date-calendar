@@ -2236,6 +2236,143 @@ function changeStatsMonth(direction) {
         "
     ></div>
 </div>
+
+<!-- 새 맛집 기록 -->
+<div
+    style="
+        margin-top: 25px;
+        padding: 20px;
+        background: white;
+        border-radius: 15px;
+    "
+>
+    <h3 style="margin-top: 0;">
+        🍴 맛집 기록하기
+    </h3>
+
+    <!-- 방문 날짜 -->
+    <input
+        type="date"
+        id="restaurantDate"
+        style="
+            width: 100%;
+            padding: 11px;
+            margin-bottom: 12px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            box-sizing: border-box;
+        "
+    >
+
+    <!-- 맛집 검색 -->
+    <div style="display: flex; gap: 8px;">
+        <input
+            type="text"
+            id="restaurantPageSearch"
+            placeholder="맛집을 검색해보세요 ♡"
+            style="
+                flex: 1;
+                padding: 11px;
+                border: 1px solid #eee;
+                border-radius: 10px;
+            "
+        >
+
+        <button
+            type="button"
+            onclick="searchRestaurantPage()"
+            style="
+                padding: 0 16px;
+                border: none;
+                border-radius: 10px;
+                background: #f3b6c0;
+                color: white;
+                cursor: pointer;
+            "
+        >
+            검색
+        </button>
+    </div>
+
+    <div
+        id="restaurantPageResults"
+        style="
+            display: none;
+            margin-top: 10px;
+        "
+    ></div>
+
+    <!-- 별점 -->
+    <select
+        id="restaurantPageRating"
+        style="
+            width: 100%;
+            padding: 11px;
+            margin-top: 12px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            background: white;
+            box-sizing: border-box;
+        "
+    >
+        <option value="">⭐ 별점 선택</option>
+        <option value="5">5.0</option>
+        <option value="4.5">4.5</option>
+        <option value="4">4.0</option>
+        <option value="3.5">3.5</option>
+        <option value="3">3.0</option>
+        <option value="2.5">2.5</option>
+        <option value="2">2.0</option>
+        <option value="1.5">1.5</option>
+        <option value="1">1.0</option>
+        <option value="0.5">0.5</option>
+    </select>
+
+    <!-- 메모 / 한줄평 -->
+    <textarea
+        id="restaurantReview"
+        placeholder="먹은 메뉴나 한줄평을 남겨보세요 ♡"
+        maxlength="300"
+        style="
+            width: 100%;
+            min-height: 80px;
+            padding: 11px;
+            margin-top: 12px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            resize: vertical;
+            box-sizing: border-box;
+            font-family: inherit;
+        "
+    ></textarea>
+
+    <button
+        type="button"
+        onclick="saveRestaurantPage()"
+        style="
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #f3b6c0;
+            color: white;
+            cursor: pointer;
+        "
+    >
+        저장하기 ♡
+    </button>
+</div>
+
+
+<!-- 맛집 목록 -->
+<div style="margin-top: 30px;">
+    <h3>
+        🍽️ 우리가 다녀온 맛집
+    </h3>
+
+    <div id="restaurantList"></div>
+</div>
 <!-- 월별 추억 -->
 <div
     id="statsSection"
