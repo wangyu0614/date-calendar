@@ -3685,10 +3685,104 @@ async function loadLetters() {
                 white-space:pre-wrap;
                 line-height:1.7;
             ">${letter.content}</div>
+            <div style="
+    text-align:right;
+    margin-top:12px;
+">
+    <button
+        type="button"
+        onclick="editLetter(${letter.id})"
+        style="
+            border:none;
+            background:none;
+            color:#888;
+            cursor:pointer;
+            margin-right:6px;
+        "
+    >
+        수정
+    </button>
+
+    <button
+        type="button"
+        onclick="deleteLetter(${letter.id})"
+        style="
+            border:none;
+            background:none;
+            color:#aaa;
+            cursor:pointer;
+        "
+    >
+        삭제
+    </button>
+</div>
         `;
 
         list.appendChild(card);
     });
+}
+
+async function editLetter(id) {
+
+    const { data, error } =
+        await supabaseClient
+            .from("letters")
+            .select("*")
+            .eq("id", id)
+            .single();
+
+    if (error) {
+        console.error("편지 불러오기 실패:", error);
+        alert("편지를 불러오지 못했어요.");
+        return;
+    }
+
+    editingLetterId = id;
+
+    document.getElementById("letterDate").value =
+        data.letter_date;
+
+    document.getElementById("letterWriter").value =
+        data.writer_name;
+
+    document.getElementById("letterTitle").value =
+        data.title || "";
+
+    document.getElementById("letterContent").value =
+        data.content || "";
+
+    document.getElementById("letterDate")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+}
+
+
+async function deleteLetter(id) {
+
+    const confirmed =
+        confirm("이 편지를 삭제할까요?");
+
+    if (!confirmed) {
+        return;
+    }
+
+    const { error } =
+        await supabaseClient
+            .from("letters")
+            .delete()
+            .eq("id", id);
+
+    if (error) {
+        console.error("편지 삭제 실패:", error);
+        alert("삭제 중 오류가 발생했어요.");
+        return;
+    }
+
+    await loadLetters();
+
+    alert("편지를 삭제했어요.");
 }
 async function saveWatchedContent() {
 
