@@ -690,6 +690,68 @@
 
     <div id="lettersList"></div>
 </div>
+
+<!-- 포토부스 -->
+<div
+    id="photoboothSection"
+    style="
+        display: none;
+        max-width: 700px;
+        margin: 20px auto;
+    "
+>
+    <h2 style="text-align:center;">
+        📸 우리의 포토부스
+    </h2>
+
+    <div style="
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+    ">
+
+        <input
+            type="date"
+            id="photoboothDate"
+            style="width:100%; margin-bottom:10px;"
+        >
+
+        <input
+            type="text"
+            id="photoboothTitle"
+            placeholder="제목 (예: 성수 인생네컷)"
+            style="width:100%; margin-bottom:10px;"
+        >
+
+        <input
+            type="file"
+            id="photoboothPhoto"
+            accept="image/*"
+            style="width:100%; margin-bottom:10px;"
+        >
+
+        <textarea
+            id="photoboothMemo"
+            placeholder="사진에 대한 추억을 남겨보세요 ♡"
+            style="
+                width:100%;
+                min-height:100px;
+                margin-bottom:10px;
+            "
+        ></textarea>
+
+        <button
+            type="button"
+            onclick="savePhotobooth()"
+        >
+            📸 사진 저장
+        </button>
+
+    </div>
+
+    <div id="photoboothList"></div>
+</div>
     
 <!-- 첫 화면 -->
 <div
