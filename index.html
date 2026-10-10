@@ -2068,6 +2068,9 @@ function showSection(section) {
 
     document.getElementById("watchedSection").style.display =
     section === "watched" ? "block" : "none";
+
+    document.getElementById("lettersSection").style.display =
+    section === "letters" ? "block" : "none";
     
     document.getElementById("bucketSection").style.display =
         section === "bucket" ? "block" : "none";
@@ -2091,6 +2094,9 @@ function showSection(section) {
 }
     if (section === "watched") {
     loadWatchedContents();
+}
+    if (section === "letters") {
+    loadLetters();
 }
 
     if (section === "bucket") {
