@@ -2990,15 +2990,15 @@ async function showRestaurantMap() {
 
     let openInfoWindow = null;
 
-    // Supabase에서 맛집 가져오기
+    // 새 restaurants 테이블에서 맛집 가져오기
     const { data, error } =
         await supabaseClient
-            .from("memories")
+            .from("restaurants")
             .select(
-                "date, restaurant_name, restaurant_address, restaurant_rating, restaurant_latitude, restaurant_longitude"
+                "visit_date, name, address, latitude, longitude, rating, review"
             )
-            .not("restaurant_latitude", "is", null)
-            .not("restaurant_longitude", "is", null);
+            .not("latitude", "is", null)
+            .not("longitude", "is", null);
 
     if (error) {
         console.error("맛집 불러오기 실패:", error);
@@ -3007,7 +3007,6 @@ async function showRestaurantMap() {
     }
 
     if (!data || data.length === 0) {
-        alert("저장된 맛집이 아직 없어요.");
         return;
     }
 
@@ -3018,8 +3017,8 @@ async function showRestaurantMap() {
 
         const position =
             new kakao.maps.LatLng(
-                Number(restaurant.restaurant_latitude),
-                Number(restaurant.restaurant_longitude)
+                Number(restaurant.latitude),
+                Number(restaurant.longitude)
             );
 
         bounds.extend(position);
@@ -3031,27 +3030,27 @@ async function showRestaurantMap() {
             });
 
         const rating =
-            restaurant.restaurant_rating
-                ? "⭐ " + restaurant.restaurant_rating
+            restaurant.rating
+                ? "⭐ " + restaurant.rating
                 : "별점 없음";
 
         const infoWindow =
             new kakao.maps.InfoWindow({
                 content: `
                     <div
-                        onclick="moveToDate('${restaurant.date}')"
                         style="
-                            padding:12px;
-                            font-size:13px;
-                            min-width:170px;
-                            cursor:pointer;
+                            padding: 12px;
+                            font-size: 13px;
+                            min-width: 180px;
                         "
                     >
-                        <strong>${restaurant.restaurant_name}</strong>
+                        <strong>
+                            ${restaurant.name}
+                        </strong>
                         <br>
 
                         <span style="color:#888;">
-                            ${restaurant.restaurant_address || ""}
+                            ${restaurant.address || ""}
                         </span>
                         <br>
 
@@ -3068,8 +3067,22 @@ async function showRestaurantMap() {
                             display:inline-block;
                             margin-top:5px;
                         ">
-                            ${restaurant.date}
+                            ${restaurant.visit_date}
                         </span>
+
+                        ${
+                            restaurant.review
+                                ? `
+                                    <br>
+                                    <span style="
+                                        display:inline-block;
+                                        margin-top:7px;
+                                    ">
+                                        ${restaurant.review}
+                                    </span>
+                                `
+                                : ""
+                        }
                     </div>
                 `
             });
@@ -3107,27 +3120,41 @@ async function showRestaurantMap() {
         }
     );
 }
+
+
+/* 기존 장소 지도에서 날짜 이동할 때 사용 */
 function moveToDate(date) {
 
     showSection("calendar");
     openMemory(date);
 }
+
 </script>
+
 <script>
-    async function testSupabase() {
-        const { data, error } = await supabaseClient
+async function testSupabase() {
+
+    const { data, error } =
+        await supabaseClient
             .from("memories")
             .select("*")
             .limit(1);
 
-        if (error) {
-            console.error("Supabase 연결 실패:", error);
-        } else {
-            console.log("Supabase 연결 성공:", data);
-        }
+    if (error) {
+        console.error(
+            "Supabase 연결 실패:",
+            error
+        );
+    } else {
+        console.log(
+            "Supabase 연결 성공:",
+            data
+        );
     }
+}
 
-    testSupabase();
+testSupabase();
 </script>
+
 </body>
 </html>
