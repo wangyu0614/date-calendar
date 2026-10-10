@@ -936,12 +936,12 @@ async function createCalendar() {
         Number(dateParts[2]) + "일";
 
 
-    // Supabase에서 해당 날짜의 메모 불러오기
     const { data, error } =
-        await supabaseClient
-            .from("memories")
-            .select("text, heart, place_name, place_address, latitude, longitude")
-            .limit(1);
+    await supabaseClient
+        .from("memories")
+        .select("text, heart, place_name, place_address, latitude, longitude")
+        .eq("date", date)
+        .limit(1);
 
     if (error) {
         console.error("메모 불러오기 실패:", error);
