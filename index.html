@@ -911,8 +911,7 @@ body.menu-open {
         password: password
     });
 
-    if (error) {
-        console.error(error);
+    if (error || !data?.user) {
         document.getElementById("loginMessage").textContent =
             "이메일 또는 비밀번호가 맞지 않아요.";
         return;
@@ -4350,27 +4349,18 @@ document.getElementById("mainMenu").addEventListener("close", () => {
   document.body.classList.remove("menu-open");
   document.getElementById("menuButton").setAttribute("aria-expanded", "false");
 });
-// Initialize only after all markup and original functions are available; no private queries before auth.
-(async () => {
+// Require explicit password login on every page load, even if Supabase restores a session.
+// Keep the SDK's stored authentication untouched; restored sessions never unlock the UI.
+(() => {
+  setAuthenticatedUI(false);
   if (!supabaseClient) {
     document.getElementById("loginMessage").textContent =
       "로그인 서비스를 불러오지 못했어요. 연결을 확인한 뒤 새로고침해 주세요.";
     return;
   }
-  supabaseClient.auth.onAuthStateChange((event, session) => {
+  supabaseClient.auth.onAuthStateChange((event) => {
     if (event === "SIGNED_OUT") setAuthenticatedUI(false);
-    else if (event === "SIGNED_IN")
-      setTimeout(() => setAuthenticatedUI(Boolean(session?.user)), 0);
   });
-  try {
-    const {
-      data: { user },
-      error,
-    } = await supabaseClient.auth.getUser();
-    setAuthenticatedUI(Boolean(user) && !error);
-  } catch {
-    setAuthenticatedUI(false);
-  }
 })();
 
 const originalEditPhotobooth = editPhotobooth;
