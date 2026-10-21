@@ -1,1163 +1,907 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Our Memories</title>
 
-    <title>Our Memories</title>
-
-    <style>
-        body {
-            margin: 0;
-            padding: 30px 15px;
-            font-family: Arial, sans-serif;
-            background-color: #fff7f8;
-            color: #333;
-        }
-
-        .calendar {
-    display: none;
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-        .title {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .title h1 {
-            margin-bottom: 8px;
-        }
-
-        .title p {
-            color: #888;
-            margin-top: 0;
-        }
-
-        .month {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .month h2 {
-            margin: 0;
-        }
-
-        .month button {
-            border: none;
-            background: white;
-            font-size: 24px;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-        }
-
-        .month button:hover {
-            background-color: #fff0f2;
-        }
-
-        .weekdays,
-        .days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-        }
-
-        .weekdays div {
-            text-align: center;
-            font-size: 13px;
-            color: #999;
-            padding: 8px 0;
-        }
-
-        .day {
-            min-height: 55px;
-            background-color: white;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 3px;
-            cursor: pointer;
-        }
-
-        .day:hover {
-            background-color: #fff0f2;
-        }
-
-        .empty {
-            min-height: 55px;
-        }
-
-        .heart {
-    color: #e88;
-    font-size: 18px;
-    line-height: 1;
-}
-
-        /* 기록창 */
-        .memory-box {
-            margin-top: 25px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 15px;
-            display: none;
-        }
-
-        .memory-box h3 {
-            margin-top: 0;
-        }
-
-        /* 하트 버튼 */
-        .heart-button {
-            width: 100%;
-            margin-bottom: 15px;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background-color: #fff0f2;
-            color: #e88;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        .heart-button.active {
-            background-color: #f3b6c0;
-            color: white;
-        }
-
-        /* 사진 업로드 */
-        .photo-title {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .photo-input {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 10px;
-            border: 1px solid #eee;
-            border-radius: 10px;
-            background-color: #fafafa;
-            cursor: pointer;
-        }
-
-        .photo-preview {
-            margin-top: 12px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-
-        .photo-preview img {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-
-        /* 메모 */
-        .memory-label {
-            display: block;
-            margin-top: 18px;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 100px;
-            box-sizing: border-box;
-            padding: 12px;
-            border: 1px solid #eee;
-            border-radius: 10px;
-            resize: none;
-            font-size: 14px;
-            font-family: inherit;
-        }
-
-        /* 저장 */
-        .save-button {
-            margin-top: 10px;
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background-color: #f3b6c0;
-            color: white;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        .save-button:hover {
-            background-color: #e9a5b1;
-        }
-        /* 상단 메뉴 가로 슬라이드 */
-#mainMenu {
-    display: none;
-    flex-wrap: nowrap !important;
-    justify-content: flex-start !important;
-    overflow-x: auto;
-    overflow-y: hidden;
-    gap: 10px;
-    padding: 8px 12px 14px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-}
-
-#mainMenu::-webkit-scrollbar {
-    display: none;
-}
-
-#mainMenu button {
-    flex: 0 0 calc((100vw - 60px) / 5);
-    white-space: nowrap;
-    min-width: 0;
-    padding: 12px 5px !important;
-    font-size: 13px;
-}
-    </style>
-    <script type="text/javascript"
-    src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=eccaea6437ab3e7d2ff10bb39fd3b19c&libraries=services">
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=eccaea6437ab3e7d2ff10bb39fd3b19c&amp;libraries=services" type="text/javascript">
 </script>
-</head>
+<style>
+:root {
+  --bg: #faf9f7;
+  --card: #fff;
+  --text: #000;
+  --secondary: #888;
+  --accent: #e8a0ae;
+  --line: #e9e7e4;
+  --radius: 18px;
+  color-scheme: light;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+}
+button,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+[hidden] {
+  display: none !important;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h2,
+h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+input,
+textarea,
+select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-radius: 12px;
+  background: var(--card);
+  padding: 13px 15px;
+  margin: 0;
+  color: var(--text);
+}
+input::placeholder,
+textarea::placeholder {
+  color: #aaa;
+  font-size: 12px;
+}
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  padding: 0;
+}
+textarea {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.7;
+  overflow: hidden;
+}
+button {
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 16px;
+  background: transparent;
+  color: inherit;
+  transition: background 0.16s;
+}
+button:hover {
+  background: #f0eeeb;
+}
+.primary {
+  display: block;
+  width: 100%;
+  background: #000 !important;
+  color: #fff !important;
+  padding: 12px 16px;
+  margin-top: 20px;
+  min-height: 46px;
+  font-weight: 500;
+}
+.primary:hover {
+  background: #292929 !important;
+}
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font-size: 23px;
+  background: transparent;
+}
+.brand {
+  font-size: 17px;
+  letter-spacing: -0.5px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.brand span {
+  color: var(--accent);
+}
+#appHeader {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+#appHeader #pageTitle {
+  font-size: 15px;
+}
+#appHeader.is-home #pageTitle {
+  margin-right: auto;
+  font-size: 17px;
+}
+#appHeader.is-home #homeButton {
+  display: none;
+}
+#menuButton {
+  font-size: 20px;
+}
+body:not(.authenticated) .page {
+  display: none !important;
+}
+.page {
+  width: 100%;
+  max-width: 560px;
+  margin: 12px auto 64px;
+  padding: 0 24px;
+}
+.page > h2 {
+  display: none;
+}
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+}
+.field-label {
+  display: block;
+  color: var(--secondary);
+  font-size: 12px;
+  margin: 18px 0 7px;
+}
+.field-label:first-child {
+  margin-top: 0;
+}
+.editor {
+  padding: 0;
+  margin-top: 26px;
+}
+.editor > h3 {
+  margin-bottom: 16px;
+}
+.list-heading,
+.editor + h3,
+.editor + div > h3 {
+  margin: 32px 0 16px;
+}
+.check-label {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--secondary);
+  font-size: 12px;
+  margin-top: 18px;
+}
+.search-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.search-row input {
+  flex: 1;
+}
+.search-row button {
+  padding: 0 14px;
+  min-width: 44px;
+  background: var(--card);
+}
+.upload-label {
+  display: block;
+  width: fit-content;
+  color: #666;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 14px 0;
+}
+.photo-input,
+input[type="file"] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  color: #888;
+  margin: 0 0 12px;
+}
+input[type="file"]::file-selector-button {
+  border: 0;
+  background: #fff;
+  border-radius: 9px;
+  padding: 8px 12px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+.photo-preview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.photo-preview:empty {
+  display: none;
+}
+.photo-preview img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 14px;
+}
+.empty-state {
+  color: var(--secondary);
+  font-size: 12px;
+  text-align: center;
+  padding: 24px 12px;
+  display: block;
+}
+#loginBox {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 32px 24px;
+}
+.login-form {
+  width: 100%;
+  max-width: 342px;
+  display: grid;
+  gap: 12px;
+}
+.login-form .brand {
+  text-align: center;
+  margin-bottom: 38px;
+  font-size: 22px;
+}
+.login-form .primary {
+  margin-top: 4px;
+}
+.login-form input {
+  min-height: 48px;
+}
+#loginMessage {
+  font-size: 12px;
+  text-align: center;
+  color: #9d4c60;
+  overflow-wrap: anywhere;
+}
+.together {
+  text-align: center;
+  padding: 40px 0 54px;
+}
+.together > p:first-child {
+  font-size: 12px;
+}
+.together h2 {
+  font-size: 28px;
+  line-height: 1.4;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin: 2px 0;
+}
+.anniversary {
+  font-size: 11px;
+  color: var(--secondary);
+}
+.home-grid {
+  display: grid;
+  gap: 28px;
+}
+.message-card {
+  padding: 22px;
+}
+.message-card h2 {
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+#todayMessages {
+  font-size: 12px;
+}
+#todayMessages > div {
+  background: transparent !important;
+  padding: 7px 0 !important;
+  margin: 0 0 8px !important;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
+.message-compose {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  border-top: 1px solid #f3f1ee;
+  padding-top: 8px;
+}
+.message-compose input {
+  padding: 7px 0;
+  font-size: 12px;
+  flex: 1;
+}
+.message-compose button {
+  width: 32px;
+  height: 32px;
+  font-size: 19px;
+  color: #888;
+}
+.recent-section > h2 {
+  text-align: center;
+  margin: 0 0 10px;
+  font-size: 12px;
+}
+.recent-memory {
+  text-align: left;
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  font-size: 12px;
+}
+.recent-memory:hover {
+  background: #fff;
+}
+.recent-memory img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+  border-radius: 18px;
+}
+.recent-copy {
+  display: block;
+  padding: 16px 20px;
+}
+.recent-copy strong {
+  font-size: 12px;
+  display: block;
+  margin-bottom: 5px;
+}
+.recent-copy p {
+  font-size: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  color: #666;
+}
+.month {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0 22px;
+}
+.month h2,
+.month h3 {
+  font-size: 15px;
+}
+.month button {
+  font-size: 23px;
+}
+.weekdays,
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.weekdays div {
+  text-align: center;
+  font-size: 10px;
+  color: #aaa;
+  padding: 8px 0;
+}
+.day,
+.empty {
+  min-height: 48px;
+}
+.day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  cursor: pointer;
+  gap: 0;
+}
+.day:hover,
+.day.selected {
+  background: #fff;
+}
+.day:focus-visible {
+  outline: 2px solid var(--accent);
+}
+.heart {
+  font-size: 11px;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.memory-box {
+  margin-top: 40px;
+}
+.memory-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.memory-heading h3 {
+  font-size: 14px;
+}
+.heart-button {
+  font-size: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  flex-shrink: 0;
+  color: var(--accent);
+  background: transparent;
+}
+.heart-button::after {
+  content: "♡";
+  font-size: 24px;
+}
+.heart-button.active::after {
+  content: "♥";
+}
+.memory-box textarea {
+  min-height: 110px;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px 12px;
+  text-align: center;
+}
+.stat-card > span {
+  display: block;
+  color: var(--secondary);
+  font-size: 11px;
+}
+.stat-card > [id] {
+  color: var(--accent);
+  font-size: 23px;
+  font-weight: 600;
+  margin-top: 7px;
+}
+.visited-places {
+  margin-top: 30px;
+}
+.visited-places h3 {
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+#statsPlaces {
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px;
+  font-size: 13px;
+  line-height: 2.3;
+  overflow-wrap: anywhere;
+}
+#dateMap,
+#restaurantMap {
+  height: clamp(320px, 55svh, 520px);
+  width: 100%;
+  background: #eeeded;
+  border-radius: 18px;
+  overflow: hidden;
+}
+#mapSection,
+#restaurantMapSection {
+  max-width: 960px;
+}
+.place-detail {
+  margin: 16px 0 24px;
+  overflow-wrap: anywhere;
+}
+.place-detail > button {
+  display: block;
+  width: 100%;
+  background: #fff;
+  text-align: left;
+  padding: 20px;
+  border-radius: 18px;
+}
+.place-detail time {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin: 3px 0 12px;
+}
+.place-detail p {
+  white-space: pre-wrap;
+  font-size: 13px;
+}
+.place-detail strong {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.place-detail strong span {
+  color: #888;
+  font-size: 22px;
+}
+#restaurantMapSection > .editor,
+#restaurantMapSection > .editor + div {
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+#placeResults > div,
+#restaurantPageResults > div {
+  background: #fff !important;
+  border-radius: 12px !important;
+  overflow-wrap: anywhere;
+}
+#datePlanList > div,
+#watchedList > div,
+#lettersList > div,
+#photoboothList > div,
+#restaurantList > div,
+#bucketList > div {
+  background: #fff !important;
+  border-radius: 18px !important;
+  padding: 20px !important;
+  margin-bottom: 14px !important;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  max-width: 100%;
+}
+#datePlanList > div > div,
+#watchedList > div > div,
+#lettersList > div > div,
+#photoboothList > div > div,
+#restaurantList > div > div {
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+#datePlanList button,
+#watchedList button,
+#lettersList button,
+#photoboothList button,
+#restaurantList button,
+#bucketList button {
+  background: transparent !important;
+  color: #888 !important;
+  font-size: 12px !important;
+  padding: 6px 8px !important;
+  border-radius: 8px;
+}
+#photoboothList img {
+  max-width: 100%;
+  height: auto !important;
+  max-height: 600px;
+  object-fit: contain !important;
+  border-radius: 14px !important;
+}
+.watch-date {
+  margin: 28px 0 12px;
+  font-size: 14px;
+}
+#bucketSection > div:first-of-type {
+  display: flex;
+  gap: 8px;
+  margin: 24px 0;
+}
+#bucketList > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#mainMenu {
+  border: 0;
+  padding: 24px;
+  width: 100%;
+  max-width: 560px;
+  height: 100svh;
+  max-height: 100svh;
+  margin: 0 0 0 auto;
+  background: var(--bg);
+  color: #000;
+  overflow-y: auto;
+}
+#mainMenu::backdrop {
+  background: rgba(0, 0, 0, 0.16);
+}
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 32px;
+}
+.menu-header .brand {
+  font-size: 17px;
+}
+#mainMenu nav button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  width: 100%;
+  border-radius: 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+  padding: 18px 0;
+  min-height: 58px;
+}
+#mainMenu nav button span {
+  font-size: 22px;
+  color: #666;
+}
+.load-status {
+  font-size: 12px;
+  color: var(--secondary);
+  text-align: center;
+  margin: 12px 0;
+}
+body.menu-open {
+  overflow: hidden;
+}
+@media (min-width: 700px) {
+  #appHeader {
+    padding: 26px 42px;
+  }
+  .page {
+    padding: 0 32px;
+    margin-top: 22px;
+  }
+  .home-page {
+    max-width: 900px;
+  }
+  .home-grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 64px;
+  }
+  .together {
+    padding: 58px 0 66px;
+  }
+  .message-card {
+    margin-top: 29px;
+    min-height: 220px;
+  }
+  .recent-memory img {
+    height: 210px;
+  }
+  .recent-section > h2 {
+    margin-bottom: 10px;
+  }
+  .recent-copy {
+    padding: 20px 22px;
+  }
+  #mainMenu {
+    padding: 28px 40px;
+  }
+  #mapSection,
+  #restaurantMapSection {
+    padding: 0 42px;
+  }
+  #dateMap,
+  #restaurantMap {
+    height: 480px;
+  }
+}
+@media (min-width: 1100px) {
+  .home-page {
+    max-width: 1080px;
+    padding: 0 72px;
+  }
+  .home-grid {
+    gap: 80px;
+  }
+  .together {
+    padding: 58px 0 76px;
+  }
+  .recent-memory img {
+    height: 220px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
 
+</style></head>
 <body>
+<main class="login-screen" id="loginBox"><form class="login-form" id="loginForm"><h1 class="brand">Jinny <span>♥</span> Wangyu</h1><label class="sr-only" for="loginEmail">Email</label><input autocomplete="username" id="loginEmail" placeholder="Email" required="" type="email"/><label class="sr-only" for="loginPassword">Password</label><input autocomplete="current-password" id="loginPassword" placeholder="Password" required="" type="password"/><button class="primary" id="loginButton" type="submit">Login</button><p aria-live="polite" id="loginMessage" role="status"></p></form></main>
+<!-- 제목 -->
 
-    <div id="loginBox">
-        <h2>Our Memories ♡</h2>
-
-        <input type="email" id="loginEmail" placeholder="이메일">
-        <input type="password" id="loginPassword" placeholder="비밀번호">
-
-        <button onclick="login()">로그인</button>
-
-        <p id="loginMessage"></p>
-    </div>
-
-
-    <!-- 제목 -->
-    <div class="title">
-        <h1>Our Memories ♡</h1>
-        <p>우리의 데이트 기록</p>
-    </div>
-
-
-    <!-- 메뉴 -->
-    <div
-        id="mainMenu"
-        style="
-            display: none;
-            justify-content: center;
-            gap: 8px;
-            margin: 20px 0;
-        "
-    >   
-        <button
-    type="button"
-    onclick="showSection('home')"
-    style="
-        padding: 10px 18px;
-        border: none;
-        border-radius: 10px;
-        background: #eee;
-        color: #555;
-        cursor: pointer;
-    "
->
-    🏠 홈
-</button>
-        <button
-            type="button"
-            onclick="showSection('calendar')"
-            style="
-                padding: 10px 18px;
-                border: none;
-                border-radius: 10px;
-                background: #f3b6c0;
-                color: white;
-                cursor: pointer;
-            "
-        >
-            📅 캘린더
-        </button>
-
-        <button
-            type="button"
-            onclick="showSection('map')"
-            style="
-                padding: 10px 18px;
-                border: none;
-                border-radius: 10px;
-                background: #eee;
-                color: #555;
-                cursor: pointer;
-            "
-        >
-            🗺️ 장소
-        </button>
-
-        <button
-    type="button"
-    onclick="showSection('restaurantMap')"
-    style="
-        padding: 10px 18px;
-        border: none;
-        border-radius: 10px;
-        background: #f3b6c0;
-        color: white;
-        cursor: pointer;
-    "
->
-    🍽️ 맛집 지도
-</button>
-
-<button
-    type="button"
-    onclick="showSection('datePlan')"
-    style="
-        padding: 10px 18px;
-        border: none;
-        border-radius: 10px;
-        background: #eee;
-        color: #555;
-        cursor: pointer;
-    "
->
-    🗓️ 데이트 플래너
-</button>
-<button
-    type="button"
-    onclick="showSection('watched')"
-    style="
-        padding: 10px 18px;
-        border: none;
-        border-radius: 10px;
-        background: #f3b6c0;
-        color: white;
-        cursor: pointer;
-    "
->
-    🎬 같이 본 것
-</button>
-
-<button
-    type="button"
-    onclick="showSection('letters')"
-    style="
-        padding: 10px 18px;
-        border: none;
-        border-radius: 10px;
-        background: #f3b6c0;
-        color: white;
-        cursor: pointer;
-    "
->
-    💌 편지
-</button>
-
-<button
-    type="button"
-    onclick="showSection('photobooth')"
-    style="
-        padding: 10px 18px;
-        border: none;
-        border-radius: 10px;
-        background: #f3b6c0;
-        color: white;
-        cursor: pointer;
-    "
->
-    📸 포토부스
-</button>
-        <button
-            type="button"
-            onclick="showSection('bucket')"
-            style="
-                padding: 10px 18px;
-                border: none;
-                border-radius: 10px;
-                background: #eee;
-                color: #555;
-                cursor: pointer;
-            "
-        >
-            🎯 버킷리스트
-        </button>
-        <button
-    type="button"
-    onclick="showSection('stats')"
-    style="
-        padding: 10px 18px;
-        border: none;
-        border-radius: 10px;
-        background: #eee;
-        color: #555;
-        cursor: pointer;
-    "
->
-    📊 추억
-</button>
-    </div>
-
+<!-- 메뉴 -->
+<header hidden="" id="appHeader"><button aria-label="Home" class="icon-button" id="homeButton" onclick="showSection('home')">‹</button><h1 class="brand" id="pageTitle">Jinny <span>♥</span> Wangyu</h1><button aria-controls="mainMenu" aria-expanded="false" aria-label="Open menu" class="icon-button" id="menuButton" onclick="openMenu()">☰</button></header><dialog aria-label="Menu" id="mainMenu"><div class="menu-header"><span class="brand">Jinny <span>♥</span> Wangyu</span><button aria-label="Close menu" class="icon-button" onclick="closeMenu()">×</button></div><nav aria-label="Main navigation"><button onclick="showSection('calendar')">Calendar<span aria-hidden="true">›</span></button><button onclick="showSection('map')">Places<span aria-hidden="true">›</span></button><button onclick="showSection('restaurantMap')">Restaurants<span aria-hidden="true">›</span></button><button onclick="showSection('datePlan')">Date Planner<span aria-hidden="true">›</span></button><button onclick="showSection('watched')">Watched Together<span aria-hidden="true">›</span></button><button onclick="showSection('letters')">Letters<span aria-hidden="true">›</span></button><button onclick="showSection('photobooth')">Photobooth<span aria-hidden="true">›</span></button><button onclick="showSection('bucket')">Bucket List<span aria-hidden="true">›</span></button><button onclick="showSection('stats')">Monthly Memories<span aria-hidden="true">›</span></button></nav></dialog>
 <!-- 데이트 플래너 -->
-<div
-    id="datePlanSection"
-    style="
-        display: none;
-        max-width: 700px;
-        margin: 30px auto;
-        padding: 0 15px;
-        box-sizing: border-box;
-    "
->
-    <h2 style="text-align: center;">
-        🗓️ 우리의 데이트 플래너 ♡
-    </h2>
+<div class="page" id="datePlanSection" style="display: none;">
 
-    <div
-        style="
-            margin-top: 25px;
-            padding: 20px;
-            background: white;
-            border-radius: 15px;
-        "
-    >
-        <input
-            type="date"
-            id="planDate"
-            style="
-                width: 100%;
-                padding: 11px;
-                margin-bottom: 12px;
-                border: 1px solid #eee;
-                border-radius: 10px;
-                box-sizing: border-box;
-            "
-        >
+<div class="editor">
+<label class="field-label" for="planDate">Date</label><input id="planDate" type="date"/>
+<label class="field-label" for="planTitle">Title</label><input id="planTitle" maxlength="100" placeholder="데이트 제목 ♡" type="text"/>
+<label class="field-label" for="planPlace">Place</label><input id="planPlace" maxlength="100" placeholder="어디서 만날까요?" type="text"/>
+<label class="field-label" for="planBudget">Budget</label><input id="planBudget" min="0" placeholder="예상 예산 (원)" type="number"/><label class="field-label" for="planMemo">Memo</label><textarea id="planMemo" maxlength="500" placeholder="하고 싶은 것, 일정 등을 적어보세요 ♡"></textarea>
 
-        <input
-            type="text"
-            id="planTitle"
-            placeholder="데이트 제목 ♡"
-            maxlength="100"
-            style="
-                width: 100%;
-                padding: 11px;
-                margin-bottom: 12px;
-                border: 1px solid #eee;
-                border-radius: 10px;
-                box-sizing: border-box;
-            "
-        >
-
-        <input
-            type="text"
-            id="planPlace"
-            placeholder="어디서 만날까요?"
-            maxlength="100"
-            style="
-                width: 100%;
-                padding: 11px;
-                margin-bottom: 12px;
-                border: 1px solid #eee;
-                border-radius: 10px;
-                box-sizing: border-box;
-            "
-        >
-
-        <textarea
-            id="planMemo"
-            placeholder="하고 싶은 것, 일정 등을 적어보세요 ♡"
-            maxlength="500"
-            style="
-                width: 100%;
-                min-height: 100px;
-                padding: 11px;
-                margin-bottom: 12px;
-                border: 1px solid #eee;
-                border-radius: 10px;
-                resize: vertical;
-                box-sizing: border-box;
-                font-family: inherit;
-            "
-        ></textarea>
-
-        <input
-            type="number"
-            id="planBudget"
-            placeholder="예상 예산 (원)"
-            min="0"
-            style="
-                width: 100%;
-                padding: 11px;
-                margin-bottom: 12px;
-                border: 1px solid #eee;
-                border-radius: 10px;
-                box-sizing: border-box;
-            "
-        >
-
-        <button
-            type="button"
-            onclick="saveDatePlan()"
-            style="
-                width: 100%;
-                padding: 12px;
-                border: none;
-                border-radius: 10px;
-                background: #f3b6c0;
-                color: white;
-                cursor: pointer;
-            "
-        >
-            데이트 계획 저장하기 ♡
-        </button>
-    </div>
-
-    <div style="margin-top: 30px;">
-        <h3>💕 우리의 데이트 계획</h3>
-        <div id="datePlanList"></div>
-    </div>
+<label class="check-label"><input aria-label="planCompleted" id="planCompleted" type="checkbox"/>Completed</label><button class="primary" onclick="saveDatePlan()" type="button">저장</button>
 </div>
-
+<div>
+<h3>Saved Plans</h3>
+<div id="datePlanList"></div>
+</div>
+</div>
 <!-- 같이 본 것 -->
-<div
-    id="watchedSection"
-    style="
-        display: none;
-        max-width: 700px;
-        margin: 30px auto;
-        padding: 0 15px;
-        box-sizing: border-box;
-    "
->
-    <h2 style="text-align: center;">
-        🎬 같이 본 것 ♡
-    </h2>
+<div class="page" id="watchedSection" style="display: none;">
 
-    <div
-        style="
-            margin-top: 25px;
-            padding: 20px;
-            background: white;
-            border-radius: 15px;
-        "
-    >
-        <input
-            type="date"
-            id="watchDate"
-            style="
-                width: 100%;
-                padding: 11px;
-                margin-bottom: 12px;
-                box-sizing: border-box;
-            "
-        >
-
-        <select
-            id="contentType"
-            style="
-                width: 100%;
-                padding: 11px;
-                margin-bottom: 12px;
-                box-sizing: border-box;
-            "
-        >
-            <option value="">종류 선택</option>
-            <option value="영화">🎬 영화</option>
-            <option value="드라마">📺 드라마</option>
-            <option value="애니">🌸 애니</option>
-            <option value="예능">😂 예능</option>
-            <option value="기타">💿 기타</option>
-        </select>
-
-        <input
-            type="text"
-            id="contentTitle"
-            placeholder="제목"
-            maxlength="100"
-            style="
-                width: 100%;
-                padding: 11px;
-                margin-bottom: 12px;
-                box-sizing: border-box;
-            "
-        >
-
-        <select
-            id="contentRating"
-            style="
-                width: 100%;
-                padding: 11px;
-                margin-bottom: 12px;
-                box-sizing: border-box;
-            "
-        >
-            <option value="">별점 선택 ⭐</option>
-            <option value="5">⭐ 5.0</option>
-            <option value="4.5">⭐ 4.5</option>
-            <option value="4">⭐ 4.0</option>
-            <option value="3.5">⭐ 3.5</option>
-            <option value="3">⭐ 3.0</option>
-            <option value="2.5">⭐ 2.5</option>
-            <option value="2">⭐ 2.0</option>
-            <option value="1.5">⭐ 1.5</option>
-            <option value="1">⭐ 1.0</option>
-            <option value="0.5">⭐ 0.5</option>
-        </select>
-
-        <textarea
-            id="contentReview"
-            placeholder="같이 본 소감이나 한줄평을 남겨보세요 ♡"
-            maxlength="500"
-            style="
-                width: 100%;
-                min-height: 100px;
-                padding: 11px;
-                margin-bottom: 12px;
-                box-sizing: border-box;
-                resize: vertical;
-                font-family: inherit;
-            "
-        ></textarea>
-
-        <button
-            type="button"
-            onclick="saveWatchedContent()"
-            style="
-                width: 100%;
-                padding: 12px;
-                border: none;
-                border-radius: 10px;
-                background: #f3b6c0;
-                color: white;
-                cursor: pointer;
-            "
-        >
-            기록 저장하기 ♡
-        </button>
-    </div>
-
-    <div style="margin-top: 30px;">
-        <h3>🍿 우리가 같이 본 것들</h3>
-        <div id="watchedList"></div>
-    </div>
+<div class="editor">
+<label class="field-label" for="watchDate">Date</label><input id="watchDate" type="date"/>
+<label class="field-label" for="contentType">Type</label><select id="contentType">
+<option value="">종류 선택</option>
+<option value="영화">🎬 영화</option>
+<option value="드라마">📺 드라마</option>
+<option value="애니">🌸 애니</option>
+<option value="예능">😂 예능</option>
+<option value="기타">💿 기타</option>
+</select>
+<label class="field-label" for="contentTitle">Title</label><input id="contentTitle" maxlength="100" placeholder="제목" type="text"/>
+<label class="field-label" for="contentRating">Rating</label><select id="contentRating">
+<option value="">별점 선택 ★</option>
+<option value="5">★ 5.0</option>
+<option value="4.5">★ 4.5</option>
+<option value="4">★ 4.0</option>
+<option value="3.5">★ 3.5</option>
+<option value="3">★ 3.0</option>
+<option value="2.5">★ 2.5</option>
+<option value="2">★ 2.0</option>
+<option value="1.5">★ 1.5</option>
+<option value="1">★ 1.0</option>
+<option value="0.5">★ 0.5</option>
+</select>
+<label class="field-label" for="contentReview">Review</label><textarea id="contentReview" maxlength="500" placeholder="같이 본 소감이나 한줄평을 남겨보세요 ♡"></textarea>
+<button class="primary" onclick="saveWatchedContent()" type="button">저장</button>
 </div>
-
+<div>
+<h3>Watched Together</h3>
+<div id="watchedList"></div>
+</div>
+</div>
 <!-- 편지 -->
-<div
-    id="lettersSection"
-    style="
-        display: none;
-        max-width: 700px;
-        margin: 20px auto;
-    "
->
-    <h2 style="text-align:center;">
-        💌 우리의 편지
-    </h2>
+<div class="page" id="lettersSection" style="display: none;">
 
-    <div style="
-        background: white;
-        padding: 20px;
-        border-radius: 15px;
-        margin-bottom: 20px;
-    ">
-
-        <input
-            type="date"
-            id="letterDate"
-            style="width:100%; margin-bottom:10px;"
-        >
-
-        <select
-            id="letterWriter"
-            style="width:100%; margin-bottom:10px;"
-        >
-            <option value="">작성자 선택</option>
-            <option value="Jinny">Jinny</option>
-            <option value="Wangyu">Wangyu</option>
-        </select>
-
-        <input
-            type="text"
-            id="letterTitle"
-            placeholder="편지 제목"
-            style="width:100%; margin-bottom:10px;"
-        >
-
-        <textarea
-            id="letterContent"
-            placeholder="마음을 담아 편지를 써보세요 ♡"
-            style="
-                width:100%;
-                min-height:180px;
-                margin-bottom:10px;
-            "
-        ></textarea>
-
-        <button
-            type="button"
-            onclick="saveLetter()"
-        >
-            💌 편지 저장
-        </button>
-
-    </div>
-
-    <div id="lettersList"></div>
+<div class="editor">
+<label class="field-label" for="letterDate">Date</label><input id="letterDate" type="date"/>
+<label class="field-label" for="letterWriter">Writer</label><select id="letterWriter">
+<option value="">작성자 선택</option>
+<option value="Jinny">Jinny</option>
+<option value="Wangyu">Wangyu</option>
+</select>
+<label class="field-label" for="letterTitle">Title</label><input id="letterTitle" placeholder="편지 제목" type="text"/>
+<label class="field-label" for="letterContent">Content</label><textarea id="letterContent" placeholder="마음을 담아 편지를 써보세요 ♡"></textarea>
+<button class="primary" onclick="saveLetter()" type="button">저장</button>
 </div>
-
+<h3 class="list-heading">Saved Letters</h3><div id="lettersList"></div>
+</div>
 <!-- 포토부스 -->
-<div
-    id="photoboothSection"
-    style="
-        display: none;
-        max-width: 700px;
-        margin: 20px auto;
-    "
->
-    <h2 style="text-align:center;">
-        📸 우리의 포토부스
-    </h2>
+<div class="page" id="photoboothSection" style="display: none;">
 
-    <div style="
-        background: white;
-        padding: 20px;
-        border-radius: 15px;
-        margin-bottom: 20px;
-    ">
-
-        <input
-            type="date"
-            id="photoboothDate"
-            style="width:100%; margin-bottom:10px;"
-        >
-
-        <input
-            type="text"
-            id="photoboothTitle"
-            placeholder="제목 (예: 성수 인생네컷)"
-            style="width:100%; margin-bottom:10px;"
-        >
-
-        <input
-            type="file"
-            id="photoboothPhoto"
-            accept="image/*"
-            style="width:100%; margin-bottom:10px;"
-        >
-
-        <textarea
-            id="photoboothMemo"
-            placeholder="사진에 대한 추억을 남겨보세요 ♡"
-            style="
-                width:100%;
-                min-height:100px;
-                margin-bottom:10px;
-            "
-        ></textarea>
-
-        <button
-            type="button"
-            onclick="savePhotobooth()"
-        >
-            📸 사진 저장
-        </button>
-
-    </div>
-
-    <div id="photoboothList"></div>
+<div class="editor">
+<label class="field-label" for="photoboothDate">Date</label><input id="photoboothDate" type="date"/>
+<label class="field-label" for="photoboothTitle">Title</label><input id="photoboothTitle" placeholder="제목 (예: 성수 인생네컷)" type="text"/>
+<label class="upload-label" for="photoboothPhoto">＋ 사진 추가</label><input accept="image/*" id="photoboothPhoto" type="file"/><div class="photo-preview" id="photoboothPreview"></div>
+<label class="field-label" for="photoboothMemo">Memo</label><textarea id="photoboothMemo" placeholder="사진에 대한 추억을 남겨보세요 ♡"></textarea>
+<button class="primary" onclick="savePhotobooth()" type="button">저장</button>
 </div>
-    
+<h3 class="list-heading">Saved Photos</h3><div id="photoboothList"></div>
+</div>
 <!-- 첫 화면 -->
-<div
-    id="homeSection"
-    style="
-        display: none;
-        max-width: 700px;
-        margin: 40px auto;
-        padding: 30px 20px;
-        box-sizing: border-box;
-        text-align: center;
-    "
->
-    <div
-        style="
-            padding: 45px 20px;
-            background: linear-gradient(
-                135deg,
-                #fff7f8,
-                #fffafa
-            );
-            border-radius: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-        "
-    >
-
-        <div
-            style="
-                font-size: 16px;
-                color: #f3a6b5;
-                margin-bottom: 15px;
-            "
-        >
-            ♡ OUR MEMORIES ♡
-        </div>
-
-        <h1
-            style="
-                font-size: 42px;
-                margin: 0;
-                color: #444;
-                letter-spacing: 1px;
-            "
-        >
-            Jinny ♡ Wangyu
-        </h1>
-
-        <div
-    style="
-        text-align: center;
-        margin-top: 20px;
-        margin-bottom: 25px;
-    "
->
-    <div style="
-        font-size: 15px;
-        color: #888;
-        margin-bottom: 7px;
-    ">
-        ❤️ 우리가 함께한 지
-    </div>
-
-    <div
-        id="dDayCount"
-        style="
-            font-size: 32px;
-            font-weight: bold;
-            color: #f3a6b5;
-        "
-    >
-        0일
-    </div>
+<main class="home-page page" id="homeSection" style="display:none"><div class="together"><p>Always Together</p><h2 id="dDayCount"></h2><p class="anniversary">2026.02.19 —</p></div><div class="home-grid editor"><section class="message-card card"><h2>Today's Message</h2><div aria-live="polite" id="todayMessages"></div><form class="message-compose" id="messageForm"><label class="sr-only" for="todayMessageInput">Today's message</label><input id="todayMessageInput" maxlength="100" placeholder="오늘의 한마디"/><button aria-label="Save message" class="icon-button" type="submit">↗</button></form></section><section class="recent-section"><h2>Recent Memory</h2><button class="recent-memory card" disabled="" id="recentMemory"><span class="empty-state">아직 저장된 추억이 없어요.</span></button></section></div></main>
+<!-- 캘린더 -->
+<div class="page calendar" id="calendarSection">
+<!-- 월 이동 -->
+<div class="month">
+<button aria-label="Previous month" class="icon-button" onclick="previousMonth()">‹</button>
+<h2 id="monthTitle"></h2>
+<button aria-label="Next month" class="icon-button" onclick="nextMonth()">›</button>
 </div>
-<!-- 오늘의 한마디 -->
-<div
-    style="
-        margin: 25px auto;
-        max-width: 420px;
-        padding: 20px;
-        background: white;
-        border-radius: 15px;
-        text-align: center;
-    "
->
-    <div style="
-        font-size: 17px;
-        font-weight: bold;
-        margin-bottom: 15px;
-    ">
-        💬 오늘의 한마디
-    </div>
-
-    <div id="todayMessages" style="margin-bottom: 15px;">
-        아직 오늘의 한마디가 없어요 ♡
-    </div>
-
-    <div style="display: flex; gap: 8px;">
-        <input
-            type="text"
-            id="todayMessageInput"
-            maxlength="100"
-            placeholder="오늘 하고 싶은 말을 남겨보세요"
-            style="
-                flex: 1;
-                padding: 11px;
-                border: 1px solid #eee;
-                border-radius: 10px;
-            "
-        >
-
-        <button
-            type="button"
-            onclick="saveTodayMessage()"
-            style="
-                border: none;
-                border-radius: 10px;
-                padding: 0 15px;
-                background: #f3b6c0;
-                color: white;
-                cursor: pointer;
-            "
-        >
-            남기기
-        </button>
-    </div>
+<!-- 요일 -->
+<div class="weekdays">
+<div>SUN</div>
+<div>MON</div>
+<div>TUE</div>
+<div>WED</div>
+<div>THU</div>
+<div>FRI</div>
+<div>SAT</div>
 </div>
-        <div
-            style="
-                margin-top: 35px;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-            "
-        >
-
-            <button
-                type="button"
-                onclick="showSection('calendar')"
-                style="
-                    padding: 18px 10px;
-                    border: none;
-                    border-radius: 14px;
-                    background: #f3b6c0;
-                    color: white;
-                    cursor: pointer;
-                    font-size: 14px;
-                "
-            >
-                📅<br>
-                <span style="display:inline-block; margin-top:6px;">
-                    우리의 기록
-                </span>
-            </button>
-
-            <button
-                type="button"
-                onclick="showSection('map')"
-                style="
-                    padding: 18px 10px;
-                    border: none;
-                    border-radius: 14px;
-                    background: #f8eeee;
-                    color: #666;
-                    cursor: pointer;
-                    font-size: 14px;
-                "
-            >
-                🗺️<br>
-                <span style="display:inline-block; margin-top:6px;">
-                    데이트 장소
-                </span>
-            </button>
-
-            <button
-                type="button"
-                onclick="showSection('bucket')"
-                style="
-                    padding: 18px 10px;
-                    border: none;
-                    border-radius: 14px;
-                    background: #f8eeee;
-                    color: #666;
-                    cursor: pointer;
-                    font-size: 14px;
-                "
-            >
-                🎯<br>
-                <span style="display:inline-block; margin-top:6px;">
-                    버킷리스트
-                </span>
-            </button>
-
-            <button
-                type="button"
-                onclick="showSection('stats')"
-                style="
-                    padding: 18px 10px;
-                    border: none;
-                    border-radius: 14px;
-                    background: #f8eeee;
-                    color: #666;
-                    cursor: pointer;
-                    font-size: 14px;
-                "
-            >
-                📊<br>
-                <span style="display:inline-block; margin-top:6px;">
-                    월별 추억
-                </span>
-            </button>
-
-        </div>
-
-        <div
-            style="
-                margin-top: 35px;
-                font-size: 13px;
-                color: #bbb;
-            "
-        >
-            Always, Together♡
-        </div>
-
-    </div>
-</div>
-
-    <!-- 캘린더 -->
-    <div class="calendar">
-
-        <!-- 월 이동 -->
-        <div class="month">
-
-            <button onclick="previousMonth()">‹</button>
-
-            <h2 id="monthTitle"></h2>
-
-            <button onclick="nextMonth()">›</button>
-
-        </div>
-
-
-        <!-- 요일 -->
-        <div class="weekdays">
-            <div>일</div>
-            <div>월</div>
-            <div>화</div>
-            <div>수</div>
-            <div>목</div>
-            <div>금</div>
-            <div>토</div>
-        </div>
-
-
-        <!-- 날짜 -->
-        <div class="days" id="days"></div>
-
-
-        <!-- 기록창 -->
-        <div class="memory-box" id="memoryBox">
-
-            <h3 id="selectedDate"></h3>
-
-
-            <!-- 하트 -->
-            <button
-                class="heart-button"
-                id="heartButton"
-                onclick="toggleHeart()"
-            >
+<!-- 날짜 -->
+<div class="days" id="days"></div>
+<!-- 기록창 -->
+<div class="memory-box editor" id="memoryBox"><div class="memory-heading"><h3 id="selectedDate"></h3><button class="heart-button" id="heartButton" onclick="toggleHeart()">
                 ♡ 데이트한 날로 표시
-            </button>
-
-
-            <!-- 사진 -->
-            <label class="photo-title">
-                📷 사진
-            </label>
-
-            <input
-                class="photo-input"
-                type="file"
-                id="photoInput"
-                accept="image/*"
-                multiple
-                onchange="previewPhotos()"
-            >
-
-            <div
-                class="photo-preview"
-                id="photoPreview"
-            >
-            </div>
-
-
-            <!-- 메모 -->
-            <label class="memory-label">
-                📝 오늘의 기록
-            </label>
-
-
-            <!-- 장소 -->
-            <label class="memory-label">
-                데이트 장소
-            </label>
-<div style="display: flex; gap: 8px;">
-    <input
-        type="text"
-        id="placeSearch"
-        placeholder="장소를 검색해보세요 ♡"
-        style="
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #eee;
-            border-radius: 10px;
-            font-size: 14px;
-            box-sizing: border-box;
-        "
-    >
-
-    <button
-        type="button"
-        onclick="searchPlace()"
-        style="
-            padding: 0 15px;
-            border: none;
-            border-radius: 10px;
-            background-color: #f3b6c0;
-            color: white;
-            cursor: pointer;
-        "
-    >
+            </button></div><div class="search-row">
+<input aria-label="장소를 검색해보세요 ♡" id="placeSearch" placeholder="장소를 검색해보세요 ♡" type="text"/>
+<button onclick="searchPlace()" type="button">
         검색
     </button>
+</div><div id="placeResults" style="display: none;"></div><label class="field-label" for="memoryText">Memo</label><textarea id="memoryText" placeholder="오늘의 데이트를 기록해보세요 ♡">
+            </textarea><label class="upload-label" for="photoInput">＋ 사진 추가</label><input accept="image/*" class="photo-input" id="photoInput" multiple="" onchange="previewPhotos()" type="file"/><div class="photo-preview" id="photoPreview">
+</div><button class="primary" onclick="saveMemory()">저장</button></div>
 </div>
-
-<div
-    id="placeResults"
-    style="
-        margin-top: 10px;
-        display: none;
-    "
-></div>
-            <textarea
-                id="memoryText"
-                placeholder="오늘의 데이트를 기록해보세요 ♡">
-            </textarea>
-
-
-            <!-- 저장 -->
-            <button
-                class="save-button"
-                onclick="saveMemory()">
-
-                기록 저장
-
-            </button>
-
-        </div>
-
-    </div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
     const SUPABASE_URL = "https://qvetnbkzxybjvykjctzm.supabase.co";
     const SUPABASE_KEY = "sb_publishable_9I3Bhkgpga6yUp5zrYnKfw_xO5cDnQg";
 
-    const supabaseClient = supabase.createClient(
+    const supabaseClient = window.supabase ? supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
-    );
+    ) : null;
     async function checkUser() {
     const { data: { user } } = await supabaseClient.auth.getUser();
 
     if (user) {
-        console.log("현재 사용자 ID:", user.id);
+
     } else {
-        console.log("로그인한 사용자가 없습니다.");
+
     }
 }
 
-checkUser();
+
     async function login() {
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
@@ -1174,19 +918,16 @@ checkUser();
         return;
     }
 
-    console.log("로그인 성공:", data);
-document.getElementById("loginBox").style.display = "none";
-document.getElementById("homeSection").style.display = "block";
-document.querySelector(".calendar").style.display = "none";
-document.getElementById("mainMenu").style.display = "flex";
-loadTodayMessages();
+
+setAuthenticatedUI(true);
 }
 </script>
-    <script>
+<script>
 
         // 현재 보고 있는 달
-        let currentYear = 2026;
-        let currentMonth = 9;
+        let calendarLoadVersion = 0;
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth();
 
         // 현재 선택한 날짜
         let selectedDate = "";
@@ -1207,6 +948,7 @@ let selectedLongitude = null;
         // =========================
 
 async function createCalendar() {
+    const loadVersion = ++calendarLoadVersion;
 
     const daysContainer =
         document.getElementById("days");
@@ -1214,8 +956,7 @@ async function createCalendar() {
     daysContainer.innerHTML = "";
 
     document.getElementById("monthTitle").innerText =
-        currentYear + "년 " +
-        (currentMonth + 1) + "월";
+        formatMonth(currentYear, currentMonth);
 
 
     // Supabase에서 이번 달 하트 가져오기
@@ -1243,6 +984,7 @@ async function createCalendar() {
             .select("date, heart")
             .gte("date", monthStart)
             .lte("date", monthEnd);
+    if (loadVersion !== calendarLoadVersion) return;
 
 
     if (error) {
@@ -1318,7 +1060,7 @@ async function createCalendar() {
 
             heart.className = "heart";
 
-            heart.innerText = "♡";
+            heart.innerText = "♥";
 
             dayElement.appendChild(heart);
         }
@@ -1629,6 +1371,7 @@ showSavedPhotos();
         // =========================
 // 카카오 장소 검색
 function searchPlace() {
+    if (!window.kakao?.maps?.services) { alert("지도 서비스를 불러오지 못했어요. 연결을 확인해 주세요."); return; }
     const keyword = document.getElementById("placeSearch").value.trim();
 
     if (!keyword) {
@@ -1693,12 +1436,7 @@ function searchPlace() {
                     </div>
                 `;
 
-                console.log("선택한 장소:", {
-                    name: selectedPlaceName,
-                    address: selectedPlaceAddress,
-                    latitude: selectedLatitude,
-                    longitude: selectedLongitude
-                });
+
             };
 
             results.appendChild(item);
@@ -1706,7 +1444,7 @@ function searchPlace() {
     });
 }
 async function saveMemory() {
-    console.log("사진 저장 함수 실행됨", selectedPhotos.length);
+
     const text = document.getElementById("memoryText").value;
 
     try {
@@ -1855,8 +1593,7 @@ if (!user) {
         }
 
 
-        // 처음 실행
-        createCalendar();
+        // Calendar is loaded after authentication.
 async function loadBucketList() {
 
     const { data, error } =
@@ -2023,7 +1760,7 @@ function updateDDay() {
         ) + 1;
 
     document.getElementById("dDayCount")
-        .innerText = days + "일";
+        .innerText = "D+" + days;
 }
 
 updateDDay();
@@ -2127,7 +1864,7 @@ async function loadTodayMessages() {
     box.innerHTML = "";
 
     data.forEach(function(item) {
-        let writerName = "";
+        let writerName = "우리";
 
 if (item.user_id === "dc099596-d847-492c-953b-ef785f20dc56") {
     writerName = "Jinny";
@@ -2149,6 +1886,8 @@ if (item.user_id === "dc099596-d847-492c-953b-ef785f20dc56") {
 }
 
 function showSection(section) {
+    if (!document.body.classList.contains("authenticated")) return;
+    updatePageHeader(section);
 
     // 모든 화면 숨기기
 
@@ -2160,7 +1899,7 @@ function showSection(section) {
 
     document.getElementById("mapSection").style.display =
         section === "map" ? "block" : "none";
-    
+
     document.getElementById("restaurantMapSection").style.display =
     section === "restaurantMap" ? "block" : "none";
 
@@ -2175,7 +1914,7 @@ function showSection(section) {
 
     document.getElementById("photoboothSection").style.display =
     section === "photobooth" ? "block" : "none";
-    
+
     document.getElementById("bucketSection").style.display =
         section === "bucket" ? "block" : "none";
 
@@ -2213,19 +1952,7 @@ function showSection(section) {
     if (section === "stats") {
         loadMonthlyStats();
     }
-// 선택한 메뉴 버튼을 화면 중앙으로 이동
-const activeButton =
-    document.querySelector(
-        `#mainMenu button[onclick="showSection('${section}')"]`
-    );
 
-if (activeButton) {
-    activeButton.scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-        block: "nearest"
-    });
-}
 }
 let statsYear = new Date().getFullYear();
 let statsMonth = new Date().getMonth();
@@ -2253,8 +1980,7 @@ async function loadMonthlyStats() {
 
     // 화면의 월 표시
     document.getElementById("statsMonthTitle").innerText =
-        statsYear + "년 " +
-        (statsMonth + 1) + "월";
+        formatMonth(statsYear, statsMonth);
 
 
     // Supabase에서 해당 월 기록 가져오기
@@ -2340,7 +2066,7 @@ async function loadMonthlyStats() {
 
         placesElement.innerHTML =
             uniquePlaces
-                .map(place => "📍 " + place)
+                .map(place => " " + place)
                 .join("<br>");
     }
 }
@@ -2361,433 +2087,103 @@ function changeStatsMonth(direction) {
     loadMonthlyStats();
 }
 </script>
-    <!-- 데이트 버킷리스트 -->
-<div
-    id="bucketSection"
-    style="
-        display: none;
-        max-width: 700px;
-        margin: 30px auto;
-        padding: 20px;
-        box-sizing: border-box;
-    "
->
-    <h2 style="text-align: center;">
-        💕 우리의 데이트 버킷리스트
-    </h2>
+<!-- 데이트 버킷리스트 -->
+<div class="page" id="bucketSection" style="display: none;">
 
-    <div style="display: flex; gap: 8px; margin-top: 20px;">
-        <input
-            type="text"
-            id="bucketInput"
-            placeholder="하고 싶은 데이트를 적어보세요 ♡"
-            style="
-                flex: 1;
-                padding: 12px;
-                border: 1px solid #eee;
-                border-radius: 10px;
-                font-size: 14px;
-                box-sizing: border-box;
-            "
-        >
-
-        <button
-            type="button"
-            onclick="addBucketItem()"
-            style="
-                padding: 0 15px;
-                border: none;
-                border-radius: 10px;
-                background-color: #f3b6c0;
-                color: white;
-                cursor: pointer;
-            "
-        >
+<div class="editor">
+<input aria-label="하고 싶은 데이트를 적어보세요 ♡" id="bucketInput" placeholder="하고 싶은 데이트를 적어보세요 ♡" type="text"/>
+<button onclick="addBucketItem()" type="button">
             추가
         </button>
-    </div>
-
-    <div id="bucketList" style="margin-top: 15px;"></div>
 </div>
-
+<div id="bucketList"></div>
 </div>
 
 <!-- 지도 화면 -->
-<div
-    id="mapSection"
-    style="
-        display: none;
-        margin: 20px auto;
-        max-width: 700px;
-    "
->
-    <h2 style="text-align: center;">
-        우리의 데이트 장소 ♡
-    </h2>
+<div class="page" id="mapSection" style="display: none;">
 
-    <div
-        id="dateMap"
-        style="
-            width: 100%;
-            height: 500px;
-            border-radius: 15px;
-            overflow: hidden;
-        "
-    ></div>
+<div id="dateMap"></div><div aria-live="polite" class="place-detail" id="placeDetail"><p class="empty-state">마커를 눌러 추억을 확인하세요.</p></div>
 </div>
-
 <!-- 맛집 지도 화면 -->
-<div
-    id="restaurantMapSection"
-    style="
-        display: none;
-        margin: 20px auto;
-        max-width: 700px;
-    "
->
-    <h2 style="text-align: center;">
-        🍽️ 우리의 맛집 ♡
-    </h2>
+<div class="page" id="restaurantMapSection" style="display: none;">
 
-    <div
-        id="restaurantMap"
-        style="
-            width: 100%;
-            height: 500px;
-            border-radius: 15px;
-            overflow: hidden;
-        "
-    ></div>
-    <!-- 새 맛집 기록 -->
-<div
-    style="
-        margin-top: 25px;
-        padding: 20px;
-        background: white;
-        border-radius: 15px;
-    "
->
-    <h3 style="margin-top: 0;">
-        🍴 맛집 기록하기
-    </h3>
+<div id="restaurantMap"></div>
+<!-- 새 맛집 기록 -->
+<div class="editor">
 
-    <!-- 방문 날짜 -->
-    <input
-        type="date"
-        id="restaurantDate"
-        style="
-            width: 100%;
-            padding: 11px;
-            margin-bottom: 12px;
-            border: 1px solid #eee;
-            border-radius: 10px;
-            box-sizing: border-box;
-        "
-    >
+<!-- 방문 날짜 -->
 
-    <!-- 맛집 검색 -->
-    <div style="display: flex; gap: 8px;">
-        <input
-            type="text"
-            id="restaurantPageSearch"
-            placeholder="맛집을 검색해보세요 ♡"
-            style="
-                flex: 1;
-                padding: 11px;
-                border: 1px solid #eee;
-                border-radius: 10px;
-            "
-        >
-
-        <button
-            type="button"
-            onclick="searchRestaurantPage()"
-            style="
-                padding: 0 16px;
-                border: none;
-                border-radius: 10px;
-                background: #f3b6c0;
-                color: white;
-                cursor: pointer;
-            "
-        >
+<!-- 맛집 검색 -->
+<div class="search-row">
+<input aria-label="맛집을 검색해보세요 ♡" id="restaurantPageSearch" placeholder="맛집을 검색해보세요 ♡" type="text"/>
+<button onclick="searchRestaurantPage()" type="button">
             검색
         </button>
-    </div>
-
-    <div
-        id="restaurantPageResults"
-        style="
-            display: none;
-            margin-top: 10px;
-        "
-    ></div>
-
-    <!-- 별점 -->
-    <select
-        id="restaurantPageRating"
-        style="
-            width: 100%;
-            padding: 11px;
-            margin-top: 12px;
-            border: 1px solid #eee;
-            border-radius: 10px;
-            background: white;
-            box-sizing: border-box;
-        "
-    >
-        <option value="">⭐ 별점 선택</option>
-        <option value="5">5.0</option>
-        <option value="4.5">4.5</option>
-        <option value="4">4.0</option>
-        <option value="3.5">3.5</option>
-        <option value="3">3.0</option>
-        <option value="2.5">2.5</option>
-        <option value="2">2.0</option>
-        <option value="1.5">1.5</option>
-        <option value="1">1.0</option>
-        <option value="0.5">0.5</option>
-    </select>
-
-    <!-- 메모 / 한줄평 -->
-    <textarea
-        id="restaurantReview"
-        placeholder="먹은 메뉴나 한줄평을 남겨보세요 ♡"
-        maxlength="300"
-        style="
-            width: 100%;
-            min-height: 80px;
-            padding: 11px;
-            margin-top: 12px;
-            border: 1px solid #eee;
-            border-radius: 10px;
-            resize: vertical;
-            box-sizing: border-box;
-            font-family: inherit;
-        "
-    ></textarea>
-
-    <button
-        type="button"
-        onclick="saveRestaurantPage()"
-        style="
-            width: 100%;
-            padding: 12px;
-            margin-top: 12px;
-            border: none;
-            border-radius: 10px;
-            background: #f3b6c0;
-            color: white;
-            cursor: pointer;
-        "
-    >
-        저장하기 ♡
-    </button>
 </div>
-
-
+<div id="restaurantPageResults" style="display: none;"></div><label class="field-label" for="restaurantDate">Visit Date</label><input id="restaurantDate" type="date"/>
+<!-- 별점 -->
+<label class="field-label" for="restaurantPageRating">Rating</label><select id="restaurantPageRating">
+<option value="">★ 별점 선택</option>
+<option value="5">5.0</option>
+<option value="4.5">4.5</option>
+<option value="4">4.0</option>
+<option value="3.5">3.5</option>
+<option value="3">3.0</option>
+<option value="2.5">2.5</option>
+<option value="2">2.0</option>
+<option value="1.5">1.5</option>
+<option value="1">1.0</option>
+<option value="0.5">0.5</option>
+</select>
+<!-- 메모 / 한줄평 -->
+<label class="field-label" for="restaurantReview">Review</label><textarea id="restaurantReview" maxlength="300" placeholder="먹은 메뉴나 한줄평을 남겨보세요 ♡"></textarea>
+<button class="primary" onclick="saveRestaurantPage()" type="button">저장</button>
+</div>
 <!-- 맛집 목록 -->
-<div style="margin-top: 30px;">
-    <h3>
-        🍽️ 우리가 다녀온 맛집
-    </h3>
-
-    <div id="restaurantList"></div>
+<div>
+<h3>Saved Restaurants</h3>
+<div id="restaurantList"></div>
 </div>
-
 </div>
-
 <!-- 월별 추억 -->
-<div
-    id="statsSection"
-    style="
-        display: none;
-        max-width: 700px;
-        margin: 30px auto;
-        padding: 20px;
-        box-sizing: border-box;
-    "
->
-    <h2 style="text-align: center;">
-        📊 월별 추억
-    </h2>
+<div class="page" id="statsSection" style="display: none;">
 
-    <!-- 월 이동 -->
-    <div
-        style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 25px;
-            margin: 25px 0;
-        "
-    >
-        <button
-            type="button"
-            onclick="changeStatsMonth(-1)"
-            style="
-                border: none;
-                background: none;
-                font-size: 28px;
-                cursor: pointer;
-            "
-        >
+<!-- 월 이동 -->
+<div class="month">
+<button aria-label="Previous month" class="icon-button" onclick="changeStatsMonth(-1)" type="button">
             ‹
         </button>
-
-        <h3
-            id="statsMonthTitle"
-            style="margin: 0;"
-        ></h3>
-
-        <button
-            type="button"
-            onclick="changeStatsMonth(1)"
-            style="
-                border: none;
-                background: none;
-                font-size: 28px;
-                cursor: pointer;
-            "
-        >
+<h3 id="statsMonthTitle"></h3>
+<button aria-label="Next month" class="icon-button" onclick="changeStatsMonth(1)" type="button">
             ›
         </button>
-    </div>
-
-    <!-- 통계 -->
-    <div
-        style="
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        "
-    >
-
-        <div
-            style="
-                padding: 20px;
-                background: #fff7f8;
-                border-radius: 15px;
-                text-align: center;
-            "
-        >
-            <div style="font-size: 24px;">❤️</div>
-            <div
-                id="statsDateCount"
-                style="
-                    font-size: 24px;
-                    font-weight: bold;
-                    margin-top: 8px;
-                "
-            >
+</div>
+<!-- 통계 -->
+<div class="stats-grid">
+<div class="stat-card"><span>Date Days</span><div id="statsDateCount">
                 0일
-            </div>
-            <div style="color: #888;">
-                데이트한 날
-            </div>
-        </div>
-
-        <div
-            style="
-                padding: 20px;
-                background: #fff7f8;
-                border-radius: 15px;
-                text-align: center;
-            "
-        >
-            <div style="font-size: 24px;">📍</div>
-            <div
-                id="statsPlaceCount"
-                style="
-                    font-size: 24px;
-                    font-weight: bold;
-                    margin-top: 8px;
-                "
-            >
+            </div></div>
+<div class="stat-card"><span>Places</span><div id="statsPlaceCount">
                 0곳
-            </div>
-            <div style="color: #888;">
-                방문한 장소
-            </div>
-        </div>
-
-        <div
-            style="
-                padding: 20px;
-                background: #fff7f8;
-                border-radius: 15px;
-                text-align: center;
-            "
-        >
-            <div style="font-size: 24px;">📷</div>
-            <div
-                id="statsPhotoCount"
-                style="
-                    font-size: 24px;
-                    font-weight: bold;
-                    margin-top: 8px;
-                "
-            >
+            </div></div>
+<div class="stat-card"><span>Photo Days</span><div id="statsPhotoCount">
                 0일
-            </div>
-            <div style="color: #888;">
-                사진을 남긴 날
-            </div>
-        </div>
-
-        <div
-            style="
-                padding: 20px;
-                background: #fff7f8;
-                border-radius: 15px;
-                text-align: center;
-            "
-        >
-            <div style="font-size: 24px;">📝</div>
-            <div
-                id="statsMemoCount"
-                style="
-                    font-size: 24px;
-                    font-weight: bold;
-                    margin-top: 8px;
-                "
-            >
+            </div></div>
+<div class="stat-card"><span>Memo Days</span><div id="statsMemoCount">
                 0일
-            </div>
-            <div style="color: #888;">
-                기록을 남긴 날
-            </div>
-        </div>
-
-    </div>
-
-    <!-- 방문한 장소 -->
-    <div
-        style="
-            margin-top: 20px;
-            padding: 20px;
-            background: #fff7f8;
-            border-radius: 15px;
-        "
-    >
-        <h3 style="margin-top: 0;">
-            📍 이번 달 우리가 간 곳
-        </h3>
-
-        <div
-            id="statsPlaces"
-            style="
-                color: #666;
-                line-height: 1.8;
-            "
-        >
+            </div></div>
+</div>
+<!-- 방문한 장소 -->
+<div class="visited-places">
+<h3>Visited Places</h3>
+<div id="statsPlaces">
             아직 기록된 장소가 없어요.
         </div>
-    </div>
-
+</div>
 </div>
 <script>
 async function showMap() {
+    if (!window.kakao?.maps) return showMapUnavailable("dateMap");
 
     const mapSection =
         document.getElementById("mapSection");
@@ -2816,7 +2212,7 @@ async function showMap() {
         await supabaseClient
             .from("memories")
             .select(
-                "date, place_name, place_address, latitude, longitude"
+                "date, text, place_name, place_address, latitude, longitude"
             )
             .not("latitude", "is", null)
             .not("longitude", "is", null);
@@ -2827,7 +2223,7 @@ async function showMap() {
         return;
     }
 
-    console.log("지도에 표시할 장소:", data);
+
 
     // 저장된 장소가 없을 때
     if (!data || data.length === 0) {
@@ -2895,6 +2291,7 @@ async function showMap() {
             "click",
             function() {
 
+                renderPlaceDetail(place);
                 // 다른 정보창 닫기
                 if (openInfoWindow) {
                     openInfoWindow.close();
@@ -2934,6 +2331,7 @@ let restaurantPageLongitude = null;
 let editingRestaurantId = null;
 
 function searchRestaurantPage() {
+    if (!window.kakao?.maps?.services) { alert("지도 서비스를 불러오지 못했어요. 연결을 확인해 주세요."); return; }
 
     const keyword =
         document.getElementById("restaurantPageSearch")
@@ -3194,7 +2592,7 @@ async function loadRestaurantList() {
         </strong>
 
         <span>
-            ⭐ ${restaurant.rating}
+            ★ ${restaurant.rating}
         </span>
     </div>
 
@@ -3401,7 +2799,8 @@ if (editingDatePlanId !== null) {
                 title: title,
                 place: place || null,
                 memo: memo || null,
-                budget: budget ? Number(budget) : null
+                budget: budget ? Number(budget) : null,
+                completed: document.getElementById("planCompleted").checked
             })
             .eq("id", editingDatePlanId);
 
@@ -3418,7 +2817,7 @@ if (editingDatePlanId !== null) {
                 place: place || null,
                 memo: memo || null,
                 budget: budget ? Number(budget) : null,
-                completed: false,
+                completed: document.getElementById("planCompleted").checked,
                 user_id: user.id
             });
 
@@ -3439,6 +2838,7 @@ document.getElementById("planTitle").value = "";
 document.getElementById("planPlace").value = "";
 document.getElementById("planMemo").value = "";
 document.getElementById("planBudget").value = "";
+document.getElementById("planCompleted").checked = false;
 await loadDatePlans();
 
 if (wasEditing) {
@@ -3496,19 +2896,19 @@ card.innerHTML = `
         font-weight: bold;
         margin-bottom: 8px;
     ">
-        ${plan.completed ? "✅" : "💕"}
+        ${plan.completed ? "✓" : ""}
         ${plan.title}
     </div>
 
-    <div>📅 ${plan.plan_date}</div>
+    <div> ${plan.plan_date}</div>
 
     ${plan.place
-        ? `<div>📍 ${plan.place}</div>`
+        ? `<div> ${plan.place}</div>`
         : ""
     }
 
     ${plan.budget !== null
-        ? `<div>💰 ${Number(plan.budget).toLocaleString()}원</div>`
+        ? `<div> ${Number(plan.budget).toLocaleString()}원</div>`
         : ""
     }
 
@@ -3634,6 +3034,7 @@ async function editDatePlan(id) {
     }
 
     editingDatePlanId = id;
+    document.getElementById("planCompleted").checked = Boolean(data.completed);
 
     document.getElementById("planDate").value =
         data.plan_date;
@@ -4024,6 +3425,7 @@ let editingPhotoboothPhotoPath = null;
     document.getElementById("photoboothDate").value = "";
     document.getElementById("photoboothTitle").value = "";
     document.getElementById("photoboothPhoto").value = "";
+document.getElementById("photoboothPhoto").dispatchEvent(new Event("change"));
     document.getElementById("photoboothMemo").value = "";
 
     await loadPhotobooth();
@@ -4190,6 +3592,7 @@ async function editPhotobooth(id) {
         data.memo || "";
 
     document.getElementById("photoboothPhoto").value = "";
+document.getElementById("photoboothPhoto").dispatchEvent(new Event("change"));
 
     document.getElementById("photoboothDate")
         .scrollIntoView({
@@ -4365,7 +3768,15 @@ async function loadWatchedContents() {
         return;
     }
 
+    let lastWatchDate = null;
     data.forEach(content => {
+        if (content.watch_date !== lastWatchDate) {
+            const heading = document.createElement("h3");
+            heading.className = "watch-date";
+            heading.textContent = formatDate(content.watch_date);
+            list.appendChild(heading);
+            lastWatchDate = content.watch_date;
+        }
 
         const card =
             document.createElement("div");
@@ -4389,7 +3800,7 @@ async function loadWatchedContents() {
 
                 ${
                     content.rating !== null
-                        ? `<span>⭐ ${content.rating}</span>`
+                        ? `<span>★ ${content.rating}</span>`
                         : ""
                 }
             </div>
@@ -4518,6 +3929,7 @@ async function editWatchedContent(id) {
         });
 }
 async function showRestaurantMap() {
+    if (!window.kakao?.maps) return showMapUnavailable("restaurantMap");
 
     const mapSection =
         document.getElementById("restaurantMapSection");
@@ -4581,7 +3993,7 @@ async function showRestaurantMap() {
 
         const rating =
             restaurant.rating
-                ? "⭐ " + restaurant.rating
+                ? "★ " + restaurant.rating
                 : "별점 없음";
 
         const infoWindow =
@@ -4674,37 +4086,315 @@ async function showRestaurantMap() {
 
 /* 기존 장소 지도에서 날짜 이동할 때 사용 */
 function moveToDate(date) {
+    const parts = date.split("-").map(Number);
+    currentYear = parts[0]; currentMonth = parts[1] - 1;
 
     showSection("calendar");
     openMemory(date);
 }
 
 </script>
-
 <script>
-async function testSupabase() {
-
-    const { data, error } =
-        await supabaseClient
-            .from("memories")
-            .select("*")
-            .limit(1);
-
-    if (error) {
-        console.error(
-            "Supabase 연결 실패:",
-            error
-        );
-    } else {
-        console.log(
-            "Supabase 연결 성공:",
-            data
-        );
+/* Presentation helpers. Existing Supabase CRUD, auth and private Storage remain in index.html. */
+const pageNames = {
+  home: "Home",
+  calendar: "Calendar",
+  map: "Places",
+  restaurantMap: "Restaurants",
+  datePlan: "Date Planner",
+  watched: "Watched Together",
+  letters: "Letters",
+  photobooth: "Photobooth",
+  bucket: "Bucket List",
+  stats: "Monthly Memories",
+};
+let currentPage = "home";
+let recentPhotoUrl = null;
+let photoboothPreviewUrl = null;
+let authenticated = false;
+let homeLoadVersion = 0;
+function formatMonth(year, month) {
+  return new Date(year, month, 1).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+}
+function formatDate(date) {
+  return new Date(date + "T12:00:00").toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+function closeMenu() {
+  const menu = document.getElementById("mainMenu");
+  if (menu.open) menu.close();
+  document.body.classList.remove("menu-open");
+  document.getElementById("menuButton").setAttribute("aria-expanded", "false");
+}
+function openMenu() {
+  if (!authenticated) return;
+  document.getElementById("mainMenu").showModal();
+  document.body.classList.add("menu-open");
+  document.getElementById("menuButton").setAttribute("aria-expanded", "true");
+}
+function updatePageHeader(section) {
+  if (!pageNames[section]) return;
+  currentPage = section;
+  closeMenu();
+  const header = document.getElementById("appHeader");
+  header.classList.toggle("is-home", section === "home");
+  const title = document.getElementById("pageTitle");
+  if (section === "home") title.innerHTML = "Jinny <span>♥</span> Wangyu";
+  else title.textContent = pageNames[section];
+  document.title = pageNames[section] + " · Jinny ♥ Wangyu";
+  window.scrollTo({ top: 0, behavior: "instant" });
+  if (section === "home") refreshHome();
+  if (section === "calendar") createCalendar();
+}
+function setAuthenticatedUI(signedIn) {
+  const changed = authenticated !== signedIn;
+  authenticated = signedIn;
+  document.body.classList.toggle("authenticated", signedIn);
+  document.getElementById("appHeader").hidden = !signedIn;
+  document.getElementById("loginBox").hidden = signedIn;
+  if (!signedIn) {
+    homeLoadVersion++;
+    closeMenu();
+    document
+      .querySelectorAll(".page")
+      .forEach((el) => (el.style.display = "none"));
+    document
+      .querySelectorAll(
+        "#todayMessages,#datePlanList,#watchedList,#lettersList,#photoboothList,#restaurantList,#bucketList,#statsPlaces",
+      )
+      .forEach((el) => el.replaceChildren());
+    document.getElementById("recentMemory").replaceChildren();
+    document.getElementById("loginPassword").value = "";
+    if (recentPhotoUrl) URL.revokeObjectURL(recentPhotoUrl);
+    recentPhotoUrl = null;
+  } else if (changed) {
+    document.getElementById("loginPassword").value = "";
+    showSection("home");
+  }
+}
+async function refreshHome() {
+  if (!authenticated) return;
+  const version = ++homeLoadVersion;
+  loadTodayMessages();
+  const card = document.getElementById("recentMemory");
+  card.disabled = true;
+  card.onclick = null;
+  card.replaceChildren();
+  const placeholder = document.createElement("span");
+  placeholder.className = "empty-state";
+  placeholder.textContent = "추억을 불러오는 중…";
+  card.append(placeholder);
+  const { data, error } = await supabaseClient
+    .from("memories")
+    .select("date, place_name, text, photos")
+    .order("date", { ascending: false })
+    .limit(1);
+  if (!authenticated || version !== homeLoadVersion) return;
+  if (error || !data?.length) {
+    placeholder.textContent = error
+      ? "추억을 불러오지 못했어요. 다시 Home을 열어주세요."
+      : "아직 저장된 추억이 없어요.";
+    return;
+  }
+  const memory = data[0];
+  if (recentPhotoUrl) URL.revokeObjectURL(recentPhotoUrl);
+  recentPhotoUrl = null;
+  if (memory.photos?.length) {
+    const { data: photo, error: photoError } = await supabaseClient.storage
+      .from("photos")
+      .createSignedUrl(memory.photos[0], 3600);
+    if (!authenticated || version !== homeLoadVersion) return;
+    if (!photoError && photo?.signedUrl) {
+      const image = document.createElement("img");
+      image.alt = "최근 추억 사진";
+      image.src = photo.signedUrl;
+      image.addEventListener("error", () => image.remove(), { once: true });
+      card.append(image);
     }
+  }
+  placeholder.remove();
+  const copy = document.createElement("span");
+  copy.className = "recent-copy";
+  const title = document.createElement("strong");
+  title.textContent =
+    formatDate(memory.date) +
+    (memory.place_name ? " · " + memory.place_name : "");
+  copy.append(title);
+  if (memory.text) {
+    const memo = document.createElement("p");
+    memo.textContent = memory.text;
+    copy.append(memo);
+  }
+  card.append(copy);
+  card.disabled = false;
+  card.onclick = () => moveToDate(memory.date);
+}
+function renderPlaceDetail(place) {
+  const detail = document.getElementById("placeDetail");
+  detail.replaceChildren();
+  const button = document.createElement("button");
+  button.type = "button";
+  button.onclick = () => moveToDate(place.date);
+  const title = document.createElement("strong");
+  title.textContent = place.place_name;
+  const arrow = document.createElement("span");
+  arrow.textContent = "›";
+  arrow.setAttribute("aria-hidden", "true");
+  title.append(arrow);
+  const date = document.createElement("time");
+  date.dateTime = place.date;
+  date.textContent = formatDate(place.date);
+  const memo = document.createElement("p");
+  memo.textContent = place.text || "";
+  button.append(title, date, memo);
+  detail.append(button);
+}
+function resizeTextarea(el) {
+  el.style.height = "auto";
+  el.style.height = Math.max(el.scrollHeight, 110) + "px";
+}
+document
+  .querySelectorAll("textarea")
+  .forEach((el) => el.addEventListener("input", () => resizeTextarea(el)));
+// Adjust loaded values and keyboard accessibility without changing the data loaders.
+const originalOpenMemory = openMemory;
+openMemory = async function (date) {
+  await originalOpenMemory(date);
+  document.getElementById("selectedDate").textContent = formatDate(date);
+  document.getElementById("photoInput").value = "";
+  document
+    .getElementById("heartButton")
+    .setAttribute("aria-pressed", String(heartActive));
+  resizeTextarea(document.getElementById("memoryText"));
+  document
+    .querySelectorAll(".day")
+    .forEach((day) =>
+      day.classList.toggle(
+        "selected",
+        Number(day.firstChild?.textContent) === Number(date.slice(-2)),
+      ),
+    );
+};
+const originalUpdateHeart = updateHeartButton;
+updateHeartButton = function () {
+  originalUpdateHeart();
+  document
+    .getElementById("heartButton")
+    .setAttribute("aria-pressed", String(heartActive));
+};
+new MutationObserver(() => {
+  document.querySelectorAll(".day:not([tabindex])").forEach((day) => {
+    day.tabIndex = 0;
+    day.setAttribute("role", "button");
+    day.setAttribute(
+      "aria-label",
+      formatDate(
+        `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day.firstChild.textContent).padStart(2, "0")}`,
+      ),
+    );
+    day.onkeydown = (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        day.click();
+      }
+    };
+  });
+}).observe(document.getElementById("days"), { childList: true });
+document
+  .getElementById("photoboothPhoto")
+  .addEventListener("change", (event) => {
+    const preview = document.getElementById("photoboothPreview");
+    preview.replaceChildren();
+    if (photoboothPreviewUrl) URL.revokeObjectURL(photoboothPreviewUrl);
+    photoboothPreviewUrl = null;
+    const file = event.target.files[0];
+    if (!file) return;
+    photoboothPreviewUrl = URL.createObjectURL(file);
+    const img = document.createElement("img");
+    img.src = photoboothPreviewUrl;
+    img.alt = "선택한 포토부스 사진";
+    preview.append(img);
+  });
+document.getElementById("messageForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  saveTodayMessage();
+});
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!supabaseClient) {
+    document.getElementById("loginMessage").textContent =
+      "로그인 서비스를 불러오지 못했어요. 연결을 확인한 뒤 새로고침해 주세요.";
+    return;
+  }
+  const button = document.getElementById("loginButton");
+  button.disabled = true;
+  button.textContent = "Logging in…";
+  document.getElementById("loginMessage").textContent = "";
+  try {
+    await login();
+  } catch {
+    document.getElementById("loginMessage").textContent =
+      "로그인에 연결하지 못했어요. 다시 시도해 주세요.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Login";
+  }
+});
+document.getElementById("mainMenu").addEventListener("close", () => {
+  document.body.classList.remove("menu-open");
+  document.getElementById("menuButton").setAttribute("aria-expanded", "false");
+});
+// Initialize only after all markup and original functions are available; no private queries before auth.
+(async () => {
+  if (!supabaseClient) {
+    document.getElementById("loginMessage").textContent =
+      "로그인 서비스를 불러오지 못했어요. 연결을 확인한 뒤 새로고침해 주세요.";
+    return;
+  }
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT") setAuthenticatedUI(false);
+    else if (event === "SIGNED_IN")
+      setTimeout(() => setAuthenticatedUI(Boolean(session?.user)), 0);
+  });
+  try {
+    const {
+      data: { user },
+      error,
+    } = await supabaseClient.auth.getUser();
+    setAuthenticatedUI(Boolean(user) && !error);
+  } catch {
+    setAuthenticatedUI(false);
+  }
+})();
+
+const originalEditPhotobooth = editPhotobooth;
+editPhotobooth = async function (id) {
+  await originalEditPhotobooth(id);
+  if (!editingPhotoboothPhotoPath) return;
+  const { data, error } = await supabaseClient.storage
+    .from("photos")
+    .createSignedUrl(editingPhotoboothPhotoPath, 3600);
+  if (error || !data?.signedUrl) return;
+  const image = document.createElement("img");
+  image.src = data.signedUrl;
+  image.alt = "저장된 포토부스 사진";
+  document.getElementById("photoboothPreview").replaceChildren(image);
+};
+
+function showMapUnavailable(id) {
+  const container = document.getElementById(id);
+  const message = document.createElement("p");
+  message.className = "empty-state";
+  message.textContent =
+    "지도를 불러오지 못했어요. 연결을 확인한 뒤 새로고침해 주세요.";
+  container.replaceChildren(message);
 }
 
-testSupabase();
-</script>
-
-</body>
+</script></body>
 </html>
