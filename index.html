@@ -762,13 +762,124 @@ body.menu-open {
   }
 }
 
-</style></head>
+/* Additive settings, clock and private account connection UI. */
+.home-clock {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--secondary);
+  font-size: 11px;
+  padding: 10px 0 0;
+}
+.settings-link {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 22px 0;
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+  color: #666;
+  font-size: 13px;
+}
+.settings-card {
+  padding: 22px;
+  margin-bottom: 18px;
+  overflow-wrap: anywhere;
+}
+.settings-card h2 {
+  margin-bottom: 12px;
+}
+.settings-card p {
+  font-size: 12px;
+  color: var(--secondary);
+}
+.helper-text {
+  font-size: 12px;
+  color: var(--secondary);
+  margin: 12px 0;
+}
+.settings-card #logoutButton {
+  width: 100%;
+  text-align: left;
+  color: #666;
+  padding: 0;
+}
+.recent-activity {
+  font-size: 12px;
+  margin-top: 32px;
+  color: #666;
+}
+.recent-activity summary {
+  cursor: pointer;
+}
+.recent-activity #activityList {
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  margin-top: 12px;
+}
+.recent-activity p {
+  padding: 5px 0;
+}
+#loginBox {
+  grid-template-columns: minmax(0, 342px);
+  align-content: center;
+  gap: 20px;
+}
+.account-link {
+  max-width: 342px;
+  width: 100%;
+  font-size: 12px;
+  color: #888;
+}
+.account-link summary {
+  cursor: pointer;
+  text-align: center;
+}
+.account-link p {
+  margin: 12px 0;
+  line-height: 1.7;
+}
+.account-link label {
+  display: block;
+  margin: 12px 0 6px;
+}
+.account-link input,
+.account-link select {
+  color: #000;
+}
+#linkMessage {
+  overflow-wrap: anywhere;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+#recentMemory:disabled {
+  cursor: default;
+}
+.page :is(p, div, strong, span) {
+  overflow-wrap: anywhere;
+}
+.page
+  :is(#lettersList, #datePlanList, #watchedList, #restaurantList)
+  [style*="margin-top"] {
+  white-space: pre-wrap;
+}
+
+</style><meta name="theme-color" content="#FAF9F7"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Our Memories"/>
+<link rel="manifest" href="./manifest.webmanifest"/>
+</head>
 <body>
-<main class="login-screen" id="loginBox"><form class="login-form" id="loginForm"><h1 class="brand">Jinny <span>♥</span> Wangyu</h1><label class="sr-only" for="loginEmail">Email</label><input autocomplete="username" id="loginEmail" placeholder="Email" required="" type="email"/><label class="sr-only" for="loginPassword">Password</label><input autocomplete="current-password" id="loginPassword" placeholder="Password" required="" type="password"/><button class="primary" id="loginButton" type="submit">Login</button><p aria-live="polite" id="loginMessage" role="status"></p></form></main>
+<main class="login-screen" id="loginBox"><form class="login-form" id="loginForm"><h1 class="brand">Jinny <span>♥</span> Wangyu</h1><label class="sr-only" for="loginEmail">ID</label><input autocomplete="username" id="loginEmail" placeholder="ID · wangyu / jinny" required="" type="text" autocapitalize="none" spellcheck="false"/><label class="sr-only" for="loginPassword">Password</label><input autocomplete="current-password" id="loginPassword" placeholder="Password" required="" type="password"/><button class="primary" id="loginButton" type="submit">Login</button><p aria-live="polite" id="loginMessage" role="status"></p></form>
+<details id="accountLink" class="account-link"><summary>이 기기의 기존 계정 연결</summary><p>처음 한 번만 연결하세요. 기존 계정과 비밀번호를 그대로 사용합니다.</p><form id="linkAccountForm"><label for="linkAlias">ID</label><select id="linkAlias"><option value="wangyu">wangyu</option><option value="jinny">jinny</option></select><label for="linkEmail">기존 이메일 · 입력 내용은 숨겨집니다</label><input id="linkEmail" type="password" inputmode="email" autocomplete="off" required/><label for="linkPassword">Password</label><input id="linkPassword" type="password" autocomplete="current-password" required/><button class="primary" type="submit">계정 연결 후 로그인</button><p id="linkMessage" role="status"></p></form></details></main>
 <!-- 제목 -->
 
 <!-- 메뉴 -->
-<header hidden="" id="appHeader"><button aria-label="Home" class="icon-button" id="homeButton" onclick="showSection('home')">‹</button><h1 class="brand" id="pageTitle">Jinny <span>♥</span> Wangyu</h1><button aria-controls="mainMenu" aria-expanded="false" aria-label="Open menu" class="icon-button" id="menuButton" onclick="openMenu()">☰</button></header><dialog aria-label="Menu" id="mainMenu"><div class="menu-header"><span class="brand">Jinny <span>♥</span> Wangyu</span><button aria-label="Close menu" class="icon-button" onclick="closeMenu()">×</button></div><nav aria-label="Main navigation"><button onclick="showSection('calendar')">Calendar<span aria-hidden="true">›</span></button><button onclick="showSection('map')">Places<span aria-hidden="true">›</span></button><button onclick="showSection('restaurantMap')">Restaurants<span aria-hidden="true">›</span></button><button onclick="showSection('datePlan')">Date Planner<span aria-hidden="true">›</span></button><button onclick="showSection('watched')">Watched Together<span aria-hidden="true">›</span></button><button onclick="showSection('letters')">Letters<span aria-hidden="true">›</span></button><button onclick="showSection('photobooth')">Photobooth<span aria-hidden="true">›</span></button><button onclick="showSection('bucket')">Bucket List<span aria-hidden="true">›</span></button><button onclick="showSection('stats')">Monthly Memories<span aria-hidden="true">›</span></button></nav></dialog>
+<header hidden="" id="appHeader"><button aria-label="Home" class="icon-button" id="homeButton" onclick="showSection('home')">‹</button><h1 class="brand" id="pageTitle">Jinny <span>♥</span> Wangyu</h1><button aria-controls="mainMenu" aria-expanded="false" aria-label="Open menu" class="icon-button" id="menuButton" onclick="openMenu()">☰</button></header><dialog aria-label="Menu" id="mainMenu"><div class="menu-header"><span class="brand">Jinny <span>♥</span> Wangyu</span><button aria-label="Close menu" class="icon-button" onclick="closeMenu()">×</button></div><nav aria-label="Main navigation"><button onclick="showSection('calendar')">Calendar<span aria-hidden="true">›</span></button><button onclick="showSection('map')">Places<span aria-hidden="true">›</span></button><button onclick="showSection('restaurantMap')">Restaurants<span aria-hidden="true">›</span></button><button onclick="showSection('datePlan')">Date Planner<span aria-hidden="true">›</span></button><button onclick="showSection('watched')">Watched Together<span aria-hidden="true">›</span></button><button onclick="showSection('letters')">Letters<span aria-hidden="true">›</span></button><button onclick="showSection('photobooth')">Photobooth<span aria-hidden="true">›</span></button><button onclick="showSection('bucket')">Bucket List<span aria-hidden="true">›</span></button><button onclick="showSection('stats')">Monthly Memories<span aria-hidden="true">›</span></button></nav><button class="settings-link" onclick="showSection('settings')">Settings <span aria-hidden="true">›</span></button></dialog>
 <!-- 데이트 플래너 -->
 <div class="page" id="datePlanSection" style="display: none;">
 
@@ -849,7 +960,7 @@ body.menu-open {
 <h3 class="list-heading">Saved Photos</h3><div id="photoboothList"></div>
 </div>
 <!-- 첫 화면 -->
-<main class="home-page page" id="homeSection" style="display:none"><div class="together"><p>Always Together</p><h2 id="dDayCount"></h2><p class="anniversary">2026.02.19 —</p></div><div class="home-grid editor"><section class="message-card card"><h2>Today's Message</h2><div aria-live="polite" id="todayMessages"></div><form class="message-compose" id="messageForm"><label class="sr-only" for="todayMessageInput">Today's message</label><input id="todayMessageInput" maxlength="100" placeholder="오늘의 한마디"/><button aria-label="Save message" class="icon-button" type="submit">↗</button></form></section><section class="recent-section"><h2>Recent Memory</h2><button class="recent-memory card" disabled="" id="recentMemory"><span class="empty-state">아직 저장된 추억이 없어요.</span></button></section></div></main>
+<main class="home-page page" id="homeSection" style="display:none"><div class="home-clock" aria-label="Current time in Seoul"><time id="homeDate"></time><time id="homeTime"></time></div><div class="together"><p>Always Together</p><h2 id="dDayCount"></h2><p class="anniversary">2026.02.19 —</p></div><div class="home-grid editor"><section class="message-card card"><h2>Today's Message</h2><div aria-live="polite" id="todayMessages"></div><form class="message-compose" id="messageForm"><label class="sr-only" for="todayMessageInput">Today's message</label><input id="todayMessageInput" maxlength="100" placeholder="오늘의 한마디"/><button aria-label="Save message" class="icon-button" type="submit">↗</button></form></section><section class="recent-section"><h2>Recent Memory</h2><button class="recent-memory card" disabled="" id="recentMemory"><span class="empty-state">아직 저장된 추억이 없어요.</span></button></section></div><details id="recentActivity" class="recent-activity"><summary>Recent Activity</summary><div id="activityList" aria-live="polite"></div></details></main>
 <!-- 캘린더 -->
 <div class="page calendar" id="calendarSection">
 <!-- 월 이동 -->
@@ -891,35 +1002,7 @@ body.menu-open {
         SUPABASE_URL,
         SUPABASE_KEY
     ) : null;
-    async function checkUser() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-
-    if (user) {
-
-    } else {
-
-    }
-}
-
-
-    async function login() {
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-    });
-
-    if (error || !data?.user) {
-        document.getElementById("loginMessage").textContent =
-            "이메일 또는 비밀번호가 맞지 않아요.";
-        return;
-    }
-
-
-setAuthenticatedUI(true);
-}
+    async function login() { return AppAuth.login(); }
 </script>
 <script>
 
@@ -936,6 +1019,11 @@ setAuthenticatedUI(true);
 
         // 현재 선택한 사진들
         let selectedPhotos = [];
+        let savedMemoryPhotoPaths = [];
+        let savedMemoryPreviewUrls = [];
+        let newMemoryPhotoData = [];
+        let memoryPhotosLoaded = false;
+        let memoryLoadVersion = 0;
         // 현재 선택한 장소
 let selectedPlaceName = "";
 let selectedPlaceAddress = "";
@@ -987,7 +1075,7 @@ async function createCalendar() {
 
 
     if (error) {
-        console.error("하트 불러오기 실패:", error);
+        reportOperationError();
     }
 
 
@@ -1115,6 +1203,11 @@ async function createCalendar() {
         }
 
         async function openMemory(date) {
+    const openVersion = ++memoryLoadVersion;
+    memoryPhotosLoaded = false;
+    savedMemoryPhotoPaths = [];
+    savedMemoryPreviewUrls = [];
+    newMemoryPhotoData = [];
 
     selectedDate = date;
 
@@ -1138,8 +1231,9 @@ async function createCalendar() {
         .eq("date", date)
         .limit(1);
 
+    if (openVersion !== memoryLoadVersion) return;
     if (error) {
-        console.error("메모 불러오기 실패:", error);
+        reportOperationError();
         alert("메모를 불러오지 못했어요.");
         return;
     }
@@ -1184,12 +1278,12 @@ async function createCalendar() {
                 background:#fff7f8;
                 border-radius:10px;
             ">
-                <strong>${selectedPlaceName}</strong><br>
+                <strong>${escapeHTML(selectedPlaceName)}</strong><br>
                 <span style="
                     font-size:13px;
                     color:#888;
                 ">
-                    ${selectedPlaceAddress}
+                    ${escapeHTML(selectedPlaceAddress)}
                 </span>
             </div>
         `;
@@ -1231,11 +1325,14 @@ const { data: memoryData, error: photoError } =
         .eq("date", date)
         .limit(1);
 
+if (openVersion !== memoryLoadVersion) return;
+memoryPhotosLoaded = !photoError;
 if (photoError) {
-    console.error("사진 정보 불러오기 실패:", photoError);
+    reportOperationError();
     selectedPhotos = [];
 } else if (memoryData && memoryData.length > 0) {
     const photoNames = memoryData[0].photos || [];
+    savedMemoryPhotoPaths = photoNames.slice();
 
     selectedPhotos = [];
 
@@ -1246,8 +1343,9 @@ if (photoError) {
                 .from("photos")
                 .download(fileName);
 
+        if (openVersion !== memoryLoadVersion) return;
         if (imageError) {
-            console.error("사진 다운로드 실패:", imageError);
+            reportOperationError();
             continue;
         }
 
@@ -1258,6 +1356,7 @@ if (photoError) {
     selectedPhotos = [];
 }
 
+savedMemoryPreviewUrls = selectedPhotos.slice();
 updateHeartButton();
 showSavedPhotos();
 }
@@ -1307,7 +1406,9 @@ showSavedPhotos();
                 Array.from(input.files);
 
 
-            selectedPhotos = [];
+            selectedPhotos = savedMemoryPreviewUrls.slice();
+             newMemoryPhotoData = [];
+             showPhotos();
 
 
             files.forEach(function(file) {
@@ -1317,6 +1418,7 @@ showSavedPhotos();
 
 
                 reader.onload = function(event) {
+                    newMemoryPhotoData.push(event.target.result);
 
                     selectedPhotos.push(
                         event.target.result
@@ -1405,10 +1507,10 @@ function searchPlace() {
             item.style.cursor = "pointer";
 
             item.innerHTML = `
-                <strong>${place.place_name}</strong>
+                <strong>${escapeHTML(place.place_name)}</strong>
                 <br>
                 <span style="font-size:13px; color:#888;">
-                    ${place.road_address_name || place.address_name}
+                    ${escapeHTML(place.road_address_name || place.address_name)}
                 </span>
             `;
 
@@ -1428,9 +1530,9 @@ function searchPlace() {
                         background:#fff7f8;
                         border-radius:10px;
                     ">
-                        <strong>${selectedPlaceName}</strong><br>
+                        <strong>${escapeHTML(selectedPlaceName)}</strong><br>
                         <span style="font-size:13px; color:#888;">
-                            ${selectedPlaceAddress}
+                            ${escapeHTML(selectedPlaceAddress)}
                         </span>
                     </div>
                 `;
@@ -1443,35 +1545,35 @@ function searchPlace() {
     });
 }
 async function saveMemory() {
+    if (!selectedDate || !memoryPhotosLoaded) { alert("기존 사진 정보를 확인하지 못했어요. 날짜를 다시 연 뒤 저장해 주세요. 입력한 내용은 유지됩니다."); return; }
 
     const text = document.getElementById("memoryText").value;
 
     try {
         // 1. 사진을 Supabase Storage에 업로드
-        const uploadedPhotos = [];
+        const uploadedPhotos = savedMemoryPhotoPaths.slice();
 
-        for (let i = 0; i < selectedPhotos.length; i++) {
-            const photo = selectedPhotos[i];
+        for (let i = 0; i < newMemoryPhotoData.length; i++) {
+            const photo = newMemoryPhotoData[i];
 
             const response = await fetch(photo);
             const blob = await response.blob();
 
-            const fileName =
-                selectedDate + "-" +
-                Date.now() + "-" +
-                i + ".jpg";
+            const photoType = blob.type || "application/octet-stream";
+            const photoExtension = ({"image/jpeg":"jpg","image/png":"png","image/webp":"webp","image/gif":"gif","image/heic":"heic","image/heif":"heif","image/avif":"avif"})[photoType] || "bin";
+            const fileName = selectedDate + "-" + uniquePhotoId() + "-" + i + "." + photoExtension;
 
             const { error: uploadError } =
                 await supabaseClient
                     .storage
                     .from("photos")
                     .upload(fileName, blob, {
-                        contentType: "image/jpeg",
-                        upsert: true
+                        contentType: photoType,
+                        upsert: false
                     });
 
             if (uploadError) {
-                console.error(uploadError);
+                reportOperationError();
                 alert("사진 업로드 실패");
                 return;
             }
@@ -1494,7 +1596,7 @@ if (!user) {
                 .limit(1);
 
         if (selectError) {
-            console.error(selectError);
+            reportOperationError();
             alert("Supabase 확인 실패");
             return;
         }
@@ -1518,7 +1620,7 @@ if (!user) {
                     .eq("id", existing[0].id)
 
             if (error) {
-                console.error(error);
+                reportOperationError();
                 alert("Supabase 저장 실패");
                 return;
             }
@@ -1544,25 +1646,23 @@ if (!user) {
 });
 
             if (error) {
-                console.error(error);
+                reportOperationError();
                 alert("Supabase 저장 실패");
                 return;
             }
         }
 
+        savedMemoryPhotoPaths = uploadedPhotos.slice();
+        savedMemoryPreviewUrls = selectedPhotos.slice();
+        newMemoryPhotoData = [];
+        document.getElementById("photoInput").value = "";
         alert("기록이 저장됐어요 ♡");
         createCalendar();
 
   } catch (error) {
-    console.error("저장 오류:", error);
+    reportOperationError();
 
-    alert(
-        "저장 중 오류가 발생했어요.\n\n" +
-        "오류 내용: " +
-        (error && error.message
-            ? error.message
-            : String(error))
-    );
+    alert("저장 중 오류가 발생했어요. 연결과 접근 권한을 확인해 주세요.");
 }
 }
         // =========================
@@ -1602,7 +1702,7 @@ async function loadBucketList() {
             .order("created_at", { ascending: true });
 
     if (error) {
-        console.error("버킷리스트 불러오기 실패:", error);
+        reportOperationError();
         return;
     }
 
@@ -1639,7 +1739,7 @@ async function loadBucketList() {
                 flex: 1;
                 ${item.done ? "text-decoration: line-through; color: #aaa;" : ""}
             ">
-                ${item.title}
+                ${escapeHTML(item.title)}
             </span>
 
             <button
@@ -1682,8 +1782,8 @@ async function addBucketItem() {
             });
 
     if (error) {
-        console.error("버킷리스트 추가 실패:", error);
-        alert(error.message);
+        reportOperationError();
+        alert("요청을 처리하지 못했어요. 연결과 접근 권한을 확인해 주세요.");
         return;
     }
 
@@ -1704,7 +1804,7 @@ async function toggleBucketItem(id, currentDone) {
             .eq("id", id);
 
     if (error) {
-        console.error("버킷리스트 수정 실패:", error);
+        reportOperationError();
         return;
     }
 
@@ -1721,7 +1821,7 @@ async function deleteBucketItem(id) {
             .eq("id", id);
 
     if (error) {
-        console.error("버킷리스트 삭제 실패:", error);
+        reportOperationError();
         return;
     }
 
@@ -1736,33 +1836,18 @@ async function deleteBucketItem(id) {
             .eq("id", id);
 
     if (error) {
-        console.error("버킷리스트 삭제 실패:", error);
+        reportOperationError();
         return;
     }
 
     loadBucketList();
 }
 function updateDDay() {
-
-    const startDate = new Date(2026, 1, 19);
-    const today = new Date();
-
-    startDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-
-    const difference =
-        today.getTime() - startDate.getTime();
-
-    const days =
-        Math.floor(
-            difference / (1000 * 60 * 60 * 24)
-        ) + 1;
-
-    document.getElementById("dDayCount")
-        .innerText = "D+" + days;
+    const days = relationshipDays();
+    document.getElementById("dDayCount").innerText = "D+" + days;
 }
 
-updateDDay();
+// Clock and D-Day initialize together after all helpers are available.
 
 async function saveTodayMessage() {
     const input =
@@ -1785,7 +1870,7 @@ async function saveTodayMessage() {
     }
 
     const today =
-        new Date().toLocaleDateString("en-CA");
+        seoulISODate();
 
     const { data: existing, error: selectError } =
         await supabaseClient
@@ -1796,7 +1881,7 @@ async function saveTodayMessage() {
             .maybeSingle();
 
     if (selectError) {
-        console.error(selectError);
+        reportOperationError();
         alert("저장 중 오류가 발생했어요.");
         return;
     }
@@ -1827,7 +1912,7 @@ async function saveTodayMessage() {
     }
 
     if (error) {
-        console.error(error);
+        reportOperationError();
         alert("저장 중 오류가 발생했어요.");
         return;
     }
@@ -1837,7 +1922,7 @@ async function saveTodayMessage() {
 }
 async function loadTodayMessages() {
     const today =
-        new Date().toLocaleDateString("en-CA");
+        seoulISODate();
 
     const { data, error } =
         await supabaseClient
@@ -1847,7 +1932,7 @@ async function loadTodayMessages() {
             .order("created_at", { ascending: true });
 
     if (error) {
-        console.error("오늘의 한마디 불러오기 실패:", error);
+        reportOperationError();
         return;
     }
 
@@ -1863,13 +1948,7 @@ async function loadTodayMessages() {
     box.innerHTML = "";
 
     data.forEach(function(item) {
-        let writerName = "우리";
-
-if (item.user_id === "dc099596-d847-492c-953b-ef785f20dc56") {
-    writerName = "Jinny";
-} else if (item.user_id === "9ba029ee-bbf3-4dd6-948b-7c72460e0ccc") {
-    writerName = "Wangyu";
-}
+        const writerName = getWriterName(item);
         const message =
             document.createElement("div");
 
@@ -1882,6 +1961,17 @@ if (item.user_id === "dc099596-d847-492c-953b-ef785f20dc56") {
             writerName + " : " + item.message;
         box.appendChild(message);
     });
+}
+
+function getWriterName(item) {
+        let writerName = "우리";
+
+if (item.user_id === "dc099596-d847-492c-953b-ef785f20dc56") {
+    writerName = "Jinny";
+} else if (item.user_id === "9ba029ee-bbf3-4dd6-948b-7c72460e0ccc") {
+    writerName = "Wangyu";
+}
+    return writerName;
 }
 
 function showSection(section) {
@@ -1920,6 +2010,9 @@ function showSection(section) {
     document.getElementById("statsSection").style.display =
         section === "stats" ? "block" : "none";
 
+
+    document.getElementById("settingsSection").style.display = section === "settings" ? "block" : "none";
+    if (section === "settings") renderSettings();
 
     // 각 화면 필요한 데이터 불러오기
 
@@ -1994,7 +2087,7 @@ async function loadMonthlyStats() {
 
 
     if (error) {
-        console.error("월별 추억 불러오기 실패:", error);
+        reportOperationError();
         return;
     }
 
@@ -2065,7 +2158,7 @@ async function loadMonthlyStats() {
 
         placesElement.innerHTML =
             uniquePlaces
-                .map(place => " " + place)
+                .map(place => escapeHTML(place))
                 .join("<br>");
     }
 }
@@ -2217,7 +2310,7 @@ async function showMap() {
             .not("longitude", "is", null);
 
     if (error) {
-        console.error("장소 불러오기 실패:", error);
+        reportOperationError();
         alert("장소를 불러오지 못했어요.");
         return;
     }
@@ -2253,7 +2346,7 @@ async function showMap() {
             new kakao.maps.InfoWindow({
                 content: `
                     <div
-                        onclick="moveToDate('${place.date}')"
+                        onclick="moveToDate(${safeJSArgument(place.date)})"
                         style="
                             padding:12px;
                             font-size:13px;
@@ -2261,10 +2354,10 @@ async function showMap() {
                             cursor:pointer;
                         "
                     >
-                        <strong>${place.place_name}</strong>
+                        <strong>${escapeHTML(place.place_name)}</strong>
                         <br>
                         <span style="color:#888;">
-                            ${place.place_address || ""}
+                            ${escapeHTML(place.place_address || "")}
                         </span>
                         <br>
                         <span style="
@@ -2272,7 +2365,7 @@ async function showMap() {
                             display:inline-block;
                             margin-top:5px;
                         ">
-                            ${place.date}
+                            ${escapeHTML(place.date)}
                         </span>
                         <br>
                         <span style="
@@ -2374,13 +2467,13 @@ function searchRestaurantPage() {
             item.style.cursor = "pointer";
 
             item.innerHTML = `
-                <strong>${place.place_name}</strong>
+                <strong>${escapeHTML(place.place_name)}</strong>
                 <br>
                 <span style="
                     font-size: 13px;
                     color: #888;
                 ">
-                    ${place.road_address_name || place.address_name}
+                    ${escapeHTML(place.road_address_name || place.address_name)}
                 </span>
             `;
 
@@ -2409,13 +2502,13 @@ function searchRestaurantPage() {
                         background: #fff7f8;
                         border-radius: 10px;
                     ">
-                        <strong>${restaurantPageName}</strong>
+                        <strong>${escapeHTML(restaurantPageName)}</strong>
                         <br>
                         <span style="
                             font-size: 13px;
                             color: #888;
                         ">
-                            ${restaurantPageAddress}
+                            ${escapeHTML(restaurantPageAddress)}
                         </span>
                     </div>
                 `;
@@ -2502,7 +2595,7 @@ async function saveRestaurantPage() {
     }
 
     if (error) {
-        console.error("맛집 저장 실패:", error);
+        reportOperationError();
         alert("맛집 저장 중 오류가 발생했어요.");
         return;
     }
@@ -2546,7 +2639,7 @@ async function loadRestaurantList() {
             .order("visit_date", { ascending: false });
 
     if (error) {
-        console.error("맛집 목록 불러오기 실패:", error);
+        reportOperationError();
         return;
     }
 
@@ -2587,7 +2680,7 @@ async function loadRestaurantList() {
         gap: 10px;
     ">
         <strong>
-            ${restaurant.name}
+            ${escapeHTML(restaurant.name)}
         </strong>
 
         <span>
@@ -2600,7 +2693,7 @@ async function loadRestaurantList() {
         font-size: 13px;
         color: #888;
     ">
-        ${restaurant.visit_date}
+        ${escapeHTML(restaurant.visit_date)}
     </div>
 
     <div style="
@@ -2608,7 +2701,7 @@ async function loadRestaurantList() {
         font-size: 13px;
         color: #aaa;
     ">
-        ${restaurant.address || ""}
+        ${escapeHTML(restaurant.address || "")}
     </div>
 
     ${
@@ -2618,7 +2711,7 @@ async function loadRestaurantList() {
                     margin-top: 10px;
                     font-size: 14px;
                 ">
-                    ${restaurant.review}
+                    ${escapeHTML(restaurant.review)}
                 </div>
             `
             : ""
@@ -2673,7 +2766,7 @@ async function editRestaurant(id) {
             .single();
 
     if (error) {
-        console.error("맛집 불러오기 실패:", error);
+        reportOperationError();
         alert("맛집 정보를 불러오지 못했어요.");
         return;
     }
@@ -2739,7 +2832,7 @@ async function deleteRestaurant(id) {
             .eq("id", id);
 
     if (error) {
-        console.error("맛집 삭제 실패:", error);
+        reportOperationError();
         alert("삭제 중 오류가 발생했어요.");
         return;
     }
@@ -2751,6 +2844,7 @@ async function deleteRestaurant(id) {
 }
 let editingDatePlanId = null;
 async function saveDatePlan() {
+
 
     const planDate =
         document.getElementById("planDate").value;
@@ -2824,7 +2918,7 @@ if (editingDatePlanId !== null) {
 }
 
     if (error) {
-        console.error("데이트 계획 저장 실패:", error);
+        reportOperationError();
         alert("저장 중 오류가 발생했어요.");
         return;
     }
@@ -2855,7 +2949,7 @@ async function loadDatePlans() {
             .order("plan_date", { ascending: true });
 
     if (error) {
-        console.error("데이트 계획 불러오기 실패:", error);
+        reportOperationError();
         return;
     }
 
@@ -2896,13 +2990,13 @@ card.innerHTML = `
         margin-bottom: 8px;
     ">
         ${plan.completed ? "✓" : ""}
-        ${plan.title}
+        ${escapeHTML(plan.title)}
     </div>
 
-    <div> ${plan.plan_date}</div>
+    <div> ${escapeHTML(plan.plan_date)}</div>
 
     ${plan.place
-        ? `<div> ${plan.place}</div>`
+        ? `<div> ${escapeHTML(plan.place)}</div>`
         : ""
     }
 
@@ -2915,7 +3009,7 @@ card.innerHTML = `
         ? `<div style="
             margin-top: 10px;
             color: #666;
-        ">${plan.memo}</div>`
+        ">${escapeHTML(plan.memo)}</div>`
         : ""
     }
 
@@ -2985,7 +3079,7 @@ async function toggleDatePlanCompleted(id, currentCompleted) {
             .eq("id", id);
 
     if (error) {
-        console.error("데이트 완료 상태 변경 실패:", error);
+        reportOperationError();
         alert("변경 중 오류가 발생했어요.");
         return;
     }
@@ -3008,7 +3102,7 @@ async function deleteDatePlan(id) {
             .eq("id", id);
 
     if (error) {
-        console.error("데이트 계획 삭제 실패:", error);
+        reportOperationError();
         alert("삭제 중 오류가 발생했어요.");
         return;
     }
@@ -3027,7 +3121,7 @@ async function editDatePlan(id) {
             .single();
 
     if (error) {
-        console.error("데이트 계획 불러오기 실패:", error);
+        reportOperationError();
         alert("데이트 계획을 불러오지 못했어요.");
         return;
     }
@@ -3121,7 +3215,7 @@ async function saveLetter() {
     }
 
     if (error) {
-        console.error("편지 저장 실패:", error);
+        reportOperationError();
         alert("편지 저장 중 오류가 발생했어요.");
         return;
     }
@@ -3153,7 +3247,7 @@ async function loadLetters() {
             .order("letter_date", { ascending: false });
 
     if (error) {
-        console.error("편지 불러오기 실패:", error);
+        reportOperationError();
         return;
     }
 
@@ -3189,7 +3283,7 @@ async function loadLetters() {
 
         card.innerHTML = `
             <strong style="font-size:18px;">
-                💌 ${letter.title}
+                💌 ${escapeHTML(letter.title)}
             </strong>
 
             <div style="
@@ -3197,14 +3291,14 @@ async function loadLetters() {
                 font-size:13px;
                 color:#888;
             ">
-                ${letter.letter_date} · ${letter.writer_name}
+                ${escapeHTML(letter.letter_date)} · ${escapeHTML(letter.writer_name)}
             </div>
 
             <div style="
                 margin-top:12px;
                 white-space:pre-wrap;
                 line-height:1.7;
-            ">${letter.content}</div>
+            ">${escapeHTML(letter.content)}</div>
             <div style="
     text-align:right;
     margin-top:12px;
@@ -3252,7 +3346,7 @@ async function editLetter(id) {
             .single();
 
     if (error) {
-        console.error("편지 불러오기 실패:", error);
+        reportOperationError();
         alert("편지를 불러오지 못했어요.");
         return;
     }
@@ -3295,7 +3389,7 @@ async function deleteLetter(id) {
             .eq("id", id);
 
     if (error) {
-        console.error("편지 삭제 실패:", error);
+        reportOperationError();
         alert("삭제 중 오류가 발생했어요.");
         return;
     }
@@ -3348,7 +3442,7 @@ let editingPhotoboothPhotoPath = null;
             file.name.split(".").pop();
 
         const fileName =
-            `photobooth-${Date.now()}.${extension}`;
+            `photobooth-${uniquePhotoId()}.${extension}`;
 
         const { error: uploadError } =
             await supabaseClient.storage
@@ -3356,7 +3450,7 @@ let editingPhotoboothPhotoPath = null;
                 .upload(fileName, file);
 
         if (uploadError) {
-            console.error("사진 업로드 실패:", uploadError);
+            reportOperationError();
             alert("사진 업로드 중 오류가 발생했어요.");
             return;
         }
@@ -3398,11 +3492,12 @@ let editingPhotoboothPhotoPath = null;
     }
 
     if (error) {
-        console.error("포토부스 저장 실패:", error);
+        reportOperationError();
         alert("저장 중 오류가 발생했어요.");
         return;
     }
 
+    let photoCleanupFailed = false;
     // 사진을 교체했다면 기존 사진 삭제
     if (
         editingPhotoboothId !== null &&
@@ -3410,9 +3505,10 @@ let editingPhotoboothPhotoPath = null;
         editingPhotoboothPhotoPath &&
         editingPhotoboothPhotoPath !== photoPath
     ) {
-        await supabaseClient.storage
+        const {error: cleanupError} = await supabaseClient.storage
             .from("photos")
             .remove([editingPhotoboothPhotoPath]);
+        photoCleanupFailed = Boolean(cleanupError);
     }
 
     const wasEditing =
@@ -3430,7 +3526,7 @@ document.getElementById("photoboothPhoto").dispatchEvent(new Event("change"));
     await loadPhotobooth();
 
     if (wasEditing) {
-        alert("포토부스 기록을 수정했어요 ♡");
+        alert(photoCleanupFailed ? "기록은 수정했지만 이전 사진 파일을 정리하지 못했어요. 저장소 권한 확인이 필요합니다." : "포토부스 기록을 수정했어요 ♡");
     } else {
         alert("포토부스 사진을 저장했어요 ♡");
     }
@@ -3444,7 +3540,7 @@ async function loadPhotobooth() {
             .order("photo_date", { ascending: false });
 
     if (error) {
-        console.error("포토부스 불러오기 실패:", error);
+        reportOperationError();
         return;
     }
 
@@ -3474,7 +3570,7 @@ async function loadPhotobooth() {
                 .createSignedUrl(photo.photo_path, 3600);
 
         if (signedError) {
-            console.error("사진 URL 생성 실패:", signedError);
+            reportOperationError();
             continue;
         }
 
@@ -3490,7 +3586,7 @@ async function loadPhotobooth() {
 
         card.innerHTML = `
             <img
-                src="${signedData.signedUrl}"
+                src="${escapeHTML(signedData.signedUrl)}"
                 style="
                     width:100%;
                     max-height:500px;
@@ -3504,7 +3600,7 @@ async function loadPhotobooth() {
                 font-weight:bold;
                 margin-top:12px;
             ">
-                ${photo.title}
+                ${escapeHTML(photo.title)}
             </div>
 
             <div style="
@@ -3512,7 +3608,7 @@ async function loadPhotobooth() {
                 color:#888;
                 margin-top:5px;
             ">
-                ${photo.photo_date}
+                ${escapeHTML(photo.photo_date)}
             </div>
 
             ${
@@ -3522,7 +3618,7 @@ async function loadPhotobooth() {
                             margin-top:10px;
                             white-space:pre-wrap;
                         ">
-                            ${photo.memo}
+                            ${escapeHTML(photo.memo)}
                         </div>
                     `
                     : ""
@@ -3547,7 +3643,7 @@ async function loadPhotobooth() {
 
     <button
         type="button"
-        onclick="deletePhotobooth(${photo.id}, '${photo.photo_path}')"
+        onclick="deletePhotobooth(${safeJSArgument(photo.id)}, ${safeJSArgument(photo.photo_path)})"
         style="
             border:none;
             background:none;
@@ -3573,7 +3669,7 @@ async function editPhotobooth(id) {
             .single();
 
     if (error) {
-        console.error("포토부스 불러오기 실패:", error);
+        reportOperationError();
         alert("기록을 불러오지 못했어요.");
         return;
     }
@@ -3617,11 +3713,12 @@ async function deletePhotobooth(id, photoPath) {
             .eq("id", id);
 
     if (error) {
-        console.error("포토부스 삭제 실패:", error);
+        reportOperationError();
         alert("삭제 중 오류가 발생했어요.");
         return;
     }
 
+    let photoCleanupFailed = false;
     if (photoPath) {
         const { error: storageError } =
             await supabaseClient.storage
@@ -3629,13 +3726,14 @@ async function deletePhotobooth(id, photoPath) {
                 .remove([photoPath]);
 
         if (storageError) {
-            console.error("사진 파일 삭제 실패:", storageError);
+            photoCleanupFailed = true;
+            reportOperationError();
         }
     }
 
     await loadPhotobooth();
 
-    alert("포토부스 기록을 삭제했어요.");
+    alert(photoCleanupFailed ? "기록은 삭제했지만 사진 파일은 정리하지 못했어요. 저장소 권한 확인이 필요합니다." : "포토부스 기록을 삭제했어요.");
 }
 async function saveWatchedContent() {
 
@@ -3714,7 +3812,7 @@ if (editingWatchedContentId !== null) {
 }
 
     if (error) {
-        console.error("같이 본 것 저장 실패:", error);
+        reportOperationError();
         alert("저장 중 오류가 발생했어요.");
         return;
     }
@@ -3742,10 +3840,11 @@ async function loadWatchedContents() {
         await supabaseClient
             .from("watched_contents")
             .select("*")
-            .order("watch_date", { ascending: false });
+            .order("watch_date", { ascending: false })
+            .order("id", { ascending: false });
 
     if (error) {
-        console.error("같이 본 기록 불러오기 실패:", error);
+        reportOperationError();
         return;
     }
 
@@ -3794,7 +3893,7 @@ async function loadWatchedContents() {
                 gap: 10px;
             ">
                 <strong>
-                    ${content.title}
+                    ${escapeHTML(content.title)}
                 </strong>
 
                 ${
@@ -3809,7 +3908,7 @@ async function loadWatchedContents() {
                 font-size: 13px;
                 color: #888;
             ">
-                ${content.content_type} · ${content.watch_date}
+                ${escapeHTML(content.content_type)} · ${escapeHTML(content.watch_date)}
             </div>
 
             ${
@@ -3819,7 +3918,7 @@ async function loadWatchedContents() {
                             margin-top: 10px;
                             font-size: 14px;
                         ">
-                            ${content.review}
+                            ${escapeHTML(content.review)}
                         </div>
                     `
                     : ""
@@ -3880,7 +3979,7 @@ async function deleteWatchedContent(id) {
             .eq("id", id);
 
     if (error) {
-        console.error("같이 본 기록 삭제 실패:", error);
+        reportOperationError();
         alert("삭제 중 오류가 발생했어요.");
         return;
     }
@@ -3899,7 +3998,7 @@ async function editWatchedContent(id) {
             .single();
 
     if (error) {
-        console.error("같이 본 기록 불러오기 실패:", error);
+        reportOperationError();
         alert("기록을 불러오지 못했어요.");
         return;
     }
@@ -3962,7 +4061,7 @@ async function showRestaurantMap() {
             .not("longitude", "is", null);
 
     if (error) {
-        console.error("맛집 불러오기 실패:", error);
+        reportOperationError();
         alert("맛집을 불러오지 못했어요.");
         return;
     }
@@ -4006,12 +4105,12 @@ async function showRestaurantMap() {
                         "
                     >
                         <strong>
-                            ${restaurant.name}
+                            ${escapeHTML(restaurant.name)}
                         </strong>
                         <br>
 
                         <span style="color:#888;">
-                            ${restaurant.address || ""}
+                            ${escapeHTML(restaurant.address || "")}
                         </span>
                         <br>
 
@@ -4028,7 +4127,7 @@ async function showRestaurantMap() {
                             display:inline-block;
                             margin-top:5px;
                         ">
-                            ${restaurant.visit_date}
+                            ${escapeHTML(restaurant.visit_date)}
                         </span>
 
                         ${
@@ -4039,7 +4138,7 @@ async function showRestaurantMap() {
                                         display:inline-block;
                                         margin-top:7px;
                                     ">
-                                        ${restaurant.review}
+                                        ${escapeHTML(restaurant.review.slice(0,120))}
                                     </span>
                                 `
                                 : ""
@@ -4106,9 +4205,9 @@ const pageNames = {
   photobooth: "Photobooth",
   bucket: "Bucket List",
   stats: "Monthly Memories",
+  settings: "Settings",
 };
 let currentPage = "home";
-let recentPhotoUrl = null;
 let photoboothPreviewUrl = null;
 let authenticated = false;
 let homeLoadVersion = 0;
@@ -4148,7 +4247,8 @@ function updatePageHeader(section) {
   else title.textContent = pageNames[section];
   document.title = pageNames[section] + " · Jinny ♥ Wangyu";
   window.scrollTo({ top: 0, behavior: "instant" });
-  if (section === "home") refreshHome();
+  if (section === "home") { refreshHome(); updateHomeClock(); }
+  document.querySelectorAll(".page textarea").forEach(el => { if (el.offsetParent) resizeTextarea(el); });
   if (section === "calendar") createCalendar();
 }
 function setAuthenticatedUI(signedIn) {
@@ -4158,6 +4258,7 @@ function setAuthenticatedUI(signedIn) {
   document.getElementById("appHeader").hidden = !signedIn;
   document.getElementById("loginBox").hidden = signedIn;
   if (!signedIn) {
+    if (typeof PrivateSession !== "undefined") PrivateSession.invalidate();
     homeLoadVersion++;
     closeMenu();
     document
@@ -4170,11 +4271,10 @@ function setAuthenticatedUI(signedIn) {
       .forEach((el) => el.replaceChildren());
     document.getElementById("recentMemory").replaceChildren();
     document.getElementById("loginPassword").value = "";
-    if (recentPhotoUrl) URL.revokeObjectURL(recentPhotoUrl);
-    recentPhotoUrl = null;
   } else if (changed) {
     document.getElementById("loginPassword").value = "";
     showSection("home");
+    updateHomeClock();
   }
 }
 async function refreshHome() {
@@ -4191,7 +4291,7 @@ async function refreshHome() {
   card.append(placeholder);
   const { data, error } = await supabaseClient
     .from("memories")
-    .select("date, place_name, text, photos")
+    .select("date, place_name, text")
     .order("date", { ascending: false })
     .limit(1);
   if (!authenticated || version !== homeLoadVersion) return;
@@ -4202,21 +4302,6 @@ async function refreshHome() {
     return;
   }
   const memory = data[0];
-  if (recentPhotoUrl) URL.revokeObjectURL(recentPhotoUrl);
-  recentPhotoUrl = null;
-  if (memory.photos?.length) {
-    const { data: photo, error: photoError } = await supabaseClient.storage
-      .from("photos")
-      .createSignedUrl(memory.photos[0], 3600);
-    if (!authenticated || version !== homeLoadVersion) return;
-    if (!photoError && photo?.signedUrl) {
-      const image = document.createElement("img");
-      image.alt = "최근 추억 사진";
-      image.src = photo.signedUrl;
-      image.addEventListener("error", () => image.remove(), { once: true });
-      card.append(image);
-    }
-  }
   placeholder.remove();
   const copy = document.createElement("span");
   copy.className = "recent-copy";
@@ -4265,6 +4350,7 @@ document
 const originalOpenMemory = openMemory;
 openMemory = async function (date) {
   await originalOpenMemory(date);
+  if (selectedDate !== date) return;
   document.getElementById("selectedDate").textContent = formatDate(date);
   document.getElementById("photoInput").value = "";
   document
@@ -4384,6 +4470,616 @@ function showMapUnavailable(id) {
   message.textContent =
     "지도를 불러오지 못했어요. 연결을 확인한 뒤 새로고침해 주세요.";
   container.replaceChildren(message);
+}
+
+</script><section id="settingsSection" class="page" style="display:none"><section class="settings-card card"><h2>Notifications</h2><p id="notificationStatus" role="status"></p><button id="enableNotifications" class="primary" type="button">알림 켜기</button><p class="helper-text">권한은 버튼을 눌렀을 때만 요청합니다.</p></section><section class="settings-card card"><h2>Export Data</h2><p class="helper-text">접근이 허용된 기록을 JSON으로 저장합니다. 사진은 경로와 메타데이터를 포함합니다.</p><button id="exportDataButton" class="primary" type="button">Export Data</button><p id="exportStatus" role="status"></p></section><section class="settings-card card"><button id="logoutButton" type="button">Logout</button><p id="logoutStatus" role="status"></p></section></section>
+<script>
+/* Additive features. No service credential values are read or copied here. */
+const APP_OPTIONS = Object.freeze({
+  timeZone: "Asia/Seoul",
+  push: Object.freeze({ publicKey: "", subscriptionStorageReady: false }),
+});
+function uniquePhotoId() {
+  return typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) =>
+        b.toString(16).padStart(2, "0"),
+      ).join("");
+}
+function escapeHTML(value) {
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    (char) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        char
+      ],
+  );
+}
+function safeJSArgument(value) {
+  return escapeHTML(JSON.stringify(value));
+}
+function reportOperationError() {
+  /* Never print backend responses or credentials. Existing operation feedback remains visible. */
+}
+const PrivateSession = {
+  version: 0,
+  invalidate() {
+    this.version++;
+    document.getElementById("activityList")?.replaceChildren();
+    document.getElementById("exportStatus").textContent = "";
+  },
+  assert(version) {
+    if (!authenticated || version !== this.version)
+      throw new Error("Session changed");
+  },
+};
+const AppAuth = {
+  aliasStorageKey: "our-memories.account-aliases.v1",
+  aliases: Object.freeze(["wangyu", "jinny"]),
+  user: null,
+  normalize(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase();
+  },
+  readAliases() {
+    try {
+      const data = JSON.parse(
+        localStorage.getItem(this.aliasStorageKey) || "{}",
+      );
+      return data && typeof data === "object" && !Array.isArray(data)
+        ? data
+        : {};
+    } catch {
+      return {};
+    }
+  },
+  resolve(alias) {
+    const normalized = this.normalize(alias);
+    if (!this.aliases.includes(normalized)) return null;
+    const email = this.readAliases()[normalized];
+    return typeof email === "string" && email.includes("@") ? email : null;
+  },
+  async authenticate(email, password) {
+    if (!supabaseClient) throw new Error("Authentication unavailable");
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error || !data?.user) return false;
+    this.user = data.user;
+    return true;
+  },
+  async login() {
+    const alias = this.normalize(document.getElementById("loginEmail").value);
+    const email = this.resolve(alias);
+    if (!email) {
+      document.getElementById("loginMessage").textContent =
+        this.aliases.includes(alias)
+          ? "이 기기에서 먼저 기존 계정을 연결해 주세요."
+          : "ID는 wangyu 또는 jinny를 입력해 주세요.";
+      document.getElementById("accountLink").open = true;
+      if (this.aliases.includes(alias))
+        document.getElementById("linkAlias").value = alias;
+      return;
+    }
+    const success = await this.authenticate(
+      email,
+      document.getElementById("loginPassword").value,
+    );
+    if (!success) {
+      document.getElementById("loginMessage").textContent =
+        "ID 또는 비밀번호가 맞지 않아요.";
+      return;
+    }
+    setAuthenticatedUI(true);
+  },
+  async requireUser() {
+    if (!authenticated) throw new Error("Login required");
+    const { data, error } = await supabaseClient.auth.getUser();
+    if (error || !data?.user) {
+      this.user = null;
+      setAuthenticatedUI(false);
+      throw new Error("Login required");
+    }
+    return data.user;
+  },
+  async logout() {
+    let pushWarning = false;
+    try {
+      await PushSetup.disconnect();
+    } catch {
+      pushWarning = true;
+    }
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) {
+      document.getElementById("logoutStatus").textContent =
+        "로그아웃하지 못했어요. 다시 시도해 주세요.";
+      return;
+    }
+    this.user = null;
+    setAuthenticatedUI(false);
+    document.querySelectorAll(".page input,.page textarea").forEach((el) => {
+      if (el.type === "checkbox") el.checked = false;
+      else el.value = "";
+    });
+    document.getElementById("photoPreview").replaceChildren();
+    document.getElementById("photoboothPreview").replaceChildren();
+    document.getElementById("placeDetail").replaceChildren();
+    document.getElementById("loginMessage").textContent = pushWarning
+      ? "로그아웃했습니다. 알림 해제 상태는 기기 설정에서 확인해 주세요."
+      : "";
+  },
+};
+document
+  .getElementById("linkAccountForm")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const button = event.currentTarget.querySelector("button");
+    if (button.disabled) return;
+    button.disabled = true;
+    const alias = AppAuth.normalize(document.getElementById("linkAlias").value);
+    const email = document.getElementById("linkEmail").value.trim();
+    const password = document.getElementById("linkPassword").value;
+    const message = document.getElementById("linkMessage");
+    message.textContent = "연결 중…";
+    try {
+      if (
+        !AppAuth.aliases.includes(alias) ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      ) {
+        message.textContent = "기존 이메일과 ID를 확인해 주세요.";
+        return;
+      }
+      if (!(await AppAuth.authenticate(email, password))) {
+        message.textContent = "기존 계정과 비밀번호를 확인해 주세요.";
+        return;
+      }
+      let retained = true;
+      try {
+        const aliases = AppAuth.readAliases();
+        aliases[alias] = email;
+        localStorage.setItem(AppAuth.aliasStorageKey, JSON.stringify(aliases));
+      } catch {
+        retained = false;
+      }
+      document.getElementById("loginEmail").value = alias;
+      document.getElementById("accountLink").open = false;
+      message.textContent = retained
+        ? "연결했습니다."
+        : "기기 저장이 제한되어 다음 접속 때 다시 연결해야 합니다.";
+      setAuthenticatedUI(true);
+    } catch {
+      message.textContent =
+        "계정을 연결하지 못했어요. 네트워크를 확인해 주세요.";
+    } finally {
+      document.getElementById("linkEmail").value = "";
+      document.getElementById("linkPassword").value = "";
+      button.disabled = false;
+    }
+  });
+function seoulDateParts(now = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: APP_OPTIONS.timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const fields = Object.fromEntries(
+    parts.map((part) => [part.type, part.value]),
+  );
+  return {
+    year: Number(fields.year),
+    month: Number(fields.month),
+    day: Number(fields.day),
+  };
+}
+function seoulISODate(now = new Date()) {
+  const p = seoulDateParts(now);
+  return `${p.year}-${String(p.month).padStart(2, "0")}-${String(p.day).padStart(2, "0")}`;
+}
+function relationshipDays(now = new Date()) {
+  const { year, month, day } = seoulDateParts(now);
+  return (
+    Math.floor(
+      (Date.UTC(year, month - 1, day) - Date.UTC(2026, 1, 19)) / 86400000,
+    ) + 1
+  );
+}
+function nextRelationshipMilestone(now = new Date()) {
+  const days = relationshipDays(now);
+  const hundred = (Math.floor(days / 100) + 1) * 100;
+  const { year } = seoulDateParts(now);
+  let anniversaryYear = year;
+  let anniversaryDays =
+    (Date.UTC(anniversaryYear, 1, 19) - Date.UTC(2026, 1, 19)) / 86400000 + 1;
+  if (anniversaryDays <= days) {
+    anniversaryYear++;
+    anniversaryDays =
+      (Date.UTC(anniversaryYear, 1, 19) - Date.UTC(2026, 1, 19)) / 86400000 + 1;
+  }
+  return hundred <= anniversaryDays
+    ? { type: "hundred", day: hundred, remaining: hundred - days }
+    : {
+        type: "anniversary",
+        years: anniversaryYear - 2026,
+        remaining: anniversaryDays - days,
+      };
+}
+function updateHomeClock(now = new Date()) {
+  const date = document.getElementById("homeDate");
+  const time = document.getElementById("homeTime");
+  date.textContent = new Intl.DateTimeFormat("en-US", {
+    timeZone: APP_OPTIONS.timeZone,
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(now);
+  time.textContent = new Intl.DateTimeFormat("en-US", {
+    timeZone: APP_OPTIONS.timeZone,
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(now);
+  date.dateTime = now.toISOString();
+  time.dateTime = now.toISOString();
+  document.getElementById("dDayCount").textContent =
+    "D+" + relationshipDays(now);
+}
+const initialSeoulDate = seoulDateParts();
+currentYear = initialSeoulDate.year;
+currentMonth = initialSeoulDate.month - 1;
+statsYear = currentYear;
+statsMonth = currentMonth;
+updateHomeClock();
+setInterval(() => updateHomeClock(), 60000);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) updateHomeClock();
+});
+function renderSettings() {
+  renderNotificationStatus();
+  document.getElementById("logoutStatus").textContent = "";
+}
+const PushSetup = {
+  async worker() {
+    if (!("serviceWorker" in navigator) || !window.isSecureContext)
+      throw new Error("Worker unavailable");
+    return navigator.serviceWorker.register("./sw.js", { scope: "./" });
+  },
+  supported() {
+    return (
+      window.isSecureContext &&
+      "serviceWorker" in navigator &&
+      "PushManager" in window &&
+      "Notification" in window
+    );
+  },
+  standalone() {
+    return (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      navigator.standalone === true
+    );
+  },
+  async enable() {
+    if (!authenticated) return;
+    const status = document.getElementById("notificationStatus");
+    if (!this.supported()) {
+      status.textContent =
+        "이 브라우저에서는 웹 알림을 지원하지 않습니다. iPhone은 Safari에서 홈 화면에 추가한 뒤 열어 주세요.";
+      return;
+    }
+    const ios =
+      /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (ios && !this.standalone()) {
+      status.textContent =
+        "Safari의 공유 → 홈 화면에 추가 후 앱에서 다시 열어 주세요.";
+      return;
+    }
+    // Request immediately within the user gesture, never on load or after network awaits.
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      renderNotificationStatus();
+      return;
+    }
+    if (
+      !APP_OPTIONS.push.publicKey ||
+      !APP_OPTIONS.push.subscriptionStorageReady
+    ) {
+      status.textContent =
+        "알림 권한을 허용했습니다. 실제 알림 전송은 서버 설정 후 사용할 수 있습니다.";
+      return;
+    }
+    const user = await AppAuth.requireUser();
+    const version = PrivateSession.version;
+    const registration = await this.worker();
+    await navigator.serviceWorker.ready;
+    const key = APP_OPTIONS.push.publicKey
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+    const bytes = Uint8Array.from(
+      atob(key + "=".repeat((4 - (key.length % 4)) % 4)),
+      (c) => c.charCodeAt(0),
+    );
+    const subscription =
+      (await registration.pushManager.getSubscription()) ||
+      (await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: bytes,
+      }));
+    try {
+      PrivateSession.assert(version);
+      const payload = subscription.toJSON();
+      const { error } = await supabaseClient
+        .from("push_subscriptions")
+        .upsert(
+          {
+            user_id: user.id,
+            endpoint: payload.endpoint,
+            p256dh: payload.keys.p256dh,
+            auth: payload.keys.auth,
+          },
+          { onConflict: "endpoint" },
+        );
+      if (error) throw new Error("Cannot store subscription");
+      PrivateSession.assert(version);
+      status.textContent = "이 기기의 알림을 켰습니다.";
+    } catch (error) {
+      await subscription.unsubscribe();
+      throw error;
+    }
+  },
+  async disconnect() {
+    if (!("serviceWorker" in navigator)) return;
+    const registration = await navigator.serviceWorker.getRegistration("./");
+    const subscription = await registration?.pushManager?.getSubscription();
+    if (!subscription) return;
+    let storeError = false;
+    if (APP_OPTIONS.push.subscriptionStorageReady) {
+      const { error } = await supabaseClient
+        .from("push_subscriptions")
+        .delete()
+        .eq("endpoint", subscription.endpoint);
+      storeError = Boolean(error);
+    }
+    const removed = await subscription.unsubscribe();
+    if (!removed || storeError) throw new Error("Cannot fully disconnect");
+  },
+};
+function renderNotificationStatus() {
+  const status = document.getElementById("notificationStatus");
+  if (!PushSetup.supported()) {
+    status.textContent =
+      "알림은 지원되는 브라우저·홈 화면 앱에서 사용할 수 있습니다.";
+    return;
+  }
+  status.textContent =
+    Notification.permission === "denied"
+      ? "알림이 차단되어 있습니다. 기기 설정에서 변경해 주세요."
+      : Notification.permission === "granted"
+        ? "알림 권한이 허용되어 있습니다. 실제 전송은 서버 설정이 필요합니다."
+        : "아직 알림 권한을 요청하지 않았습니다.";
+}
+document
+  .getElementById("enableNotifications")
+  .addEventListener("click", async () => {
+    const button = document.getElementById("enableNotifications");
+    button.disabled = true;
+    try {
+      await PushSetup.enable();
+    } catch {
+      document.getElementById("notificationStatus").textContent =
+        "알림 설정을 완료하지 못했어요. 연결과 기기 설정을 확인해 주세요.";
+    } finally {
+      button.disabled = false;
+    }
+  });
+document.getElementById("logoutButton").addEventListener("click", async () => {
+  const button = document.getElementById("logoutButton");
+  if (button.disabled) return;
+  button.disabled = true;
+  try {
+    await AppAuth.logout();
+  } catch {
+    document.getElementById("logoutStatus").textContent =
+      "로그아웃하지 못했어요. 다시 시도해 주세요.";
+  } finally {
+    button.disabled = false;
+  }
+});
+const EXPORT_TABLES = Object.freeze([
+  "memories",
+  "restaurants",
+  "date_plans",
+  "watched_contents",
+  "letters",
+  "photobooth",
+  "date_bucket_list",
+  "daily_messages",
+]);
+async function collectExportData() {
+  await AppAuth.requireUser();
+  const version = PrivateSession.version;
+  const result = {
+    format: "our-memories",
+    version: 1,
+    exported_at: new Date().toISOString(),
+    photos: "metadata-and-paths-only",
+    tables: {},
+  };
+  for (const table of EXPORT_TABLES) {
+    const rows = [];
+    for (let start = 0; ; start += 500) {
+      if (start >= 100000) throw new Error("Export too large");
+      const { data, error } = await supabaseClient
+        .from(table)
+        .select("*")
+        .order("id", { ascending: true })
+        .range(start, start + 499);
+      PrivateSession.assert(version);
+      if (error || !Array.isArray(data)) throw new Error("Export incomplete");
+      rows.push(...data);
+      if (data.length < 500) break;
+    }
+    result.tables[table] = rows;
+  }
+  await AppAuth.requireUser();
+  PrivateSession.assert(version);
+  return result;
+}
+document
+  .getElementById("exportDataButton")
+  .addEventListener("click", async () => {
+    const button = document.getElementById("exportDataButton");
+    if (button.disabled) return;
+    button.disabled = true;
+    const status = document.getElementById("exportStatus");
+    status.textContent = "기록을 준비하는 중…";
+    let url;
+    try {
+      const data = await collectExportData();
+      url = URL.createObjectURL(
+        new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }),
+      );
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download =
+        "our-memories-" + new Date().toISOString().slice(0, 10) + ".json";
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      status.textContent =
+        "백업 파일을 저장했습니다. 개인 기록이므로 안전한 곳에 보관해 주세요.";
+    } catch {
+      status.textContent = authenticated
+        ? "전체 기록을 백업하지 못했어요. 연결과 접근 권한을 확인해 주세요."
+        : "다시 로그인한 뒤 백업해 주세요.";
+    } finally {
+      if (url) setTimeout(() => URL.revokeObjectURL(url), 1000);
+      button.disabled = false;
+    }
+  });
+const ACTIVITY_SOURCES = Object.freeze([
+  { table: "memories", label: "추억을 남겼어요" },
+  { table: "restaurants", label: "맛집을 남겼어요" },
+  { table: "date_plans", label: "데이트 계획을 남겼어요" },
+  { table: "watched_contents", label: "같이 본 기록을 남겼어요" },
+  { table: "letters", label: "편지를 남겼어요" },
+  { table: "photobooth", label: "사진을 남겼어요" },
+]);
+async function loadRecentActivity() {
+  if (!authenticated) return;
+  const version = PrivateSession.version;
+  const container = document.getElementById("activityList");
+  container.textContent = "불러오는 중…";
+  const results = await Promise.all(
+    ACTIVITY_SOURCES.map(async (source) => {
+      try {
+        const { data, error } = await supabaseClient
+          .from(source.table)
+          .select("created_at,user_id")
+          .order("created_at", { ascending: false })
+          .limit(5);
+        return error
+          ? []
+          : (data || [])
+              .filter((row) => Number.isFinite(Date.parse(row.created_at)))
+              .map((row) => ({ ...row, label: source.label }));
+      } catch {
+        return [];
+      }
+    }),
+  );
+  if (!authenticated || version !== PrivateSession.version) return;
+  container.replaceChildren();
+  const activity = results
+    .flat()
+    .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+    .slice(0, 5);
+  if (!activity.length) {
+    container.textContent = "표시할 최근 활동이 없어요.";
+    return;
+  }
+  for (const item of activity) {
+    const row = document.createElement("p");
+    row.textContent = getWriterName(item) + " · " + item.label;
+    container.append(row);
+  }
+}
+document
+  .getElementById("recentActivity")
+  .addEventListener("toggle", (event) => {
+    if (event.currentTarget.open) loadRecentActivity();
+  });
+// Prevent duplicate mutations and uploads. Original validation and success feedback are retained.
+const activeMutations = new Set();
+for (const name of [
+  "saveMemory",
+  "saveTodayMessage",
+  "saveRestaurantPage",
+  "saveDatePlan",
+  "saveWatchedContent",
+  "saveLetter",
+  "savePhotobooth",
+  "addBucketItem",
+  "toggleBucketItem",
+  "toggleDatePlanCompleted",
+  "deleteBucketItem",
+  "deleteRestaurant",
+  "deleteDatePlan",
+  "deleteWatchedContent",
+  "deleteLetter",
+  "deletePhotobooth",
+]) {
+  const original = window[name];
+  window[name] = async function (...args) {
+    if (activeMutations.has(name) || !authenticated) return;
+    if (name === "deleteBucketItem" && !confirm("이 항목을 삭제할까요?"))
+      return;
+    activeMutations.add(name);
+    const selectors = ['button[onclick^="' + name + '("]'];
+    if (name === "saveTodayMessage") selectors.push("#messageForm button");
+    const buttons = [...document.querySelectorAll(selectors.join(","))];
+    const states = buttons.map((button) => ({
+      button,
+      text: button.textContent,
+      disabled: button.disabled,
+    }));
+    states.forEach(({ button }) => {
+      button.disabled = true;
+      if (name.startsWith("save") || name === "addBucketItem")
+        button.textContent = "Saving…";
+    });
+    try {
+      await AppAuth.requireUser();
+      return await original(...args);
+    } catch {
+      if (authenticated)
+        alert("요청을 완료하지 못했어요. 연결과 접근 권한을 확인해 주세요.");
+    } finally {
+      activeMutations.delete(name);
+      states.forEach(({ button, text, disabled }) => {
+        button.disabled = disabled;
+        button.textContent = text;
+      });
+    }
+  };
+}
+for (const name of [
+  "editDatePlan",
+  "editLetter",
+  "editWatchedContent",
+  "editPhotobooth",
+  "editRestaurant",
+]) {
+  const original = window[name];
+  window[name] = async function (...args) {
+    if (!authenticated) return;
+    await original(...args);
+    document.querySelectorAll(".page textarea").forEach((el) => {
+      if (el.offsetParent) resizeTextarea(el);
+    });
+  };
 }
 
 </script></body>
