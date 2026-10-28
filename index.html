@@ -861,12 +861,13 @@ button:disabled {
 .page :is(p, div, strong, span) {
   overflow-wrap: anywhere;
 }
-.page
-  :is(#lettersList, #datePlanList, #watchedList, #restaurantList)
-  [style*="margin-top"] {
-  white-space: pre-wrap;
-}
+.record-text { white-space: pre-wrap; }
 
+body{position:relative;isolation:isolate}body.home-cover-visible::before{content:"";position:fixed;inset:0;z-index:-1;background-image:linear-gradient(rgba(250,249,247,.82),rgba(250,249,247,.9)),var(--home-cover);background-position:center;background-size:cover;pointer-events:none}#homeCoverPreview:empty{display:none}#homeCoverPreview img{width:100%;max-height:220px;object-fit:cover;border-radius:14px;margin-top:14px}#changePasswordForm input{border:1px solid var(--line)}
+/* Compact record cards; whitespace between action buttons is layout, not content. */
+:is(#restaurantList,#watchedList,#datePlanList)>div{padding:14px 16px!important;margin-bottom:10px!important}
+:is(#restaurantList,#watchedList,#datePlanList) .record-actions{display:flex!important;justify-content:flex-end;align-items:center;gap:4px;white-space:normal!important;margin-top:8px!important;line-height:normal}
+:is(#restaurantList,#watchedList,#datePlanList) .record-actions button{margin:0!important;padding:6px 8px!important;min-height:32px;flex:0 0 auto;white-space:nowrap}
 </style><meta name="theme-color" content="#FAF9F7"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
@@ -2707,17 +2708,15 @@ async function loadRestaurantList() {
     ${
         restaurant.review
             ? `
-                <div style="
+                <div class="record-text" style="
                     margin-top: 10px;
                     font-size: 14px;
-                ">
-                    ${escapeHTML(restaurant.review)}
-                </div>
+                ">${escapeHTML(restaurant.review)}</div>
             `
             : ""
     }
 
-<div style="
+<div class="record-actions" style="
     text-align: right;
     margin-top: 12px;
 ">
@@ -3006,14 +3005,14 @@ card.innerHTML = `
     }
 
     ${plan.memo
-        ? `<div style="
+        ? `<div class="record-text" style="
             margin-top: 10px;
             color: #666;
         ">${escapeHTML(plan.memo)}</div>`
         : ""
     }
 
-<div style="
+<div class="record-actions" style="
     text-align: right;
     margin-top: 12px;
 ">
@@ -3299,7 +3298,7 @@ async function loadLetters() {
                 white-space:pre-wrap;
                 line-height:1.7;
             ">${escapeHTML(letter.content)}</div>
-            <div style="
+            <div class="record-actions" style="
     text-align:right;
     margin-top:12px;
 ">
@@ -3623,7 +3622,7 @@ async function loadPhotobooth() {
                     `
                     : ""
             }
-            <div style="
+            <div class="record-actions" style="
     text-align:right;
     margin-top:12px;
 ">
@@ -3914,16 +3913,14 @@ async function loadWatchedContents() {
             ${
                 content.review
                     ? `
-                        <div style="
+                        <div class="record-text" style="
                             margin-top: 10px;
                             font-size: 14px;
-                        ">
-                            ${escapeHTML(content.review)}
-                        </div>
+                        ">${escapeHTML(content.review)}</div>
                     `
                     : ""
             }
-            <div style="
+            <div class="record-actions" style="
     text-align: right;
     margin-top: 12px;
 ">
@@ -4239,6 +4236,7 @@ function openMenu() {
 function updatePageHeader(section) {
   if (!pageNames[section]) return;
   currentPage = section;
+  if (typeof HomeCover !== "undefined") HomeCover.syncVisibility();
   closeMenu();
   const header = document.getElementById("appHeader");
   header.classList.toggle("is-home", section === "home");
@@ -4258,6 +4256,9 @@ function setAuthenticatedUI(signedIn) {
   document.getElementById("appHeader").hidden = !signedIn;
   document.getElementById("loginBox").hidden = signedIn;
   if (!signedIn) {
+    if (typeof HomeCover !== "undefined") HomeCover.clear();
+    document.getElementById("changePasswordForm")?.reset();
+    const passwordStatus = document.getElementById("passwordStatus"); if (passwordStatus) passwordStatus.textContent="";
     if (typeof PrivateSession !== "undefined") PrivateSession.invalidate();
     homeLoadVersion++;
     closeMenu();
@@ -4279,6 +4280,7 @@ function setAuthenticatedUI(signedIn) {
 }
 async function refreshHome() {
   if (!authenticated) return;
+  if (typeof HomeCover !== "undefined") HomeCover.load();
   const version = ++homeLoadVersion;
   loadTodayMessages();
   const card = document.getElementById("recentMemory");
@@ -4472,7 +4474,7 @@ function showMapUnavailable(id) {
   container.replaceChildren(message);
 }
 
-</script><section id="settingsSection" class="page" style="display:none"><section class="settings-card card"><h2>Notifications</h2><p id="notificationStatus" role="status"></p><button id="enableNotifications" class="primary" type="button">알림 켜기</button><p class="helper-text">권한은 버튼을 눌렀을 때만 요청합니다.</p></section><section class="settings-card card"><h2>Export Data</h2><p class="helper-text">접근이 허용된 기록을 JSON으로 저장합니다. 사진은 경로와 메타데이터를 포함합니다.</p><button id="exportDataButton" class="primary" type="button">Export Data</button><p id="exportStatus" role="status"></p></section><section class="settings-card card"><button id="logoutButton" type="button">Logout</button><p id="logoutStatus" role="status"></p></section></section>
+</script><section id="settingsSection" class="page" style="display:none"><section class="settings-card card"><h2>Change Password</h2><form id="changePasswordForm"><label class="field-label" for="currentPassword">현재 비밀번호</label><input id="currentPassword" name="currentPassword" type="password" autocomplete="current-password" required/><label class="field-label" for="newPassword">새 비밀번호</label><input id="newPassword" name="newPassword" type="password" minlength="8" autocomplete="new-password" required/><label class="field-label" for="confirmPassword">새 비밀번호 확인</label><input id="confirmPassword" name="confirmPassword" type="password" minlength="8" autocomplete="new-password" required/><button class="primary" type="submit">비밀번호 변경</button><p id="passwordStatus" role="status"></p></form></section><section class="settings-card card"><h2>Home Background</h2><p class="helper-text">직접 선택한 사진을 두 사람의 Home 배경으로 사용합니다. Recent Memory와 독립적으로 저장됩니다.</p><label class="field-label" for="homeCoverFile">대표 사진 · 최대 10MB</label><input id="homeCoverFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/heic,image/heif"/><div id="homeCoverPreview"></div><button id="saveHomeCover" class="primary" type="button" data-cover-action>배경 사진 저장</button><button id="removeHomeCover" type="button" data-cover-action>배경 해제</button><p id="coverStatus" role="status"></p></section><section class="settings-card card"><h2>Notifications</h2><p id="notificationStatus" role="status"></p><button id="enableNotifications" class="primary" type="button">알림 켜기</button><p class="helper-text">권한은 버튼을 눌렀을 때만 요청합니다.</p></section><section class="settings-card card"><h2>Export Data</h2><p class="helper-text">접근이 허용된 기록을 JSON으로 저장합니다. 사진은 경로와 메타데이터를 포함합니다.</p><button id="exportDataButton" class="primary" type="button">Export Data</button><p id="exportStatus" role="status"></p></section><section class="settings-card card"><button id="logoutButton" type="button">Logout</button><p id="logoutStatus" role="status"></p></section></section>
 <script>
 /* Additive features. No service credential values are read or copied here. */
 const APP_OPTIONS = Object.freeze({
@@ -5081,6 +5083,84 @@ for (const name of [
     });
   };
 }
+
+</script><script>
+/* Password changes and a shared, explicitly selected Home background. */
+AppAuth.changePassword = async function(currentPassword,newPassword){
+  const version=PrivateSession.version;
+  const user=await this.requireUser();
+  if(!user.email) return {ok:false,message:'계정 정보를 확인하지 못했어요. 다시 로그인해 주세요.'};
+  const {data,error}=await supabaseClient.auth.signInWithPassword({email:user.email,password:currentPassword});
+  if(error || !data?.user || data.user.id!==user.id)return {ok:false,message:'현재 비밀번호를 확인해 주세요.'};
+  PrivateSession.assert(version);
+  const confirmed=await this.requireUser();
+  if(confirmed.id!==user.id)throw new Error('Account changed');
+  const result=await supabaseClient.auth.updateUser({password:newPassword});
+  if(result.error)return {ok:false,message:'비밀번호를 변경하지 못했어요. 비밀번호 정책을 확인하거나 다시 로그인해 주세요.'};
+  return {ok:true,message:'비밀번호를 변경했습니다. 다음 로그인부터 새 비밀번호를 사용하세요.'};
+};
+document.getElementById('changePasswordForm').addEventListener('submit',async event=>{
+  event.preventDefault();const form=event.currentTarget;const button=form.querySelector('button');if(button.disabled)return;
+  const status=document.getElementById('passwordStatus');
+  const current=form.elements.currentPassword.value;const next=form.elements.newPassword.value;const confirmation=form.elements.confirmPassword.value;
+  if(next.length<8){status.textContent='새 비밀번호를 8자 이상 입력해 주세요.';return;}
+  if(next!==confirmation){status.textContent='새 비밀번호와 확인 값이 일치하지 않아요.';return;}
+  if(next===current){status.textContent='현재 비밀번호와 다른 새 비밀번호를 입력해 주세요.';return;}
+  button.disabled=true;status.textContent='변경 중…';
+  try {const result=await AppAuth.changePassword(current,next);if(authenticated)status.textContent=result.message;if(result.ok)form.reset();}
+  catch{if(authenticated)status.textContent='비밀번호를 변경하지 못했어요. 다시 로그인한 뒤 시도해 주세요.';}
+  finally {button.disabled=false;form.elements.currentPassword.value='';}
+});
+const HomeCover={bucket:'home-covers',version:0,path:null,url:null,
+  status(message){document.getElementById('coverStatus').textContent=message;},
+  syncVisibility(){document.body.classList.toggle('home-cover-visible',authenticated&&currentPage==='home'&&Boolean(this.url));},
+  clear(){this.version++;this.path=null;this.url=null;document.body.style.removeProperty('--home-cover');this.syncVisibility();const preview=document.getElementById('homeCoverPreview');if(preview)preview.replaceChildren();},
+  async load(){
+    if(!authenticated)return;const version=++this.version;const sessionVersion=PrivateSession.version;
+    try {
+      const {data,error}=await supabaseClient.from('couple_preferences').select('cover_photo_path').eq('id','home').single();
+      if(!authenticated||version!==this.version||sessionVersion!==PrivateSession.version)return;
+      if(error){this.clear();this.status('공유 배경 설정을 읽지 못했어요. 안내된 SQL과 두 사용자 등록·접근 권한을 확인해 주세요.');return;}
+      if(!data?.cover_photo_path){this.clear();this.status('선택한 대표 사진이 없습니다.');return;}
+      const {data:signed,error:signError}=await supabaseClient.storage.from(this.bucket).createSignedUrl(data.cover_photo_path,3600);
+      if(!authenticated||version!==this.version||sessionVersion!==PrivateSession.version)return;
+      if(signError||!signed?.signedUrl){this.clear();this.status('선택한 사진을 불러오지 못했어요. 다시 선택하거나 접근 권한을 확인해 주세요.');return;}
+      const image=new Image();image.alt='직접 선택한 Home 배경 사진';image.src=signed.signedUrl;
+      await image.decode();
+      if(!authenticated||version!==this.version||sessionVersion!==PrivateSession.version)return;
+      this.path=data.cover_photo_path;this.url=signed.signedUrl;
+      document.body.style.setProperty('--home-cover',`url(${JSON.stringify(this.url)})`);
+      document.getElementById('homeCoverPreview').replaceChildren(image);this.syncVisibility();this.status('두 사람이 공유하는 Home 배경입니다.');
+    }catch{if(authenticated&&version===this.version){this.clear();this.status('대표 사진을 불러오지 못했어요. 다시 시도해 주세요.');}}
+  },
+  async setPath(path){
+    const user=await AppAuth.requireUser();const version=PrivateSession.version;
+    const {error}=await supabaseClient.from('couple_preferences').update({cover_photo_path:path,updated_by:user.id,updated_at:new Date().toISOString()}).eq('id','home').select('cover_photo_path').single();
+    PrivateSession.assert(version);if(error)throw new Error('Cannot save cover');
+    await this.load();
+  },
+  async upload(file){
+    if(!file)throw new Error('Choose a photo');
+    const types={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif','image/avif':'avif','image/heic':'heic','image/heif':'heif'};
+    if(!types[file.type]||file.size>10*1024*1024){this.status('10MB 이하의 JPG·PNG·WebP·GIF·AVIF·HEIC 사진을 선택해 주세요.');return;}
+    await AppAuth.requireUser();const version=PrivateSession.version;const path=uniquePhotoId()+'.'+types[file.type];
+    const {error}=await supabaseClient.storage.from(this.bucket).upload(path,file,{contentType:file.type,upsert:false});
+    PrivateSession.assert(version);if(error)throw new Error('Cannot upload cover');
+    await this.setPath(path);document.getElementById('homeCoverFile').value='';
+  }
+};
+async function coverAction(action){
+  const buttons=[...document.querySelectorAll('[data-cover-action]')];if(buttons.some(button=>button.disabled))return;
+  buttons.forEach(button=>button.disabled=true);HomeCover.status('저장 중…');
+  try{await action();}catch{if(authenticated)HomeCover.status('변경하지 못했어요. 기존 공유 설정은 유지됩니다. SQL·사용자 등록·접근 권한을 확인해 주세요.');}
+  finally{buttons.forEach(button=>button.disabled=false);}
+}
+document.getElementById('saveHomeCover').addEventListener('click',()=>coverAction(()=>HomeCover.upload(document.getElementById('homeCoverFile').files[0])));
+document.getElementById('removeHomeCover').addEventListener('click',()=>{if(confirm('Home 배경을 해제할까요? 원본 사진은 삭제하지 않습니다.'))coverAction(()=>HomeCover.setPath(null));});
+const previousRenderSettings=renderSettings;
+renderSettings=function(){previousRenderSettings();HomeCover.load();};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&authenticated&&currentPage==='home')HomeCover.load();});
+setInterval(()=>{if(authenticated&&currentPage==='home')HomeCover.load();},45*60*1000);
 
 </script></body>
 </html>
