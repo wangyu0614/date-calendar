@@ -868,11 +868,31 @@ body{position:relative;isolation:isolate}body.home-cover-visible::before{content
 :is(#restaurantList,#watchedList,#datePlanList)>div{padding:14px 16px!important;margin-bottom:10px!important}
 :is(#restaurantList,#watchedList,#datePlanList) .record-actions{display:flex!important;justify-content:flex-end;align-items:center;gap:4px;white-space:normal!important;margin-top:8px!important;line-height:normal}
 :is(#restaurantList,#watchedList,#datePlanList) .record-actions button{margin:0!important;padding:6px 8px!important;min-height:32px;flex:0 0 auto;white-space:nowrap}
+/* Home follows the supplied warm ivory layout, using the explicitly chosen cover. */
+body.home-cover-visible::before{display:none}
+#appHeader.is-home{position:relative;min-height:80px}
+#appHeader.is-home #pageTitle{position:absolute;left:50%;transform:translateX(-50%);margin:0;font:italic 600 22px Georgia,serif;white-space:nowrap}
+#appHeader.is-home #menuButton{order:-1;margin-right:auto}
+.home-page{max-width:960px;padding-top:0}.home-hero{position:relative;border-radius:18px;overflow:hidden;margin:4px 0 14px}
+.home-hero>img{display:block;width:100%;height:clamp(210px,34svh,410px);object-fit:cover;object-position:center}
+.hero-edit{position:absolute;right:12px;top:12px;width:36px;height:36px;padding:0;background:#fff;border-radius:50%;font-size:20px;box-shadow:0 2px 10px #0001}
+.choose-photo{display:block;margin:0 auto 16px;color:#888;font-size:12px}
+.home-summary{display:grid;gap:12px;margin:0 0 20px}.home-page .together{padding:14px;text-align:center;border:1px solid #efe6dd;box-shadow:0 3px 12px #b88b6510}
+.home-page .together h2{font-size:26px;letter-spacing:-.6px}.home-page .together h2::after{content:' ♥';color:#ed96a4}.home-page .anniversary{font-size:10px;margin-top:3px}
+.home-page .home-clock{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:0;padding:14px;border:1px solid #efe6dd}
+.home-clock #homeDate{font-size:12px;color:#666}.home-clock #homeTime{font-size:25px;font-weight:650;line-height:1.3;color:#111}
+.home-page .home-grid{gap:20px}.home-page .message-card{padding:18px;margin:0;min-height:0;background:#fcebe6}
+.home-page .message-card h2{font-size:14px;margin-bottom:10px;display:flex;justify-content:space-between}.message-card h2>span{font-size:23px;color:#ed96a4}
+.home-page .message-compose{background:transparent;border-color:#e9d9d3}.home-page .message-compose input{background:transparent}
+.home-page .recent-section>h2{text-align:left;font-size:14px;margin:0 0 12px}
+.home-page .recent-memory{border:1px solid #efe6dd;box-shadow:0 2px 10px #b88b6510}.home-page .recent-copy{padding:15px 16px}.recent-copy strong{font-size:13px}
+.home-page .recent-activity{margin-top:22px}.recent-activity time{font-size:10px;color:#999}
+@media(min-width:700px){.home-page{padding-left:42px;padding-right:42px}.home-summary{grid-template-columns:1fr 1fr}.home-page .home-grid{grid-template-columns:1fr 1fr;gap:24px}.home-page .home-hero>img{height:360px}}
 </style><meta name="theme-color" content="#FAF9F7"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Our Memories"/>
-<link rel="manifest" href="./manifest.webmanifest"/>
+<link rel="manifest" href="./manifest.webmanifest"/><link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png"/>
 </head>
 <body>
 <main class="login-screen" id="loginBox"><form class="login-form" id="loginForm"><h1 class="brand">Jinny <span>♥</span> Wangyu</h1><label class="sr-only" for="loginEmail">ID</label><input autocomplete="username" id="loginEmail" placeholder="ID · wangyu / jinny" required="" type="text" autocapitalize="none" spellcheck="false"/><label class="sr-only" for="loginPassword">Password</label><input autocomplete="current-password" id="loginPassword" placeholder="Password" required="" type="password"/><button class="primary" id="loginButton" type="submit">Login</button><p aria-live="polite" id="loginMessage" role="status"></p></form>
@@ -961,7 +981,12 @@ body{position:relative;isolation:isolate}body.home-cover-visible::before{content
 <h3 class="list-heading">Saved Photos</h3><div id="photoboothList"></div>
 </div>
 <!-- 첫 화면 -->
-<main class="home-page page" id="homeSection" style="display:none"><div class="home-clock" aria-label="Current time in Seoul"><time id="homeDate"></time><time id="homeTime"></time></div><div class="together"><p>Always Together</p><h2 id="dDayCount"></h2><p class="anniversary">2026.02.19 —</p></div><div class="home-grid editor"><section class="message-card card"><h2>Today's Message</h2><div aria-live="polite" id="todayMessages"></div><form class="message-compose" id="messageForm"><label class="sr-only" for="todayMessageInput">Today's message</label><input id="todayMessageInput" maxlength="100" placeholder="오늘의 한마디"/><button aria-label="Save message" class="icon-button" type="submit">↗</button></form></section><section class="recent-section"><h2>Recent Memory</h2><button class="recent-memory card" disabled="" id="recentMemory"><span class="empty-state">아직 저장된 추억이 없어요.</span></button></section></div><details id="recentActivity" class="recent-activity"><summary>Recent Activity</summary><div id="activityList" aria-live="polite"></div></details></main>
+<main class="home-page page" id="homeSection" style="display:none">
+<section id="homeHero" class="home-hero" hidden><img id="homeHeroImage" alt="직접 선택한 우리 대표 사진"/><button type="button" class="hero-edit" onclick="showSection('settings')" aria-label="대표 사진 변경">✎</button></section>
+<button id="chooseHomePhoto" class="choose-photo" onclick="showSection('settings')">＋ 대표 사진 선택</button>
+<div class="home-summary"><section class="together card"><p>우리가 함께한 지</p><h2 id="dDayCount"></h2><p class="anniversary">2026.02.19 —</p></section><section class="home-clock card" aria-label="Current time in Seoul"><time id="homeDate"></time><time id="homeTime"></time></section></div>
+<div class="home-grid"><section class="message-card card"><h2>오늘의 한마디 <span aria-hidden="true">♡</span></h2><div aria-live="polite" id="todayMessages"></div><form class="message-compose" id="messageForm"><label class="sr-only" for="todayMessageInput">Today's message</label><input id="todayMessageInput" maxlength="100" placeholder="오늘의 한마디"/><button aria-label="Save message" class="icon-button" type="submit">↗</button></form></section><section class="recent-section"><h2>최근 추억</h2><button class="recent-memory card" disabled id="recentMemory"><span class="empty-state">아직 저장된 추억이 없어요.</span></button></section></div>
+<details id="recentActivity" class="recent-activity"><summary>Recent Activity</summary><div id="activityList" aria-live="polite"></div></details></main>
 <!-- 캘린더 -->
 <div class="page calendar" id="calendarSection">
 <!-- 월 이동 -->
@@ -5161,6 +5186,41 @@ const previousRenderSettings=renderSettings;
 renderSettings=function(){previousRenderSettings();HomeCover.load();};
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&authenticated&&currentPage==='home')HomeCover.load();});
 setInterval(()=>{if(authenticated&&currentPage==='home')HomeCover.load();},45*60*1000);
+
+</script><script>
+/* The selected hero remains independent of the latest memory. */
+function syncHomeHero(){
+  const hero=document.getElementById('homeHero');const image=document.getElementById('homeHeroImage');
+  const visible=authenticated && Boolean(HomeCover.url);
+  hero.hidden=!visible;document.getElementById('chooseHomePhoto').hidden=visible;
+  if(visible)image.src=HomeCover.url;else image.removeAttribute('src');
+}
+const loadSelectedHomeCover=HomeCover.load.bind(HomeCover);
+HomeCover.load=async function(){await loadSelectedHomeCover();syncHomeHero();};
+const clearSelectedHomeCover=HomeCover.clear.bind(HomeCover);
+HomeCover.clear=function(){clearSelectedHomeCover();syncHomeHero();};
+// Prefer server-recorded create/update events; older deployments retain the creation-only fallback.
+const loadLegacyActivity=loadRecentActivity;
+loadRecentActivity=async function(){
+  if(!authenticated)return;
+  const version=PrivateSession.version;const container=document.getElementById('activityList');
+  container.textContent='불러오는 중…';
+  try{
+    const {data,error}=await supabaseClient.from('couple_activity').select('id,actor_id,entity,operation,happened_at').order('happened_at',{ascending:false}).order('id',{ascending:false}).limit(5);
+    if(!authenticated||version!==PrivateSession.version)return;
+    if(error){await loadLegacyActivity();return;}
+    container.replaceChildren();
+    const labels={memories:'추억',restaurants:'맛집',date_plans:'데이트 계획',watched_contents:'같이 본 기록',letters:'편지',photobooth:'사진',date_bucket_list:'버킷리스트',daily_messages:'오늘의 한마디'};
+    for(const item of data||[]){
+      const row=document.createElement('p');
+      const time=document.createElement('time');time.dateTime=item.happened_at;
+      time.textContent=new Intl.DateTimeFormat('ko-KR',{timeZone:APP_OPTIONS.timeZone,month:'numeric',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(item.happened_at));
+      row.textContent=getWriterName({user_id:item.actor_id})+' · '+(labels[item.entity]||'기록')+(item.operation==='UPDATE'?' 수정':' 추가');
+      row.append(document.createElement('br'),time);container.append(row);
+    }
+    if(!data?.length)container.textContent='아직 최근 활동이 없어요.';
+  }catch{if(authenticated&&version===PrivateSession.version)await loadLegacyActivity();}
+};
 
 </script></body>
 </html>
