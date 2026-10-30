@@ -875,7 +875,6 @@ body.home-cover-visible::before{display:none}
 #appHeader.is-home #menuButton{order:-1;margin-right:auto}
 .home-page{max-width:960px;padding-top:0}.home-hero{position:relative;border-radius:18px;overflow:hidden;margin:4px 0 14px}
 .home-hero>img{display:block;width:100%;height:clamp(210px,34svh,410px);object-fit:cover;object-position:center}
-.hero-edit{position:absolute;right:12px;top:12px;width:36px;height:36px;padding:0;background:#fff;border-radius:50%;font-size:20px;box-shadow:0 2px 10px #0001}
 .choose-photo{display:block;margin:0 auto 16px;color:#888;font-size:12px}
 .home-summary{display:grid;gap:12px;margin:0 0 20px}.home-page .together{padding:14px;text-align:center;border:1px solid #efe6dd;box-shadow:0 3px 12px #b88b6510}
 .home-page .together h2{font-size:26px;letter-spacing:-.6px}.home-page .together h2::after{content:' ♥';color:#ed96a4}.home-page .anniversary{font-size:10px;margin-top:3px}
@@ -888,11 +887,22 @@ body.home-cover-visible::before{display:none}
 .home-page .recent-memory{border:1px solid #efe6dd;box-shadow:0 2px 10px #b88b6510}.home-page .recent-copy{padding:15px 16px}.recent-copy strong{font-size:13px}
 .home-page .recent-activity{margin-top:22px}.recent-activity time{font-size:10px;color:#999}
 @media(min-width:700px){.home-page{padding-left:42px;padding-right:42px}.home-summary{grid-template-columns:1fr 1fr}.home-page .home-grid{grid-template-columns:1fr 1fr;gap:24px}.home-page .home-hero>img{height:360px}}
+/* October 30: balanced tablet login, right menu and uncropped selected cover. */
+#loginBox{justify-content:center;justify-items:center;grid-template-columns:minmax(0,342px);padding:32px 24px}
+#loginBox .login-form,#loginBox .account-link{width:100%;max-width:342px;margin-left:auto;margin-right:auto}
+#appHeader.is-home #menuButton{order:0;margin-left:auto;margin-right:0}
+.home-page .home-hero>img{height:auto;max-height:min(65svh,600px);object-fit:contain;border-radius:18px}
+.home-page .home-hero{background:transparent}
+#mainMenu{width:calc(100% - 24px);max-width:560px;height:auto;max-height:calc(100dvh - 32px);margin:16px auto;border-radius:28px;padding-bottom:max(28px,env(safe-area-inset-bottom));box-shadow:0 12px 36px #0002}
+#mainMenu .settings-link{border:1px solid #ebe5e0;border-radius:999px;background:#fff;padding:15px 20px;margin:24px 0 12px;box-shadow:0 5px 12px #0000000d;align-items:center}
+.watched-tabs{display:flex;flex-wrap:wrap;gap:4px;background:#efece8;border-radius:20px;padding:5px;margin:0 0 22px}
+.watched-tabs button{flex:1 0 auto;min-height:40px;padding:8px 12px;border-radius:999px;font-size:12px;white-space:nowrap}
+.watched-tabs button[aria-selected="true"]{background:#e8a0ae;color:#fff;box-shadow:0 2px 6px #0000000d}
 </style><meta name="theme-color" content="#FAF9F7"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="Our Memories"/>
-<link rel="manifest" href="./manifest.webmanifest"/><link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=2">
+<link rel="manifest" href="./manifest.webmanifest"/><link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=2"/>
 </head>
 <body>
 <main class="login-screen" id="loginBox"><form class="login-form" id="loginForm"><h1 class="brand">Jinny <span>♥</span> Wangyu</h1><label class="sr-only" for="loginEmail">ID</label><input autocomplete="username" id="loginEmail" placeholder="ID · wangyu / jinny" required="" type="text" autocapitalize="none" spellcheck="false"/><label class="sr-only" for="loginPassword">Password</label><input autocomplete="current-password" id="loginPassword" placeholder="Password" required="" type="password"/><button class="primary" id="loginButton" type="submit">Login</button><p aria-live="polite" id="loginMessage" role="status"></p></form>
@@ -919,6 +929,7 @@ body.home-cover-visible::before{display:none}
 </div>
 <!-- 같이 본 것 -->
 <div class="page" id="watchedSection" style="display: none;">
+<div class="watched-tabs" role="tablist" aria-label="같이 본 것 분류"><button id="watch-tab-movie" role="tab" aria-selected="true" aria-controls="watchedList" data-watch-category="영화" onclick="setWatchedCategory('영화')">영화</button><button id="watch-tab-series" role="tab" aria-selected="false" aria-controls="watchedList" data-watch-category="드라마" onclick="setWatchedCategory('드라마')">드라마</button><button id="watch-tab-stage" role="tab" aria-selected="false" aria-controls="watchedList" data-watch-category="뮤지컬 및 연극" onclick="setWatchedCategory('뮤지컬 및 연극')">뮤지컬 및 연극</button><button id="watch-tab-show" role="tab" aria-selected="false" aria-controls="watchedList" data-watch-category="예능" onclick="setWatchedCategory('예능')">예능</button><button id="watch-tab-other" role="tab" aria-selected="false" aria-controls="watchedList" data-watch-category="기타" onclick="setWatchedCategory('기타')">기타</button></div>
 
 <div class="editor">
 <label class="field-label" for="watchDate">Date</label><input id="watchDate" type="date"/>
@@ -926,7 +937,7 @@ body.home-cover-visible::before{display:none}
 <option value="">종류 선택</option>
 <option value="영화">🎬 영화</option>
 <option value="드라마">📺 드라마</option>
-<option value="애니">🌸 애니</option>
+<option value="뮤지컬 및 연극">뮤지컬 및 연극</option>
 <option value="예능">😂 예능</option>
 <option value="기타">💿 기타</option>
 </select>
@@ -982,7 +993,7 @@ body.home-cover-visible::before{display:none}
 </div>
 <!-- 첫 화면 -->
 <main class="home-page page" id="homeSection" style="display:none">
-<section id="homeHero" class="home-hero" hidden><img id="homeHeroImage" alt="직접 선택한 우리 대표 사진"/><button type="button" class="hero-edit" onclick="showSection('settings')" aria-label="대표 사진 변경">✎</button></section>
+<section id="homeHero" class="home-hero" hidden><img id="homeHeroImage" alt="직접 선택한 우리 대표 사진"/></section>
 <button id="chooseHomePhoto" class="choose-photo" onclick="showSection('settings')">＋ 대표 사진 선택</button>
 <div class="home-summary"><section class="together card"><p>우리가 함께한 지</p><h2 id="dDayCount"></h2><p class="anniversary">2026.02.19 —</p></section><section class="home-clock card" aria-label="Current time in Seoul"><time id="homeDate"></time><time id="homeTime"></time></section></div>
 <div class="home-grid"><section class="message-card card"><h2>오늘의 한마디 <span aria-hidden="true">♡</span></h2><div aria-live="polite" id="todayMessages"></div><form class="message-compose" id="messageForm"><label class="sr-only" for="todayMessageInput">Today's message</label><input id="todayMessageInput" maxlength="100" placeholder="오늘의 한마디"/><button aria-label="Save message" class="icon-button" type="submit">↗</button></form></section><section class="recent-section"><h2>최근 추억</h2><button class="recent-memory card" disabled id="recentMemory"><span class="empty-state">아직 저장된 추억이 없어요.</span></button></section></div>
@@ -3850,6 +3861,7 @@ document.getElementById("contentType").value = "";
 document.getElementById("contentTitle").value = "";
 document.getElementById("contentRating").value = "";
 document.getElementById("contentReview").value = "";
+setWatchedCategory(watchedCategory(contentType), false);
 await loadWatchedContents();
 
 if (wasEditing) {
@@ -3858,15 +3870,43 @@ if (wasEditing) {
     alert("같이 본 기록을 저장했어요 ♡");
 }
 }
+let selectedWatchedCategory = "영화";
+let watchedLoadVersion = 0;
+function watchedCategory(type) {
+    if (["영화","드라마","예능"].includes(type)) return type;
+    if (["뮤지컬 및 연극","뮤지컬","연극"].includes(type)) return "뮤지컬 및 연극";
+    return "기타";
+}
+function setWatchedCategory(category, reload = true) {
+    selectedWatchedCategory = category;
+    document.querySelectorAll("[data-watch-category]").forEach(button => {
+        button.setAttribute("aria-selected", String(button.dataset.watchCategory === category));
+    });
+    if (reload && authenticated) return loadWatchedContents();
+}
+function preserveWatchedTypeOption(value) {
+    const select = document.getElementById("contentType");
+    select.querySelectorAll("[data-legacy-type]").forEach(option => option.remove());
+    if (value && ![...select.options].some(option => option.value === value)) {
+        const option = document.createElement("option");
+        option.value = value; option.textContent = value + " · 기존 기록";
+        option.hidden = true; option.disabled = true; option.dataset.legacyType = "true";
+        select.append(option);
+    }
+}
 async function loadWatchedContents() {
 
-    const { data, error } =
+    const requestedCategory = selectedWatchedCategory;
+    const requestVersion = ++watchedLoadVersion;
+    const { data: allData, error } =
         await supabaseClient
             .from("watched_contents")
             .select("*")
             .order("watch_date", { ascending: false })
             .order("id", { ascending: false });
 
+    if (requestVersion !== watchedLoadVersion) return;
+    const data = (allData || []).filter(item => watchedCategory(item.content_type) === requestedCategory);
     if (error) {
         reportOperationError();
         return;
@@ -3884,7 +3924,7 @@ async function loadWatchedContents() {
                 color: #999;
                 padding: 30px;
             ">
-                아직 같이 본 기록이 없어요 ♡
+                이 분류에 저장된 기록이 없어요.
             </div>
         `;
         return;
@@ -4030,8 +4070,8 @@ async function editWatchedContent(id) {
     document.getElementById("watchDate").value =
         data.watch_date;
 
-    document.getElementById("contentType").value =
-        data.content_type || "";
+    preserveWatchedTypeOption(data.content_type || "");
+    document.getElementById("contentType").value = data.content_type || "";
 
     document.getElementById("contentTitle").value =
         data.title || "";
