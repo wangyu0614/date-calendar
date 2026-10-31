@@ -905,8 +905,8 @@ body.home-cover-visible::before{display:none}
 <link rel="manifest" href="./manifest.webmanifest"/><link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=2"/>
 </head>
 <body>
-<main class="login-screen" id="loginBox"><form class="login-form" id="loginForm"><h1 class="brand">Jinny <span>♥</span> Wangyu</h1><label class="sr-only" for="loginEmail">ID</label><input autocomplete="username" id="loginEmail" placeholder="ID · wangyu / jinny" required="" type="text" autocapitalize="none" spellcheck="false"/><label class="sr-only" for="loginPassword">Password</label><input autocomplete="current-password" id="loginPassword" placeholder="Password" required="" type="password"/><button class="primary" id="loginButton" type="submit">Login</button><p aria-live="polite" id="loginMessage" role="status"></p></form>
-<details id="accountLink" class="account-link"><summary>이 기기의 기존 계정 연결</summary><p>처음 한 번만 연결하세요. 기존 계정과 비밀번호를 그대로 사용합니다.</p><form id="linkAccountForm"><label for="linkAlias">ID</label><select id="linkAlias"><option value="wangyu">wangyu</option><option value="jinny">jinny</option></select><label for="linkEmail">기존 이메일 · 입력 내용은 숨겨집니다</label><input id="linkEmail" type="password" inputmode="email" autocomplete="off" required/><label for="linkPassword">Password</label><input id="linkPassword" type="password" autocomplete="current-password" required/><button class="primary" type="submit">계정 연결 후 로그인</button><p id="linkMessage" role="status"></p></form></details></main>
+<main class="login-screen" id="loginBox"><form class="login-form" id="loginForm"><h1 class="brand">Jinny <span>♥</span> Wangyu</h1><label class="sr-only" for="loginEmail">이메일 주소</label><input autocomplete="username" id="loginEmail" placeholder="이메일 주소" required="" type="email" autocapitalize="none" spellcheck="false"/><label class="sr-only" for="loginPassword">Password</label><input autocomplete="current-password" id="loginPassword" placeholder="Password" required="" type="password"/><button class="primary" id="loginButton" type="submit">Login</button><p aria-live="polite" id="loginMessage" role="status"></p></form>
+</main>
 <!-- 제목 -->
 
 <!-- 메뉴 -->
@@ -4348,6 +4348,7 @@ async function refreshHome() {
   if (typeof HomeCover !== "undefined") HomeCover.load();
   const version = ++homeLoadVersion;
   loadTodayMessages();
+  if(document.getElementById("recentActivity").open) loadRecentActivity();
   const card = document.getElementById("recentMemory");
   card.disabled = true;
   card.onclick = null;
@@ -4581,32 +4582,7 @@ const PrivateSession = {
   },
 };
 const AppAuth = {
-  aliasStorageKey: "our-memories.account-aliases.v1",
-  aliases: Object.freeze(["wangyu", "jinny"]),
   user: null,
-  normalize(value) {
-    return String(value || "")
-      .trim()
-      .toLowerCase();
-  },
-  readAliases() {
-    try {
-      const data = JSON.parse(
-        localStorage.getItem(this.aliasStorageKey) || "{}",
-      );
-      return data && typeof data === "object" && !Array.isArray(data)
-        ? data
-        : {};
-    } catch {
-      return {};
-    }
-  },
-  resolve(alias) {
-    const normalized = this.normalize(alias);
-    if (!this.aliases.includes(normalized)) return null;
-    const email = this.readAliases()[normalized];
-    return typeof email === "string" && email.includes("@") ? email : null;
-  },
   async authenticate(email, password) {
     if (!supabaseClient) throw new Error("Authentication unavailable");
     const { data, error } = await supabaseClient.auth.signInWithPassword({
@@ -4618,16 +4594,9 @@ const AppAuth = {
     return true;
   },
   async login() {
-    const alias = this.normalize(document.getElementById("loginEmail").value);
-    const email = this.resolve(alias);
-    if (!email) {
-      document.getElementById("loginMessage").textContent =
-        this.aliases.includes(alias)
-          ? "이 기기에서 먼저 기존 계정을 연결해 주세요."
-          : "ID는 wangyu 또는 jinny를 입력해 주세요.";
-      document.getElementById("accountLink").open = true;
-      if (this.aliases.includes(alias))
-        document.getElementById("linkAlias").value = alias;
+    const email = document.getElementById("loginEmail").value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      document.getElementById("loginMessage").textContent = "가입한 이메일 주소 전체를 입력해 주세요.";
       return;
     }
     const success = await this.authenticate(
@@ -4636,7 +4605,7 @@ const AppAuth = {
     );
     if (!success) {
       document.getElementById("loginMessage").textContent =
-        "ID 또는 비밀번호가 맞지 않아요.";
+        "이메일 또는 비밀번호가 맞지 않아요.";
       return;
     }
     setAuthenticatedUI(true);
@@ -4678,53 +4647,6 @@ const AppAuth = {
       : "";
   },
 };
-document
-  .getElementById("linkAccountForm")
-  .addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const button = event.currentTarget.querySelector("button");
-    if (button.disabled) return;
-    button.disabled = true;
-    const alias = AppAuth.normalize(document.getElementById("linkAlias").value);
-    const email = document.getElementById("linkEmail").value.trim();
-    const password = document.getElementById("linkPassword").value;
-    const message = document.getElementById("linkMessage");
-    message.textContent = "연결 중…";
-    try {
-      if (
-        !AppAuth.aliases.includes(alias) ||
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-      ) {
-        message.textContent = "기존 이메일과 ID를 확인해 주세요.";
-        return;
-      }
-      if (!(await AppAuth.authenticate(email, password))) {
-        message.textContent = "기존 계정과 비밀번호를 확인해 주세요.";
-        return;
-      }
-      let retained = true;
-      try {
-        const aliases = AppAuth.readAliases();
-        aliases[alias] = email;
-        localStorage.setItem(AppAuth.aliasStorageKey, JSON.stringify(aliases));
-      } catch {
-        retained = false;
-      }
-      document.getElementById("loginEmail").value = alias;
-      document.getElementById("accountLink").open = false;
-      message.textContent = retained
-        ? "연결했습니다."
-        : "기기 저장이 제한되어 다음 접속 때 다시 연결해야 합니다.";
-      setAuthenticatedUI(true);
-    } catch {
-      message.textContent =
-        "계정을 연결하지 못했어요. 네트워크를 확인해 주세요.";
-    } finally {
-      document.getElementById("linkEmail").value = "";
-      document.getElementById("linkPassword").value = "";
-      button.disabled = false;
-    }
-  });
 function seoulDateParts(now = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: APP_OPTIONS.timeZone,
@@ -4808,6 +4730,15 @@ function renderSettings() {
   document.getElementById("logoutStatus").textContent = "";
 }
 const PushSetup = {
+  config: null,
+  async configuration() {
+    if (APP_OPTIONS.push.publicKey && APP_OPTIONS.push.subscriptionStorageReady) return this.config = {publicKey:APP_OPTIONS.push.publicKey,ready:true};
+    try {
+      const {data,error}=await supabaseClient.functions.invoke('notification-config');
+      if(!error && data?.ready && typeof data.publicKey==='string' && /^[A-Za-z0-9_-]{80,100}$/.test(data.publicKey)) return this.config=data;
+    } catch { /* Missing server configuration never enables a fake subscription. */ }
+    return null;
+  },
   async worker() {
     if (!("serviceWorker" in navigator) || !window.isSecureContext)
       throw new Error("Worker unavailable");
@@ -4849,19 +4780,16 @@ const PushSetup = {
       renderNotificationStatus();
       return;
     }
-    if (
-      !APP_OPTIONS.push.publicKey ||
-      !APP_OPTIONS.push.subscriptionStorageReady
-    ) {
-      status.textContent =
-        "알림 권한을 허용했습니다. 실제 알림 전송은 서버 설정 후 사용할 수 있습니다.";
+    const config = await this.configuration();
+    if (!config?.ready || !config.publicKey) {
+      status.textContent = "알림 권한은 허용됐지만 서버 설정이 아직 완료되지 않았어요. 설정 후 다시 눌러 주세요.";
       return;
     }
     const user = await AppAuth.requireUser();
     const version = PrivateSession.version;
     const registration = await this.worker();
     await navigator.serviceWorker.ready;
-    const key = APP_OPTIONS.push.publicKey
+    const key = config.publicKey
       .replace(/-/g, "+")
       .replace(/_/g, "/");
     const bytes = Uint8Array.from(
@@ -4890,7 +4818,7 @@ const PushSetup = {
         );
       if (error) throw new Error("Cannot store subscription");
       PrivateSession.assert(version);
-      status.textContent = "이 기기의 알림을 켰습니다.";
+      status.textContent = "이 기기의 알림 구독을 등록했습니다. 서버 설정 완료 후 상대방의 새 기록·수정 활동과 기념일 알림을 받습니다.";
     } catch (error) {
       await subscription.unsubscribe();
       throw error;
@@ -4902,7 +4830,7 @@ const PushSetup = {
     const subscription = await registration?.pushManager?.getSubscription();
     if (!subscription) return;
     let storeError = false;
-    if (APP_OPTIONS.push.subscriptionStorageReady) {
+    if (subscription) {
       const { error } = await supabaseClient
         .from("push_subscriptions")
         .delete()
@@ -5162,7 +5090,7 @@ AppAuth.changePassword = async function(currentPassword,newPassword){
   if(confirmed.id!==user.id)throw new Error('Account changed');
   const result=await supabaseClient.auth.updateUser({password:newPassword});
   if(result.error)return {ok:false,message:'비밀번호를 변경하지 못했어요. 비밀번호 정책을 확인하거나 다시 로그인해 주세요.'};
-  return {ok:true,message:'비밀번호를 변경했습니다. 다음 로그인부터 새 비밀번호를 사용하세요.'};
+  return {ok:true,message:'이 계정의 비밀번호를 변경했습니다. 모든 기기의 다음 로그인부터 새 비밀번호를 사용하세요. 다른 계정의 비밀번호는 바뀌지 않습니다.'};
 };
 document.getElementById('changePasswordForm').addEventListener('submit',async event=>{
   event.preventDefault();const form=event.currentTarget;const button=form.querySelector('button');if(button.disabled)return;
