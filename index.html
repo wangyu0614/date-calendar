@@ -898,6 +898,18 @@ body.home-cover-visible::before{display:none}
 .watched-tabs{display:flex;flex-wrap:wrap;gap:4px;background:#efece8;border-radius:20px;padding:5px;margin:0 0 22px}
 .watched-tabs button{flex:1 0 auto;min-height:40px;padding:8px 12px;border-radius:999px;font-size:12px;white-space:nowrap}
 .watched-tabs button[aria-selected="true"]{background:#e8a0ae;color:#fff;box-shadow:0 2px 6px #0000000d}
+
+.next-milestone{color:#888;font-size:11px;margin-top:7px;line-height:1.5}
+.home-search-link{display:block;margin:0 0 14px auto;padding:6px 4px;color:#888;font-size:12px}
+.search-menu-link{display:flex;justify-content:space-between;width:100%;padding:18px 0;font-size:13px;margin-top:16px;border-top:1px solid var(--line)}
+#recordSearchForm{margin:12px 0 18px}#recordSearchForm input{flex:1}#recordSearchForm .primary{width:auto;margin:0;padding:10px 16px}
+.search-result{display:block;width:100%;text-align:left;padding:16px 18px;margin:0 0 12px;overflow-wrap:anywhere}
+.search-result-meta{display:block;font-size:11px;color:#888;margin-bottom:5px}.search-result strong{display:block;font-size:14px}
+.search-result p{font-size:12px;color:#666;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#searchMore{display:block;margin:16px auto;background:#fff}#searchDetail{border:0;border-radius:24px;padding:24px;width:calc(100% - 32px);max-width:560px;max-height:calc(100dvh - 48px);background:var(--bg);box-shadow:0 12px 36px #0002;overflow-y:auto}
+#searchDetail::backdrop{background:#0003}.search-detail-header{display:flex;justify-content:space-between;align-items:center;gap:12px;overflow-wrap:anywhere}.search-detail-header h2{font-size:16px;min-width:0}
+.search-detail-text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;margin:6px 0 18px}#searchDetailBody h3{font-size:11px;color:#888}
+.search-highlight{outline:2px solid var(--accent);outline-offset:3px}
 </style><meta name="theme-color" content="#FAF9F7"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
@@ -910,7 +922,7 @@ body.home-cover-visible::before{display:none}
 <!-- 제목 -->
 
 <!-- 메뉴 -->
-<header hidden="" id="appHeader"><button aria-label="Home" class="icon-button" id="homeButton" onclick="showSection('home')">‹</button><h1 class="brand" id="pageTitle">Jinny <span>♥</span> Wangyu</h1><button aria-controls="mainMenu" aria-expanded="false" aria-label="Open menu" class="icon-button" id="menuButton" onclick="openMenu()">☰</button></header><dialog aria-label="Menu" id="mainMenu"><div class="menu-header"><span class="brand">Jinny <span>♥</span> Wangyu</span><button aria-label="Close menu" class="icon-button" onclick="closeMenu()">×</button></div><nav aria-label="Main navigation"><button onclick="showSection('calendar')">Calendar<span aria-hidden="true">›</span></button><button onclick="showSection('map')">Places<span aria-hidden="true">›</span></button><button onclick="showSection('restaurantMap')">Restaurants<span aria-hidden="true">›</span></button><button onclick="showSection('datePlan')">Date Planner<span aria-hidden="true">›</span></button><button onclick="showSection('watched')">Watched Together<span aria-hidden="true">›</span></button><button onclick="showSection('letters')">Letters<span aria-hidden="true">›</span></button><button onclick="showSection('photobooth')">Photobooth<span aria-hidden="true">›</span></button><button onclick="showSection('bucket')">Bucket List<span aria-hidden="true">›</span></button><button onclick="showSection('stats')">Monthly Memories<span aria-hidden="true">›</span></button></nav><button class="settings-link" onclick="showSection('settings')">Settings <span aria-hidden="true">›</span></button></dialog>
+<header hidden="" id="appHeader"><button aria-label="Home" class="icon-button" id="homeButton" onclick="showSection('home')">‹</button><h1 class="brand" id="pageTitle">Jinny <span>♥</span> Wangyu</h1><button aria-controls="mainMenu" aria-expanded="false" aria-label="Open menu" class="icon-button" id="menuButton" onclick="openMenu()">☰</button></header><dialog aria-label="Menu" id="mainMenu"><div class="menu-header"><span class="brand">Jinny <span>♥</span> Wangyu</span><button aria-label="Close menu" class="icon-button" onclick="closeMenu()">×</button></div><nav aria-label="Main navigation"><button onclick="showSection('calendar')">Calendar<span aria-hidden="true">›</span></button><button onclick="showSection('map')">Places<span aria-hidden="true">›</span></button><button onclick="showSection('restaurantMap')">Restaurants<span aria-hidden="true">›</span></button><button onclick="showSection('datePlan')">Date Planner<span aria-hidden="true">›</span></button><button onclick="showSection('watched')">Watched Together<span aria-hidden="true">›</span></button><button onclick="showSection('letters')">Letters<span aria-hidden="true">›</span></button><button onclick="showSection('photobooth')">Photobooth<span aria-hidden="true">›</span></button><button onclick="showSection('bucket')">Bucket List<span aria-hidden="true">›</span></button><button onclick="showSection('stats')">Monthly Memories<span aria-hidden="true">›</span></button></nav><button class="search-menu-link" onclick="showSection('search')">전체 기록 검색 <span aria-hidden="true">›</span></button><button class="settings-link" onclick="showSection('settings')">Settings <span aria-hidden="true">›</span></button></dialog>
 <!-- 데이트 플래너 -->
 <div class="page" id="datePlanSection" style="display: none;">
 
@@ -995,7 +1007,7 @@ body.home-cover-visible::before{display:none}
 <main class="home-page page" id="homeSection" style="display:none">
 <section id="homeHero" class="home-hero" hidden><img id="homeHeroImage" alt="직접 선택한 우리 대표 사진"/></section>
 <button id="chooseHomePhoto" class="choose-photo" onclick="showSection('settings')">＋ 대표 사진 선택</button>
-<div class="home-summary"><section class="together card"><p>우리가 함께한 지</p><h2 id="dDayCount"></h2><p class="anniversary">2026.02.19 —</p></section><section class="home-clock card" aria-label="Current time in Seoul"><time id="homeDate"></time><time id="homeTime"></time></section></div>
+<button class="home-search-link" onclick="showSection('search')">⌕ 전체 기록 검색</button><div class="home-summary"><section class="together card"><p>우리가 함께한 지</p><h2 id="dDayCount"></h2><p class="anniversary">2026.02.19 —</p><p id="nextMilestone" class="next-milestone"></p></section><section class="home-clock card" aria-label="Current time in Seoul"><time id="homeDate"></time><time id="homeTime"></time></section></div>
 <div class="home-grid"><section class="message-card card"><h2>오늘의 한마디 <span aria-hidden="true">♡</span></h2><div aria-live="polite" id="todayMessages"></div><form class="message-compose" id="messageForm"><label class="sr-only" for="todayMessageInput">Today's message</label><input id="todayMessageInput" maxlength="100" placeholder="오늘의 한마디"/><button aria-label="Save message" class="icon-button" type="submit">↗</button></form></section><section class="recent-section"><h2>최근 추억</h2><button class="recent-memory card" disabled id="recentMemory"><span class="empty-state">아직 저장된 추억이 없어요.</span></button></section></div>
 <details id="recentActivity" class="recent-activity"><summary>Recent Activity</summary><div id="activityList" aria-live="polite"></div></details></main>
 <!-- 캘린더 -->
@@ -1753,6 +1765,7 @@ async function loadBucketList() {
         const div =
             document.createElement("div");
 
+        div.dataset.recordId = String(item.id);
         div.style.cssText = `
             display: flex;
             align-items: center;
@@ -2050,6 +2063,9 @@ function showSection(section) {
 
     document.getElementById("settingsSection").style.display = section === "settings" ? "block" : "none";
     if (section === "settings") renderSettings();
+
+    document.getElementById("searchSection").style.display = section === "search" ? "block" : "none";
+    if (section === "search") document.getElementById("recordSearchInput").focus({preventScroll:true});
 
     // 각 화면 필요한 데이터 불러오기
 
@@ -2703,6 +2719,7 @@ async function loadRestaurantList() {
         const card =
             document.createElement("div");
 
+        card.dataset.recordId = String(restaurant.id);
         card.style.cssText = `
             background: white;
             padding: 16px;
@@ -3011,6 +3028,7 @@ async function loadDatePlans() {
         const card =
             document.createElement("div");
 
+        card.dataset.recordId = String(plan.id);
         card.style.cssText = `
             background: white;
             padding: 18px;
@@ -3309,6 +3327,7 @@ async function loadLetters() {
         const card =
             document.createElement("div");
 
+        card.dataset.recordId = String(letter.id);
         card.style.cssText = `
             background:white;
             padding:18px;
@@ -3612,6 +3631,7 @@ async function loadPhotobooth() {
         const card =
             document.createElement("div");
 
+        card.dataset.recordId = String(photo.id);
         card.style.cssText = `
             background:white;
             padding:18px;
@@ -3943,6 +3963,7 @@ async function loadWatchedContents() {
         const card =
             document.createElement("div");
 
+        card.dataset.recordId = String(content.id);
         card.style.cssText = `
             background: white;
             padding: 18px;
@@ -4268,6 +4289,7 @@ const pageNames = {
   bucket: "Bucket List",
   stats: "Monthly Memories",
   settings: "Settings",
+  search: "Search",
 };
 let currentPage = "home";
 let photoboothPreviewUrl = null;
@@ -4321,6 +4343,7 @@ function setAuthenticatedUI(signedIn) {
   document.getElementById("appHeader").hidden = !signedIn;
   document.getElementById("loginBox").hidden = signedIn;
   if (!signedIn) {
+    if (typeof GlobalSearch !== "undefined") GlobalSearch.reset();
     if (typeof HomeCover !== "undefined") HomeCover.clear();
     document.getElementById("changePasswordForm")?.reset();
     const passwordStatus = document.getElementById("passwordStatus"); if (passwordStatus) passwordStatus.textContent="";
@@ -4695,6 +4718,10 @@ function nextRelationshipMilestone(now = new Date()) {
         remaining: anniversaryDays - days,
       };
 }
+function nextMilestoneText(now = new Date()) {
+  const next = nextRelationshipMilestone(now);
+  return (next.type === "hundred" ? next.day + "일까지 " : next.years + "주년까지 ") + next.remaining + "일";
+}
 function updateHomeClock(now = new Date()) {
   const date = document.getElementById("homeDate");
   const time = document.getElementById("homeTime");
@@ -4714,6 +4741,7 @@ function updateHomeClock(now = new Date()) {
   time.dateTime = now.toISOString();
   document.getElementById("dDayCount").textContent =
     "D+" + relationshipDays(now);
+  document.getElementById("nextMilestone").textContent = nextMilestoneText(now);
 }
 const initialSeoulDate = seoulDateParts();
 currentYear = initialSeoulDate.year;
@@ -5189,6 +5217,97 @@ loadRecentActivity=async function(){
     if(!data?.length)container.textContent='아직 최근 활동이 없어요.';
   }catch{if(authenticated&&version===PrivateSession.version)await loadLegacyActivity();}
 };
+
+</script><section id="searchSection" class="page" style="display:none"><form id="recordSearchForm" class="search-row"><label class="sr-only" for="recordSearchInput">장소·메모·제목 검색</label><input id="recordSearchInput" type="search" maxlength="120" placeholder="장소·메모·제목 검색"/><button id="searchSubmit" class="primary" type="submit">검색</button></form><p id="recordSearchStatus" class="helper-text" role="status" aria-live="polite"></p><div id="searchResults"></div><button id="searchMore" type="button" hidden>더 보기</button></section><dialog id="searchDetail" aria-labelledby="searchDetailTitle"><div class="search-detail-header"><h2 id="searchDetailTitle"></h2><button type="button" class="icon-button" onclick="document.getElementById('searchDetail').close()" aria-label="검색 기록 닫기">×</button></div><div id="searchDetailBody"></div><button id="openSearchRecord" class="primary" type="button">원래 화면에서 보기</button></dialog><script>
+/* Read-only search: only the current session's RLS-visible record fields are fetched. */
+const SEARCH_SOURCES=Object.freeze([
+ {table:'memories',label:'추억',page:'calendar',date:'date',title:'place_name',text:['text','place_name','place_address'],fields:'id,date,text,place_name,place_address',list:'#days'},
+ {table:'restaurants',label:'맛집',page:'restaurantMap',date:'visit_date',title:'name',text:['name','address','review'],fields:'id,name,address,review,visit_date',list:'#restaurantList'},
+ {table:'date_plans',label:'데이트 계획',page:'datePlan',date:'plan_date',title:'title',text:['title','place','memo'],fields:'id,title,place,memo,plan_date',list:'#datePlanList'},
+ {table:'watched_contents',label:'같이 본 것',page:'watched',date:'watch_date',title:'title',text:['title','review','content_type'],fields:'id,title,review,content_type,watch_date',list:'#watchedList'},
+ {table:'letters',label:'편지',page:'letters',date:'letter_date',title:'title',text:['title','content','writer_name'],fields:'id,title,content,writer_name,letter_date',list:'#lettersList'},
+ {table:'photobooth',label:'포토부스',page:'photobooth',date:'photo_date',title:'title',text:['title','memo'],fields:'id,title,memo,photo_date',list:'#photoboothList'},
+ {table:'date_bucket_list',label:'버킷리스트',page:'bucket',date:'created_at',title:'title',text:['title'],fields:'id,title,created_at',list:'#bucketList'},
+ {table:'daily_messages',label:'오늘의 한마디',page:'home',date:'message_date',title:null,text:['message'],fields:'id,message,message_date',list:null}
+]);
+function normalizeSearchText(value){return String(value??'').normalize('NFKC').toLocaleLowerCase('ko-KR');}
+function searchRecordMatches(source,row,tokens){const text=normalizeSearchText(source.text.map(field=>row[field]||'').join(' '));return tokens.every(token=>text.includes(token));}
+function searchDate(source,row){return String(row[source.date]||'').slice(0,10);}
+const GlobalSearch={version:0,results:[],limit:50,shown:0,
+ reset(){
+  this.version++;this.results=[];this.shown=0;
+  document.getElementById('recordSearchInput').value='';document.getElementById('searchResults').replaceChildren();document.getElementById('recordSearchStatus').textContent='';
+  document.getElementById('searchMore').hidden=true;document.getElementById('searchSubmit').disabled=false;
+  const dialog=document.getElementById('searchDetail');if(dialog.open)dialog.close();document.getElementById('searchDetailBody').replaceChildren();
+ },
+ async search(){
+  if(!authenticated)return;
+  const query=document.getElementById('recordSearchInput').value.trim();const status=document.getElementById('recordSearchStatus');
+  if(!query||query.length>120){status.textContent=query?'검색어는 120자 이하로 입력해 주세요.':'검색할 장소·메모·제목을 입력해 주세요.';return;}
+  const request=++this.version;const session=PrivateSession.version;const button=document.getElementById('searchSubmit');button.disabled=true;
+  this.results=[];this.shown=0;document.getElementById('searchResults').replaceChildren();document.getElementById('searchMore').hidden=true;status.textContent='기록을 검색하는 중…';
+  const tokens=query.split(/\s+/u).map(normalizeSearchText);
+  try{
+   await AppAuth.requireUser();PrivateSession.assert(session);
+   const outcomes=await Promise.allSettled(SEARCH_SOURCES.map(async source=>{
+    const matches=[];
+    for(let start=0;;start+=500){
+     if(start>=100000)throw new Error('Search source too large');
+     if(request!==this.version)throw new Error('Search superseded');
+     PrivateSession.assert(session);
+     const {data,error}=await supabaseClient.from(source.table).select(source.fields).order('id',{ascending:true}).range(start,start+499);
+     PrivateSession.assert(session);
+     if(error||!Array.isArray(data))throw new Error('Search source unavailable');
+     for(const row of data)if(searchRecordMatches(source,row,tokens))matches.push({source,row});
+     if(data.length<500)break;
+    }
+    return matches;
+   }));
+   if(request!==this.version||!authenticated||session!==PrivateSession.version)return;
+   this.results=outcomes.filter(result=>result.status==='fulfilled').flatMap(result=>result.value).sort((a,b)=>searchDate(b.source,b.row).localeCompare(searchDate(a.source,a.row))||a.source.label.localeCompare(b.source.label));
+   const failures=outcomes.map((outcome,index)=>outcome.status==='rejected'?SEARCH_SOURCES[index].label:null).filter(Boolean);
+   status.textContent=failures.length===SEARCH_SOURCES.length?'기록을 검색하지 못했어요. 연결과 접근 권한을 확인한 뒤 다시 검색해 주세요.':(this.results.length?`${this.results.length}개의 기록을 찾았어요.`:'일치하는 기록이 없어요.')+(failures.length?' 검색하지 못한 항목: '+failures.join(', ')+'. 연결을 확인한 뒤 다시 검색해 주세요.':'');
+   this.renderMore();
+  }catch{
+   if(request===this.version&&authenticated)status.textContent='검색을 완료하지 못했어요. 연결과 로그인 상태를 확인해 주세요.';
+  }finally{if(request===this.version)button.disabled=false;}
+ },
+ renderMore(){
+  if(!authenticated)return;
+  const end=Math.min(this.shown+this.limit,this.results.length);const fragment=document.createDocumentFragment();
+  for(let i=this.shown;i<end;i++){
+   const {source,row}=this.results[i];const button=document.createElement('button');button.type='button';button.className='search-result card';
+   const meta=document.createElement('span');meta.className='search-result-meta';meta.textContent=source.label+(searchDate(source,row)?' · '+searchDate(source,row):'');
+   const title=document.createElement('strong');title.textContent=(source.title&&row[source.title])||source.label;
+   const excerpt=document.createElement('p');excerpt.textContent=source.text.map(field=>row[field]).filter(Boolean).join(' · ');
+   button.append(meta,title,excerpt);button.addEventListener('click',()=>this.open(i));fragment.append(button);
+  }
+  document.getElementById('searchResults').append(fragment);this.shown=end;document.getElementById('searchMore').hidden=end>=this.results.length;
+ },
+ open(index){
+  if(!authenticated)return;
+  const item=this.results[index];if(!item)return;
+  const {source,row}=item;
+  if(source.table==='memories'){moveToDate(row.date);return;}
+  const content=document.getElementById('searchDetailBody');content.replaceChildren();
+  const heading=document.getElementById('searchDetailTitle');heading.textContent=(source.title&&row[source.title])||source.label;
+  const meta=document.createElement('p');meta.className='helper-text';meta.textContent=source.label+(searchDate(source,row)?' · '+searchDate(source,row):'');content.append(meta);
+  const labels={name:'이름',address:'주소',review:'리뷰',place:'장소',memo:'메모',title:'제목',content_type:'분류',content:'내용',writer_name:'작성자',message:'한마디'};
+  for(const field of source.text){if(!row[field])continue;const label=document.createElement('h3');label.textContent=labels[field]||'기록';const text=document.createElement('p');text.className='search-detail-text';text.textContent=String(row[field]);content.append(label,text);}
+  const openButton=document.getElementById('openSearchRecord');openButton.hidden=source.table==='daily_messages';
+  openButton.onclick=()=>{document.getElementById('searchDetail').close();if(source.page==='watched')setWatchedCategory(watchedCategory(row.content_type),false);showSection(source.page);this.highlight(source,row.id);};
+  document.getElementById('searchDetail').showModal();
+ },
+ highlight(source,id){
+  if(!source.list)return;
+  const container=document.querySelector(source.list);if(!container)return;const session=PrivateSession.version;
+  let observer,timer;
+  const find=()=>{if(!authenticated||session!==PrivateSession.version||currentPage!==source.page){observer?.disconnect();clearTimeout(timer);return true;}const card=[...container.querySelectorAll('[data-record-id]')].find(el=>el.dataset.recordId===String(id));if(!card)return false;observer?.disconnect();clearTimeout(timer);card.classList.add('search-highlight');card.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>card.classList.remove('search-highlight'),2500);return true;};
+  if(find())return;observer=new MutationObserver(find);observer.observe(container,{childList:true,subtree:true});timer=setTimeout(()=>observer.disconnect(),10000);
+ }
+};
+document.getElementById('recordSearchForm').addEventListener('submit',event=>{event.preventDefault();GlobalSearch.search();});
+document.getElementById('searchMore').addEventListener('click',()=>GlobalSearch.renderMore());
 
 </script></body>
 </html>
