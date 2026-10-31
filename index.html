@@ -910,6 +910,14 @@ body.home-cover-visible::before{display:none}
 #searchDetail::backdrop{background:#0003}.search-detail-header{display:flex;justify-content:space-between;align-items:center;gap:12px;overflow-wrap:anywhere}.search-detail-header h2{font-size:16px;min-width:0}
 .search-detail-text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;margin:6px 0 18px}#searchDetailBody h3{font-size:11px;color:#888}
 .search-highlight{outline:2px solid var(--accent);outline-offset:3px}
+
+body.photo-viewer-open{overflow:hidden}
+#photoViewer{border:0;border-radius:20px;background:#151515;color:#fff;width:calc(100% - 20px);max-width:1100px;max-height:calc(100dvh - 20px);padding:12px;box-shadow:0 10px 40px #0005;overflow:auto}
+#photoViewer::backdrop{background:#000c}.photo-viewer-header{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 8px}
+#closePhotoViewer{color:#fff;font-size:28px;padding:0;width:44px;height:44px}#photoViewerStage{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:120px;touch-action:pan-y pinch-zoom}
+#expandedPhoto{display:block;max-width:100%;width:auto;height:auto;max-height:calc(100dvh - 175px);object-fit:contain;border-radius:8px}
+#photoViewerStatus{font-size:13px;text-align:center;padding:10px}.photo-viewer-controls{display:flex;justify-content:center;gap:28px;margin-top:8px}.photo-viewer-controls button{width:52px;height:44px;background:#ffffff16;color:#fff;font-size:28px;padding:0}
+#photoPreview img,#photoboothList img,#photoboothPreview img,#homeHeroImage,#homeCoverPreview img{cursor:zoom-in}
 </style><meta name="theme-color" content="#FAF9F7"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
@@ -922,7 +930,7 @@ body.home-cover-visible::before{display:none}
 <!-- 제목 -->
 
 <!-- 메뉴 -->
-<header hidden="" id="appHeader"><button aria-label="Home" class="icon-button" id="homeButton" onclick="showSection('home')">‹</button><h1 class="brand" id="pageTitle">Jinny <span>♥</span> Wangyu</h1><button aria-controls="mainMenu" aria-expanded="false" aria-label="Open menu" class="icon-button" id="menuButton" onclick="openMenu()">☰</button></header><dialog aria-label="Menu" id="mainMenu"><div class="menu-header"><span class="brand">Jinny <span>♥</span> Wangyu</span><button aria-label="Close menu" class="icon-button" onclick="closeMenu()">×</button></div><nav aria-label="Main navigation"><button onclick="showSection('calendar')">Calendar<span aria-hidden="true">›</span></button><button onclick="showSection('map')">Places<span aria-hidden="true">›</span></button><button onclick="showSection('restaurantMap')">Restaurants<span aria-hidden="true">›</span></button><button onclick="showSection('datePlan')">Date Planner<span aria-hidden="true">›</span></button><button onclick="showSection('watched')">Watched Together<span aria-hidden="true">›</span></button><button onclick="showSection('letters')">Letters<span aria-hidden="true">›</span></button><button onclick="showSection('photobooth')">Photobooth<span aria-hidden="true">›</span></button><button onclick="showSection('bucket')">Bucket List<span aria-hidden="true">›</span></button><button onclick="showSection('stats')">Monthly Memories<span aria-hidden="true">›</span></button></nav><button class="search-menu-link" onclick="showSection('search')">전체 기록 검색 <span aria-hidden="true">›</span></button><button class="settings-link" onclick="showSection('settings')">Settings <span aria-hidden="true">›</span></button></dialog>
+<header hidden="" id="appHeader"><button aria-label="Home" class="icon-button" id="homeButton" onclick="showSection('home')">‹</button><h1 class="brand" id="pageTitle">Jinny <span>♥</span> Wangyu</h1><button aria-controls="mainMenu" aria-expanded="false" aria-label="Open menu" class="icon-button" id="menuButton" onclick="openMenu()">☰</button></header><dialog aria-label="Menu" id="mainMenu"><div class="menu-header"><span class="brand">Jinny <span>♥</span> Wangyu</span><button aria-label="Close menu" class="icon-button" onclick="closeMenu()">×</button></div><nav aria-label="Main navigation"><button onclick="showSection('calendar')">Calendar<span aria-hidden="true">›</span></button><button onclick="showSection('map')">Places<span aria-hidden="true">›</span></button><button onclick="showSection('restaurantMap')">Restaurants<span aria-hidden="true">›</span></button><button onclick="showSection('datePlan')">Date Planner<span aria-hidden="true">›</span></button><button onclick="showSection('watched')">Watched Together<span aria-hidden="true">›</span></button><button onclick="showSection('letters')">Letters<span aria-hidden="true">›</span></button><button onclick="showSection('photobooth')">Photobooth<span aria-hidden="true">›</span></button><button onclick="showSection('bucket')">Bucket List<span aria-hidden="true">›</span></button><button onclick="showSection('stats')">Monthly Memories<span aria-hidden="true">›</span></button><button onclick="showSection('search')">전체 기록 검색<span aria-hidden="true">›</span></button></nav><button class="settings-link" onclick="showSection('settings')">Settings <span aria-hidden="true">›</span></button></dialog>
 <!-- 데이트 플래너 -->
 <div class="page" id="datePlanSection" style="display: none;">
 
@@ -1072,6 +1080,9 @@ body.home-cover-visible::before{display:none}
         let savedMemoryPreviewUrls = [];
         let newMemoryPhotoData = [];
         let memoryPhotosLoaded = false;
+        let memoryPreviewVersion = 0;
+        let pendingMemoryPhotoReads = 0;
+        let memoryPhotoReadFailed = false;
         let memoryLoadVersion = 0;
         // 현재 선택한 장소
 let selectedPlaceName = "";
@@ -1254,6 +1265,7 @@ async function createCalendar() {
         async function openMemory(date) {
     const openVersion = ++memoryLoadVersion;
     memoryPhotosLoaded = false;
+    pendingMemoryPhotoReads = 0; memoryPhotoReadFailed = false;
     savedMemoryPhotoPaths = [];
     savedMemoryPreviewUrls = [];
     newMemoryPhotoData = [];
@@ -1446,6 +1458,8 @@ showSavedPhotos();
         // =========================
 
         function previewPhotos() {
+            const previewVersion = ++memoryPreviewVersion;
+            const recordVersion = memoryLoadVersion;
 
             const input =
                 document.getElementById("photoInput");
@@ -1457,6 +1471,7 @@ showSavedPhotos();
 
             selectedPhotos = savedMemoryPreviewUrls.slice();
              newMemoryPhotoData = [];
+             pendingMemoryPhotoReads = files.length; memoryPhotoReadFailed = false;
              showPhotos();
 
 
@@ -1467,6 +1482,8 @@ showSavedPhotos();
 
 
                 reader.onload = function(event) {
+                    if (previewVersion !== memoryPreviewVersion || recordVersion !== memoryLoadVersion) return;
+                    pendingMemoryPhotoReads--;
                     newMemoryPhotoData.push(event.target.result);
 
                     selectedPhotos.push(
@@ -1479,6 +1496,7 @@ showSavedPhotos();
                 };
 
 
+                reader.onerror = function() { if (previewVersion !== memoryPreviewVersion || recordVersion !== memoryLoadVersion) return; pendingMemoryPhotoReads--; memoryPhotoReadFailed = true; alert("사진을 읽지 못했어요. 파일을 다시 선택해 주세요."); };
                 reader.readAsDataURL(file);
 
             });
@@ -1594,6 +1612,7 @@ function searchPlace() {
     });
 }
 async function saveMemory() {
+    if (pendingMemoryPhotoReads > 0 || memoryPhotoReadFailed) { alert(memoryPhotoReadFailed ? "사진을 다시 선택한 뒤 저장해 주세요." : "사진을 준비하는 중이에요. 잠시 후 다시 저장해 주세요."); return; }
     if (!selectedDate || !memoryPhotosLoaded) { alert("기존 사진 정보를 확인하지 못했어요. 날짜를 다시 연 뒤 저장해 주세요. 입력한 내용은 유지됩니다."); return; }
 
     const text = document.getElementById("memoryText").value;
@@ -1705,6 +1724,7 @@ if (!user) {
         savedMemoryPreviewUrls = selectedPhotos.slice();
         newMemoryPhotoData = [];
         document.getElementById("photoInput").value = "";
+        DraftGuard.clean("calendar");
         alert("기록이 저장됐어요 ♡");
         createCalendar();
 
@@ -1839,6 +1859,7 @@ async function addBucketItem() {
 
     input.value = "";
 
+DraftGuard.clean("bucket");
     loadBucketList();
 }
 
@@ -1967,6 +1988,7 @@ async function saveTodayMessage() {
         return;
     }
     input.value = "";
+DraftGuard.clean("home");
     await loadTodayMessages();
     alert("오늘의 한마디를 남겼어요 ♡");
 }
@@ -2025,6 +2047,7 @@ if (item.user_id === "dc099596-d847-492c-953b-ef785f20dc56") {
 }
 
 function showSection(section) {
+    if (typeof DraftGuard !== "undefined" && section !== currentPage && !DraftGuard.allow()) return false;
     if (!document.body.classList.contains("authenticated")) return;
     updatePageHeader(section);
 
@@ -2672,6 +2695,7 @@ async function saveRestaurantPage() {
     restaurantPageLatitude = null;
     restaurantPageLongitude = null;
 
+DraftGuard.clean("restaurantMap");
     // 목록 + 지도 바로 갱신
     await loadRestaurantList();
     await showRestaurantMap();
@@ -2867,6 +2891,7 @@ async function editRestaurant(id) {
             behavior: "smooth",
             block: "center"
         });
+    DraftGuard.clean("restaurantMap");
 }
 async function deleteRestaurant(id) {
 
@@ -2984,6 +3009,7 @@ document.getElementById("planPlace").value = "";
 document.getElementById("planMemo").value = "";
 document.getElementById("planBudget").value = "";
 document.getElementById("planCompleted").checked = false;
+DraftGuard.clean("datePlan");
 await loadDatePlans();
 
 if (wasEditing) {
@@ -3202,6 +3228,7 @@ async function editDatePlan(id) {
             behavior: "smooth",
             block: "center"
         });
+    DraftGuard.clean("datePlan");
 }
 let editingWatchedContentId = null;
 let editingLetterId = null;
@@ -3281,6 +3308,7 @@ async function saveLetter() {
     document.getElementById("letterTitle").value = "";
     document.getElementById("letterContent").value = "";
 
+DraftGuard.clean("letters");
     await loadLetters();
 
     if (wasEditing) {
@@ -3424,6 +3452,7 @@ async function editLetter(id) {
             behavior: "smooth",
             block: "center"
         });
+    DraftGuard.clean("letters");
 }
 
 
@@ -3577,6 +3606,7 @@ let editingPhotoboothPhotoPath = null;
 document.getElementById("photoboothPhoto").dispatchEvent(new Event("change"));
     document.getElementById("photoboothMemo").value = "";
 
+DraftGuard.clean("photobooth");
     await loadPhotobooth();
 
     if (wasEditing) {
@@ -3749,6 +3779,7 @@ document.getElementById("photoboothPhoto").dispatchEvent(new Event("change"));
             behavior: "smooth",
             block: "center"
         });
+    DraftGuard.clean("photobooth");
 }
 
 
@@ -3881,6 +3912,7 @@ document.getElementById("contentType").value = "";
 document.getElementById("contentTitle").value = "";
 document.getElementById("contentRating").value = "";
 document.getElementById("contentReview").value = "";
+DraftGuard.clean("watched");
 setWatchedCategory(watchedCategory(contentType), false);
 await loadWatchedContents();
 
@@ -4108,6 +4140,7 @@ async function editWatchedContent(id) {
             behavior: "smooth",
             block: "center"
         });
+    DraftGuard.clean("watched");
 }
 async function showRestaurantMap() {
     if (!window.kakao?.maps) return showMapUnavailable("restaurantMap");
@@ -4343,6 +4376,8 @@ function setAuthenticatedUI(signedIn) {
   document.getElementById("appHeader").hidden = !signedIn;
   document.getElementById("loginBox").hidden = signedIn;
   if (!signedIn) {
+    if (typeof DraftGuard !== "undefined") DraftGuard.resetSession();
+    if (typeof PhotoViewer !== "undefined") { PhotoViewer.close(); PhotoViewer.clear(); }
     if (typeof GlobalSearch !== "undefined") GlobalSearch.reset();
     if (typeof HomeCover !== "undefined") HomeCover.clear();
     document.getElementById("changePasswordForm")?.reset();
@@ -4846,7 +4881,7 @@ const PushSetup = {
         );
       if (error) throw new Error("Cannot store subscription");
       PrivateSession.assert(version);
-      status.textContent = "이 기기의 알림 구독을 등록했습니다. 서버 설정 완료 후 상대방의 새 기록·수정 활동과 기념일 알림을 받습니다.";
+      status.textContent = "이 기기의 알림 구독을 등록했습니다. 서버 설정 완료 후 상대방의 새 기록·수정 활동, 기념일과 일정 전날 알림을 받습니다.";
     } catch (error) {
       await subscription.unsubscribe();
       throw error;
@@ -5167,7 +5202,7 @@ const HomeCover={bucket:'home-covers',version:0,path:null,url:null,
     await AppAuth.requireUser();const version=PrivateSession.version;const path=uniquePhotoId()+'.'+types[file.type];
     const {error}=await supabaseClient.storage.from(this.bucket).upload(path,file,{contentType:file.type,upsert:false});
     PrivateSession.assert(version);if(error)throw new Error('Cannot upload cover');
-    await this.setPath(path);document.getElementById('homeCoverFile').value='';
+    await this.setPath(path);document.getElementById('homeCoverFile').value='';DraftGuard.clean('settingsCover');
   }
 };
 async function coverAction(action){
@@ -5308,6 +5343,95 @@ const GlobalSearch={version:0,results:[],limit:50,shown:0,
 };
 document.getElementById('recordSearchForm').addEventListener('submit',event=>{event.preventDefault();GlobalSearch.search();});
 document.getElementById('searchMore').addEventListener('click',()=>GlobalSearch.renderMore());
+
+</script><dialog id="photoViewer" aria-labelledby="photoViewerTitle"><div class="photo-viewer-header"><h2 id="photoViewerTitle" class="sr-only">사진 확대 보기</h2><span id="photoViewerCount" aria-live="polite"></span><button id="closePhotoViewer" type="button" aria-label="사진 닫기">×</button></div><div id="photoViewerStage"><img id="expandedPhoto" alt="추억 사진"/><p id="photoViewerStatus" role="status"></p></div><div class="photo-viewer-controls"><button id="previousPhoto" type="button" aria-label="이전 사진">‹</button><button id="nextPhoto" type="button" aria-label="다음 사진">›</button></div></dialog><script>
+/* Draft snapshots stay in memory; no passwords, records or photo data are persisted. */
+const DraftGuard={
+ baselines:new Map(),bypass:0,
+ fields:{home:['todayMessageInput'],calendar:['memoryText','placeSearch','photoInput'],restaurantMap:['restaurantDate','restaurantPageSearch','restaurantPageRating','restaurantReview'],datePlan:['planDate','planTitle','planPlace','planBudget','planMemo','planCompleted'],watched:['watchDate','contentType','contentTitle','contentRating','contentReview'],letters:['letterDate','letterWriter','letterTitle','letterContent'],photobooth:['photoboothDate','photoboothTitle','photoboothPhoto','photoboothMemo'],bucket:['bucketInput'],settingsCover:['homeCoverFile'],settingsPassword:['currentPassword','newPassword','confirmPassword']},
+ snapshot(scope){
+  const values=(this.fields[scope]||[]).map(id=>{const el=document.getElementById(id);if(!el)return null;if(el.type==='file')return [...el.files].map(file=>[file.name,file.size,file.lastModified]);if(el.type==='password')return el.value.length>0;if(el.type==='checkbox')return el.checked;return el.value;});
+  if(scope==='calendar')values.push(heartActive,selectedPlaceName,selectedPlaceAddress,selectedLatitude,selectedLongitude,newMemoryPhotoData.length);
+  if(scope==='restaurantMap')values.push(restaurantPageName,restaurantPageAddress,restaurantPageLatitude,restaurantPageLongitude);
+  return JSON.stringify(values);
+ },
+ scopes(page){return page==='settings'?['settingsCover','settingsPassword']:[page];},
+ clean(scope){this.baselines.set(scope,this.snapshot(scope));},
+ dirty(scope){return this.baselines.has(scope)&&this.baselines.get(scope)!==this.snapshot(scope);},
+ pending(page=currentPage){return this.scopes(page).some(scope=>this.dirty(scope));},
+ any(){return [...this.baselines.keys()].some(scope=>this.dirty(scope));},
+ busy(){return activeMutations.size>0||document.querySelector('[data-cover-action]:disabled')!==null||document.querySelector('#changePasswordForm button:disabled')!==null;},
+ allow(page=currentPage,otherPage=null){if(!authenticated||this.bypass)return true;if(this.busy()){alert('저장 중입니다. 완료된 뒤 이동해 주세요.');return false;}return !(this.pending(page)||(otherPage&&this.pending(otherPage)))||confirm('저장하지 않은 내용이 있어요. 저장하지 않고 이동할까요?');},
+ allowAll(){if(!authenticated||this.bypass)return true;if(this.busy()){alert('저장 중입니다. 완료된 뒤 이동해 주세요.');return false;}return !this.any()||confirm('저장하지 않은 내용이 있어요. 저장하지 않고 로그아웃할까요?');},
+ reset(){for(const scope of Object.keys(this.fields))this.clean(scope);},
+ resetSession(){
+  for(const ids of Object.values(this.fields))for(const id of ids){const el=document.getElementById(id);if(!el)continue;if(el.type==='checkbox')el.checked=false;else el.value='';}
+  memoryLoadVersion++;memoryPreviewVersion++;pendingMemoryPhotoReads=0;memoryPhotoReadFailed=false;calendarLoadVersion++;selectedDate='';memoryPhotosLoaded=false;heartActive=false;selectedPhotos=[];savedMemoryPhotoPaths=[];savedMemoryPreviewUrls=[];newMemoryPhotoData=[];
+  selectedPlaceName='';selectedPlaceAddress='';selectedLatitude=null;selectedLongitude=null;
+  restaurantPageName='';restaurantPageAddress='';restaurantPageLatitude=null;restaurantPageLongitude=null;
+  editingRestaurantId=null;editingDatePlanId=null;editingWatchedContentId=null;editingLetterId=null;editingPhotoboothId=null;editingPhotoboothPhotoPath=null;
+  document.getElementById('memoryBox').style.display='none';document.getElementById('photoPreview').replaceChildren();document.getElementById('photoboothPreview').replaceChildren();this.reset();
+ },
+ withoutPrompt(action){this.bypass++;try{return action();}finally{this.bypass--;}}
+};
+DraftGuard.reset();
+const guardedOpenMemory=openMemory;
+openMemory=async function(date){if(!DraftGuard.allow(currentPage,'calendar'))return false;const result=await guardedOpenMemory(date);if(selectedDate===date&&memoryPhotosLoaded)DraftGuard.clean('calendar');return result;};
+const guardedMoveToDate=moveToDate;
+moveToDate=function(date){if(!DraftGuard.allow(currentPage,'calendar'))return false;return DraftGuard.withoutPrompt(()=>guardedMoveToDate(date));};
+for(const name of ['editDatePlan','editLetter','editWatchedContent','editPhotobooth','editRestaurant']){
+ const original=window[name];window[name]=async function(...args){if(!DraftGuard.allow())return false;return original(...args);};
+}
+// Freeze editable controls during each save so captured input cannot be overwritten by typing mid-request.
+for(const [name,scope] of Object.entries({saveMemory:'calendar',saveTodayMessage:'home',saveRestaurantPage:'restaurantMap',saveDatePlan:'datePlan',saveWatchedContent:'watched',saveLetter:'letters',savePhotobooth:'photobooth',addBucketItem:'bucket'})){
+ const original=window[name];window[name]=async function(...args){
+  const controls=(DraftGuard.fields[scope]||[]).map(id=>document.getElementById(id)).filter(Boolean);
+  const states=controls.map(el=>[el,el.disabled]);controls.forEach(el=>el.disabled=true);
+  try{return await original(...args);}finally{for(const [el,disabled] of states)el.disabled=disabled;}
+ };
+}
+const guardedCoverAction=coverAction;
+coverAction=async function(action){const field=document.getElementById('homeCoverFile');const disabled=field.disabled;field.disabled=true;try{return await guardedCoverAction(action);}finally{field.disabled=disabled;}};
+const guardedPasswordChange=AppAuth.changePassword.bind(AppAuth);
+AppAuth.changePassword=async function(...args){const fields=[...document.querySelectorAll('#changePasswordForm input')];const states=fields.map(field=>field.disabled);fields.forEach(field=>field.disabled=true);try{return await guardedPasswordChange(...args);}finally{fields.forEach((field,index)=>field.disabled=states[index]);}};
+const guardedLogout=AppAuth.logout.bind(AppAuth);
+AppAuth.logout=async function(){if(!DraftGuard.allowAll())return;return guardedLogout();};
+window.addEventListener('beforeunload',event=>{if(authenticated&&(DraftGuard.any()||DraftGuard.busy())){event.preventDefault();event.returnValue='';}});
+const PhotoViewer={images:[],index:0,touch:null,
+ open(image){
+  if(!authenticated||!image?.src)return;
+  const group=image.closest('#photoPreview,#photoboothPreview,#homeCoverPreview')||image.closest('#photoboothList [data-record-id]');
+  this.images=(group?[...group.querySelectorAll('img')]:[image]).filter(item=>item.currentSrc||item.src).map(item=>({src:item.currentSrc||item.src,alt:item.alt||'추억 사진'}));
+  this.index=Math.max(0,(group?[...group.querySelectorAll('img')]:[image]).filter(item=>item.currentSrc||item.src).indexOf(image));
+  if(!this.images.length)return;
+  this.render();document.getElementById('photoViewer').showModal();document.body.classList.add('photo-viewer-open');
+ },
+ render(){
+  const image=document.getElementById('expandedPhoto');image.hidden=false;document.getElementById('photoViewerStatus').textContent='';
+  image.alt=this.images[this.index].alt;image.src=this.images[this.index].src;
+  document.getElementById('photoViewerCount').textContent=(this.index+1)+' / '+this.images.length;
+  document.getElementById('previousPhoto').hidden=this.images.length<2;document.getElementById('nextPhoto').hidden=this.images.length<2;
+ },
+ step(direction){if(this.images.length<2)return;this.index=(this.index+direction+this.images.length)%this.images.length;this.render();},
+ swipe(dx,dy){if(Math.abs(dx)>=60&&Math.abs(dx)>Math.abs(dy)*1.4)this.step(dx<0?1:-1);},
+ close(){const dialog=document.getElementById('photoViewer');if(dialog.open)dialog.close();},
+ clear(){this.images=[];this.index=0;this.touch=null;document.getElementById('expandedPhoto').removeAttribute('src');document.getElementById('photoViewerCount').textContent='';document.body.classList.remove('photo-viewer-open');}
+};
+const photoRoots='#photoPreview,#photoboothList,#photoboothPreview,#homeHero,#homeCoverPreview';
+function enablePhotoButtons(){document.querySelectorAll(photoRoots).forEach(root=>root.querySelectorAll('img').forEach(image=>{image.tabIndex=0;image.setAttribute('role','button');image.setAttribute('aria-label','사진 크게 보기');if(!image.alt)image.alt='추억 사진';}));}
+enablePhotoButtons();
+for(const root of document.querySelectorAll(photoRoots))new MutationObserver(enablePhotoButtons).observe(root,{childList:true,subtree:true});
+document.addEventListener('click',event=>{const image=event.target.closest?.('img');if(image?.closest(photoRoots)){event.preventDefault();PhotoViewer.open(image);}});
+document.addEventListener('keydown',event=>{const image=event.target;if(image.matches?.('img')&&image.closest(photoRoots)&&(event.key==='Enter'||event.key===' ')){event.preventDefault();PhotoViewer.open(image);}});
+document.getElementById('closePhotoViewer').addEventListener('click',()=>PhotoViewer.close());
+document.getElementById('previousPhoto').addEventListener('click',()=>PhotoViewer.step(-1));document.getElementById('nextPhoto').addEventListener('click',()=>PhotoViewer.step(1));
+document.getElementById('photoViewer').addEventListener('close',()=>PhotoViewer.clear());
+document.getElementById('photoViewer').addEventListener('keydown',event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();PhotoViewer.step(event.key==='ArrowRight'?1:-1);}});
+const photoStage=document.getElementById('photoViewerStage');
+photoStage.addEventListener('touchstart',event=>{PhotoViewer.touch=event.touches.length===1?{x:event.touches[0].clientX,y:event.touches[0].clientY}:null;},{passive:true});
+photoStage.addEventListener('touchend',event=>{const start=PhotoViewer.touch;PhotoViewer.touch=null;if(start&&event.changedTouches.length===1)PhotoViewer.swipe(event.changedTouches[0].clientX-start.x,event.changedTouches[0].clientY-start.y);},{passive:true});
+photoStage.addEventListener('touchcancel',()=>{PhotoViewer.touch=null;},{passive:true});
+document.getElementById('expandedPhoto').addEventListener('error',event=>{event.target.hidden=true;document.getElementById('photoViewerStatus').textContent='사진을 불러오지 못했어요. 닫고 해당 기록을 다시 열어 주세요.';});
 
 </script></body>
 </html>
