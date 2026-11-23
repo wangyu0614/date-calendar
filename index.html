@@ -594,7 +594,6 @@ input[type="file"]::file-selector-button {
 }
 #datePlanList > div,
 #watchedList > div,
-#lettersList > div,
 #photoboothList > div,
 #restaurantList > div,
 #bucketList > div {
@@ -608,7 +607,6 @@ input[type="file"]::file-selector-button {
 }
 #datePlanList > div > div,
 #watchedList > div > div,
-#lettersList > div > div,
 #photoboothList > div > div,
 #restaurantList > div > div {
   line-height: 1.8;
@@ -616,7 +614,6 @@ input[type="file"]::file-selector-button {
 }
 #datePlanList button,
 #watchedList button,
-#lettersList button,
 #photoboothList button,
 #restaurantList button,
 #bucketList button {
@@ -936,7 +933,7 @@ body.photo-viewer-open{overflow:hidden}
 <!-- 제목 -->
 
 <!-- 메뉴 -->
-<header hidden="" id="appHeader"><button aria-label="Home" class="icon-button" id="homeButton" onclick="showSection('home')">‹</button><h1 class="brand" id="pageTitle">Jinny <span>♥</span> Wangyu</h1><button aria-controls="mainMenu" aria-expanded="false" aria-label="Open menu" class="icon-button" id="menuButton" onclick="openMenu()">☰</button></header><dialog aria-label="Menu" id="mainMenu"><div class="menu-header"><span class="brand">Jinny <span>♥</span> Wangyu</span><button aria-label="Close menu" class="icon-button" onclick="closeMenu()">×</button></div><nav aria-label="Main navigation"><button onclick="showSection('calendar')">Calendar<span aria-hidden="true">›</span></button><button onclick="showSection('map')">Places<span aria-hidden="true">›</span></button><button onclick="showSection('restaurantMap')">Restaurants<span aria-hidden="true">›</span></button><button onclick="showSection('datePlan')">Date Planner<span aria-hidden="true">›</span></button><button onclick="showSection('watched')">Watched Together<span aria-hidden="true">›</span></button><button onclick="showSection('games')">Mini Games<span aria-hidden="true">›</span></button><button onclick="showSection('letters')">Letters<span aria-hidden="true">›</span></button><button onclick="showSection('photobooth')">Photobooth<span aria-hidden="true">›</span></button><button onclick="showSection('bucket')">Bucket List<span aria-hidden="true">›</span></button><button onclick="showSection('stats')">Monthly Memories<span aria-hidden="true">›</span></button><button onclick="showSection('search')">전체 기록 검색<span aria-hidden="true">›</span></button></nav><button class="settings-link" onclick="showSection('settings')">Settings <span aria-hidden="true">›</span></button></dialog>
+<header hidden="" id="appHeader"><button aria-label="Home" class="icon-button" id="homeButton" onclick="showSection('home')">‹</button><h1 class="brand" id="pageTitle">Jinny <span>♥</span> Wangyu</h1><button aria-controls="mainMenu" aria-expanded="false" aria-label="Open menu" class="icon-button" id="menuButton" onclick="openMenu()">☰</button></header><dialog aria-label="Menu" id="mainMenu"><div class="menu-header"><span class="brand">Jinny <span>♥</span> Wangyu</span><button aria-label="Close menu" class="icon-button" onclick="closeMenu()">×</button></div><nav aria-label="Main navigation"><button onclick="showSection('calendar')">Calendar<span aria-hidden="true">›</span></button><button onclick="showSection('map')">Places<span aria-hidden="true">›</span></button><button onclick="showSection('restaurantMap')">Restaurants<span aria-hidden="true">›</span></button><button onclick="showSection('datePlan')">Date Planner<span aria-hidden="true">›</span></button><button onclick="showSection('watched')">Watched Together<span aria-hidden="true">›</span></button><button onclick="showSection('games')">Mini Games<span aria-hidden="true">›</span></button><button onclick="showSection('photobooth')">Photobooth<span aria-hidden="true">›</span></button><button onclick="showSection('bucket')">Bucket List<span aria-hidden="true">›</span></button><button onclick="showSection('stats')">Monthly Memories<span aria-hidden="true">›</span></button><button onclick="showSection('search')">전체 기록 검색<span aria-hidden="true">›</span></button></nav><button class="settings-link" onclick="showSection('settings')">Settings <span aria-hidden="true">›</span></button></dialog>
 <!-- 데이트 플래너 -->
 <div class="page" id="datePlanSection" style="display: none;">
 
@@ -988,22 +985,6 @@ body.photo-viewer-open{overflow:hidden}
 <h3>Watched Together</h3>
 <div id="watchedList"></div>
 </div>
-</div>
-<!-- 편지 -->
-<div class="page" id="lettersSection" style="display: none;">
-
-<div class="editor">
-<label class="field-label" for="letterDate">Date</label><input id="letterDate" type="date"/>
-<label class="field-label" for="letterWriter">Writer</label><select id="letterWriter">
-<option value="">작성자 선택</option>
-<option value="Jinny">Jinny</option>
-<option value="Wangyu">Wangyu</option>
-</select>
-<label class="field-label" for="letterTitle">Title</label><input id="letterTitle" placeholder="편지 제목" type="text"/>
-<label class="field-label" for="letterContent">Content</label><textarea id="letterContent" placeholder="마음을 담아 편지를 써보세요 ♡"></textarea>
-<button class="primary" onclick="saveLetter()" type="button">저장</button>
-</div>
-<h3 class="list-heading">Saved Letters</h3><div id="lettersList"></div>
 </div>
 <!-- 포토부스 -->
 <div class="page" id="photoboothSection" style="display: none;">
@@ -2079,8 +2060,6 @@ function showSection(section) {
     document.getElementById("watchedSection").style.display =
     section === "watched" ? "block" : "none";
 
-    document.getElementById("lettersSection").style.display =
-    section === "letters" ? "block" : "none";
 
     document.getElementById("photoboothSection").style.display =
     section === "photobooth" ? "block" : "none";
@@ -2116,9 +2095,6 @@ function showSection(section) {
 }
     if (section === "watched") {
     loadWatchedContents();
-}
-    if (section === "letters") {
-    loadLetters();
 }
     if (section === "photobooth") {
     loadPhotobooth();
@@ -3242,256 +3218,6 @@ async function editDatePlan(id) {
     DraftGuard.clean("datePlan");
 }
 let editingWatchedContentId = null;
-let editingLetterId = null;
-
-async function saveLetter() {
-
-    const letterDate =
-        document.getElementById("letterDate").value;
-
-    const writerName =
-        document.getElementById("letterWriter").value;
-
-    const title =
-        document.getElementById("letterTitle").value.trim();
-
-    const content =
-        document.getElementById("letterContent").value.trim();
-
-    if (!letterDate || !writerName || !title || !content) {
-        alert("날짜, 작성자, 제목, 내용을 모두 입력해주세요.");
-        return;
-    }
-
-    const {
-        data: { user }
-    } = await supabaseClient.auth.getUser();
-
-    if (!user) {
-        alert("로그인이 필요해요.");
-        return;
-    }
-
-    let error;
-
-    if (editingLetterId !== null) {
-
-        const result =
-            await supabaseClient
-                .from("letters")
-                .update({
-                    letter_date: letterDate,
-                    writer_name: writerName,
-                    title: title,
-                    content: content
-                })
-                .eq("id", editingLetterId);
-
-        error = result.error;
-
-    } else {
-
-        const result =
-            await supabaseClient
-                .from("letters")
-                .insert({
-                    letter_date: letterDate,
-                    writer_name: writerName,
-                    title: title,
-                    content: content,
-                    user_id: user.id
-                });
-
-        error = result.error;
-    }
-
-    if (error) {
-        reportOperationError();
-        alert("편지 저장 중 오류가 발생했어요.");
-        return;
-    }
-
-    const wasEditing = editingLetterId !== null;
-    editingLetterId = null;
-
-    document.getElementById("letterDate").value = "";
-    document.getElementById("letterWriter").value = "";
-    document.getElementById("letterTitle").value = "";
-    document.getElementById("letterContent").value = "";
-
-DraftGuard.clean("letters");
-    await loadLetters();
-
-    if (wasEditing) {
-        alert("편지를 수정했어요 ♡");
-    } else {
-        alert("편지를 저장했어요 ♡");
-    }
-}
-
-
-async function loadLetters() {
-
-    const { data, error } =
-        await supabaseClient
-            .from("letters")
-            .select("*")
-            .order("letter_date", { ascending: false });
-
-    if (error) {
-        reportOperationError();
-        return;
-    }
-
-    const list =
-        document.getElementById("lettersList");
-
-    list.innerHTML = "";
-
-    if (!data || data.length === 0) {
-        list.innerHTML = `
-            <div style="
-                text-align:center;
-                color:#999;
-                padding:30px;
-            ">
-                아직 작성한 편지가 없어요 💌
-            </div>
-        `;
-        return;
-    }
-
-    data.forEach(letter => {
-
-        const card =
-            document.createElement("div");
-
-        card.dataset.recordId = String(letter.id);
-        card.style.cssText = `
-            background:white;
-            padding:18px;
-            margin-bottom:12px;
-            border-radius:15px;
-        `;
-
-        card.innerHTML = `
-            <strong style="font-size:18px;">
-                💌 ${escapeHTML(letter.title)}
-            </strong>
-
-            <div style="
-                margin-top:6px;
-                font-size:13px;
-                color:#888;
-            ">
-                ${escapeHTML(letter.letter_date)} · ${escapeHTML(letter.writer_name)}
-            </div>
-
-            <div style="
-                margin-top:12px;
-                white-space:pre-wrap;
-                line-height:1.7;
-            ">${escapeHTML(letter.content)}</div>
-            <div class="record-actions" style="
-    text-align:right;
-    margin-top:12px;
-">
-    <button
-        type="button"
-        onclick="editLetter(${letter.id})"
-        style="
-            border:none;
-            background:none;
-            color:#888;
-            cursor:pointer;
-            margin-right:6px;
-        "
-    >
-        수정
-    </button>
-
-    <button
-        type="button"
-        onclick="deleteLetter(${letter.id})"
-        style="
-            border:none;
-            background:none;
-            color:#aaa;
-            cursor:pointer;
-        "
-    >
-        삭제
-    </button>
-</div>
-        `;
-
-        list.appendChild(card);
-    });
-}
-
-async function editLetter(id) {
-
-    const { data, error } =
-        await supabaseClient
-            .from("letters")
-            .select("*")
-            .eq("id", id)
-            .single();
-
-    if (error) {
-        reportOperationError();
-        alert("편지를 불러오지 못했어요.");
-        return;
-    }
-
-    editingLetterId = id;
-
-    document.getElementById("letterDate").value =
-        data.letter_date;
-
-    document.getElementById("letterWriter").value =
-        data.writer_name;
-
-    document.getElementById("letterTitle").value =
-        data.title || "";
-
-    document.getElementById("letterContent").value =
-        data.content || "";
-
-    document.getElementById("letterDate")
-        .scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
-    DraftGuard.clean("letters");
-}
-
-
-async function deleteLetter(id) {
-
-    const confirmed =
-        confirm("이 편지를 삭제할까요?");
-
-    if (!confirmed) {
-        return;
-    }
-
-    const { error } =
-        await supabaseClient
-            .from("letters")
-            .delete()
-            .eq("id", id);
-
-    if (error) {
-        reportOperationError();
-        alert("삭제 중 오류가 발생했어요.");
-        return;
-    }
-
-    await loadLetters();
-
-    alert("편지를 삭제했어요.");
-}
 let editingPhotoboothId = null;
 let editingPhotoboothPhotoPath = null;
  async function savePhotobooth() {
@@ -4328,7 +4054,6 @@ const pageNames = {
   restaurantMap: "Restaurants",
   datePlan: "Date Planner",
   watched: "Watched Together",
-  letters: "Letters",
   photobooth: "Photobooth",
   bucket: "Bucket List",
   stats: "Monthly Memories",
@@ -4403,7 +4128,7 @@ function setAuthenticatedUI(signedIn) {
       .forEach((el) => (el.style.display = "none"));
     document
       .querySelectorAll(
-        "#todayMessages,#datePlanList,#watchedList,#lettersList,#photoboothList,#restaurantList,#bucketList,#statsPlaces",
+        "#todayMessages,#datePlanList,#watchedList,#photoboothList,#restaurantList,#bucketList,#statsPlaces",
       )
       .forEach((el) => el.replaceChildren());
     document.getElementById("recentMemory").replaceChildren();
@@ -5056,7 +4781,6 @@ const EXPORT_TABLES = Object.freeze([
   "restaurants",
   "date_plans",
   "watched_contents",
-  "letters",
   "photobooth",
   "date_bucket_list",
   "daily_messages",
@@ -5128,7 +4852,6 @@ const ACTIVITY_SOURCES = Object.freeze([
   { table: "restaurants", label: "맛집을 남겼어요" },
   { table: "date_plans", label: "데이트 계획을 남겼어요" },
   { table: "watched_contents", label: "같이 본 기록을 남겼어요" },
-  { table: "letters", label: "편지를 남겼어요" },
   { table: "photobooth", label: "사진을 남겼어요" },
 ]);
 async function loadRecentActivity() {
@@ -5183,7 +4906,6 @@ for (const name of [
   "saveRestaurantPage",
   "saveDatePlan",
   "saveWatchedContent",
-  "saveLetter",
   "savePhotobooth",
   "addBucketItem",
   "toggleBucketItem",
@@ -5192,7 +4914,6 @@ for (const name of [
   "deleteRestaurant",
   "deleteDatePlan",
   "deleteWatchedContent",
-  "deleteLetter",
   "deletePhotobooth",
 ]) {
   const original = window[name];
@@ -5231,7 +4952,6 @@ for (const name of [
 }
 for (const name of [
   "editDatePlan",
-  "editLetter",
   "editWatchedContent",
   "editPhotobooth",
   "editRestaurant",
@@ -5347,7 +5067,7 @@ loadRecentActivity=async function(){
     if(!authenticated||version!==PrivateSession.version)return;
     if(error){await loadLegacyActivity();return;}
     container.replaceChildren();
-    const labels={memories:'추억',restaurants:'맛집',date_plans:'데이트 계획',watched_contents:'같이 본 기록',letters:'편지',photobooth:'사진',date_bucket_list:'버킷리스트',daily_messages:'오늘의 한마디'};
+    const labels={memories:'추억',restaurants:'맛집',date_plans:'데이트 계획',watched_contents:'같이 본 기록',photobooth:'사진',date_bucket_list:'버킷리스트',daily_messages:'오늘의 한마디'};
     for(const item of data||[]){
       const row=document.createElement('p');
       const time=document.createElement('time');time.dateTime=item.happened_at;
@@ -5366,7 +5086,6 @@ const SEARCH_SOURCES=Object.freeze([
  {table:'restaurants',label:'맛집',page:'restaurantMap',date:'visit_date',title:'name',text:['name','address','review'],fields:'id,name,address,review,visit_date',list:'#restaurantList'},
  {table:'date_plans',label:'데이트 계획',page:'datePlan',date:'plan_date',title:'title',text:['title','place','memo'],fields:'id,title,place,memo,plan_date',list:'#datePlanList'},
  {table:'watched_contents',label:'같이 본 것',page:'watched',date:'watch_date',title:'title',text:['title','review','content_type'],fields:'id,title,review,content_type,watch_date',list:'#watchedList'},
- {table:'letters',label:'편지',page:'letters',date:'letter_date',title:'title',text:['title','content','writer_name'],fields:'id,title,content,writer_name,letter_date',list:'#lettersList'},
  {table:'photobooth',label:'포토부스',page:'photobooth',date:'photo_date',title:'title',text:['title','memo'],fields:'id,title,memo,photo_date',list:'#photoboothList'},
  {table:'date_bucket_list',label:'버킷리스트',page:'bucket',date:'created_at',title:'title',text:['title'],fields:'id,title,created_at',list:'#bucketList'},
  {table:'daily_messages',label:'오늘의 한마디',page:'home',date:'message_date',title:null,text:['message'],fields:'id,message,message_date',list:null}
@@ -5454,7 +5173,7 @@ document.getElementById('searchMore').addEventListener('click',()=>GlobalSearch.
 /* Draft snapshots stay in memory; no passwords, records or photo data are persisted. */
 const DraftGuard={
  baselines:new Map(),bypass:0,
- fields:{home:['todayMessageInput'],calendar:['memoryText','placeSearch','photoInput'],restaurantMap:['restaurantDate','restaurantPageSearch','restaurantPageRating','restaurantReview'],datePlan:['planDate','planTitle','planPlace','planBudget','planMemo','planCompleted'],watched:['watchDate','contentType','contentTitle','contentRating','contentReview'],letters:['letterDate','letterWriter','letterTitle','letterContent'],photobooth:['photoboothDate','photoboothTitle','photoboothPhoto','photoboothMemo'],bucket:['bucketInput'],settingsCover:['homeCoverFile'],settingsPassword:['currentPassword','newPassword','confirmPassword']},
+ fields:{home:['todayMessageInput'],calendar:['memoryText','placeSearch','photoInput'],restaurantMap:['restaurantDate','restaurantPageSearch','restaurantPageRating','restaurantReview'],datePlan:['planDate','planTitle','planPlace','planBudget','planMemo','planCompleted'],watched:['watchDate','contentType','contentTitle','contentRating','contentReview'],photobooth:['photoboothDate','photoboothTitle','photoboothPhoto','photoboothMemo'],bucket:['bucketInput'],settingsCover:['homeCoverFile'],settingsPassword:['currentPassword','newPassword','confirmPassword']},
  snapshot(scope){
   const values=(this.fields[scope]||[]).map(id=>{const el=document.getElementById(id);if(!el)return null;if(el.type==='file')return [...el.files].map(file=>[file.name,file.size,file.lastModified]);if(el.type==='password')return el.value.length>0;if(el.type==='checkbox')return el.checked;return el.value;});
   if(scope==='calendar')values.push(heartActive,selectedPlaceName,selectedPlaceAddress,selectedLatitude,selectedLongitude,newMemoryPhotoData.length);
@@ -5475,7 +5194,7 @@ const DraftGuard={
   memoryLoadVersion++;memoryPreviewVersion++;pendingMemoryPhotoReads=0;memoryPhotoReadFailed=false;calendarLoadVersion++;selectedDate='';memoryPhotosLoaded=false;heartActive=false;selectedPhotos=[];savedMemoryPhotoPaths=[];savedMemoryPreviewUrls=[];newMemoryPhotoData=[];
   selectedPlaceName='';selectedPlaceAddress='';selectedLatitude=null;selectedLongitude=null;
   restaurantPageName='';restaurantPageAddress='';restaurantPageLatitude=null;restaurantPageLongitude=null;
-  editingRestaurantId=null;editingDatePlanId=null;editingWatchedContentId=null;editingLetterId=null;editingPhotoboothId=null;editingPhotoboothPhotoPath=null;
+  editingRestaurantId=null;editingDatePlanId=null;editingWatchedContentId=null;editingPhotoboothId=null;editingPhotoboothPhotoPath=null;
   document.getElementById('memoryBox').style.display='none';document.getElementById('photoPreview').replaceChildren();document.getElementById('photoboothPreview').replaceChildren();this.reset();
  },
  withoutPrompt(action){this.bypass++;try{return action();}finally{this.bypass--;}}
@@ -5485,11 +5204,11 @@ const guardedOpenMemory=openMemory;
 openMemory=async function(date){if(!DraftGuard.allow(currentPage,'calendar'))return false;const result=await guardedOpenMemory(date);if(selectedDate===date&&memoryPhotosLoaded)DraftGuard.clean('calendar');return result;};
 const guardedMoveToDate=moveToDate;
 moveToDate=function(date){if(!DraftGuard.allow(currentPage,'calendar'))return false;return DraftGuard.withoutPrompt(()=>guardedMoveToDate(date));};
-for(const name of ['editDatePlan','editLetter','editWatchedContent','editPhotobooth','editRestaurant']){
+for(const name of ['editDatePlan','editWatchedContent','editPhotobooth','editRestaurant']){
  const original=window[name];window[name]=async function(...args){if(!DraftGuard.allow())return false;return original(...args);};
 }
 // Freeze editable controls during each save so captured input cannot be overwritten by typing mid-request.
-for(const [name,scope] of Object.entries({saveMemory:'calendar',saveTodayMessage:'home',saveRestaurantPage:'restaurantMap',saveDatePlan:'datePlan',saveWatchedContent:'watched',saveLetter:'letters',savePhotobooth:'photobooth',addBucketItem:'bucket'})){
+for(const [name,scope] of Object.entries({saveMemory:'calendar',saveTodayMessage:'home',saveRestaurantPage:'restaurantMap',saveDatePlan:'datePlan',saveWatchedContent:'watched',savePhotobooth:'photobooth',addBucketItem:'bucket'})){
  const original=window[name];window[name]=async function(...args){
   const controls=(DraftGuard.fields[scope]||[]).map(id=>document.getElementById(id)).filter(Boolean);
   const states=controls.map(el=>[el,el.disabled]);controls.forEach(el=>el.disabled=true);
