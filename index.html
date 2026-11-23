@@ -5063,7 +5063,7 @@ loadRecentActivity=async function(){
   const version=PrivateSession.version;const container=document.getElementById('activityList');
   container.textContent='불러오는 중…';
   try{
-    const {data,error}=await supabaseClient.from('couple_activity').select('id,actor_id,entity,operation,happened_at').order('happened_at',{ascending:false}).order('id',{ascending:false}).limit(5);
+    const {data,error}=await supabaseClient.from('couple_activity').select('id,actor_id,entity,operation,happened_at').neq('entity','letters').order('happened_at',{ascending:false}).order('id',{ascending:false}).limit(5);
     if(!authenticated||version!==PrivateSession.version)return;
     if(error){await loadLegacyActivity();return;}
     container.replaceChildren();
