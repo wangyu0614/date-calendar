@@ -506,6 +506,22 @@ input[type="file"]::file-selector-button {
   color: var(--accent);
   line-height: 1.2;
 }
+.day-markers, .calendar-milestone-legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+}
+.calendar-milestone-legend {
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: #665c60;
+}
+.calendar-milestone { font-size: 12px; line-height: 1.2; }
+.calendar-milestone--hundred { color: #a63f69; }
+.calendar-milestone--year { color: #8a560b; }
 .memory-box {
   margin-top: 40px;
 }
@@ -1063,6 +1079,10 @@ body.photo-viewer-open{overflow:hidden}
 </div>
 <!-- 날짜 -->
 <div class="days" id="days"></div>
+<p class="calendar-milestone-legend">
+  <span><span class="calendar-milestone--hundred" aria-hidden="true">✿</span> 100일 단위</span>
+  <span><span class="calendar-milestone--year" aria-hidden="true">★</span> 매년 주년</span>
+</p>
 <!-- 기록창 -->
 <div class="memory-box editor" id="memoryBox"><div class="memory-heading"><h3 id="selectedDate"></h3><button class="heart-button" id="heartButton" onclick="toggleHeart()">
                 ♡ 데이트한 날로 표시
@@ -1225,7 +1245,10 @@ async function createCalendar() {
                 : null;
 
 
-        // 하트 표시
+        const markers = document.createElement("span");
+        markers.className = "day-markers";
+        markers.setAttribute("aria-hidden", "true");
+        const markerLabels = [];
         if (savedData && savedData.heart) {
 
             const heart =
@@ -1235,7 +1258,20 @@ async function createCalendar() {
 
             heart.innerText = "♥";
 
-            dayElement.appendChild(heart);
+            markers.appendChild(heart);
+            markerLabels.push("데이트한 날");
+        }
+        for (const milestone of calendarRelationshipMilestones(currentYear, currentMonth, day)) {
+            const marker = document.createElement("span");
+            marker.className = "calendar-milestone calendar-milestone--" + milestone.type;
+            marker.textContent = milestone.symbol;
+            markers.appendChild(marker);
+            markerLabels.push(milestone.label);
+        }
+        if (markerLabels.length) {
+            dayElement.dataset.markerLabels = markerLabels.join(", ");
+            dayElement.title = dayElement.dataset.markerLabels;
+            dayElement.appendChild(markers);
         }
 
 
@@ -4283,7 +4319,7 @@ new MutationObserver(() => {
       "aria-label",
       formatDate(
         `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day.firstChild.textContent).padStart(2, "0")}`,
-      ),
+      ) + (day.dataset.markerLabels ? ", " + day.dataset.markerLabels : ""),
     );
     day.onkeydown = (e) => {
       if (e.key === "Enter" || e.key === " ") {
@@ -4594,31 +4630,45 @@ function seoulISODate(now = new Date()) {
   const p = seoulDateParts(now);
   return `${p.year}-${String(p.month).padStart(2, "0")}-${String(p.day).padStart(2, "0")}`;
 }
+const relationshipStart = { year: 2026, monthIndex: 1, day: 19 };
+
+function relationshipDayNumber(year, monthIndex, day) {
+  const start = Date.UTC(relationshipStart.year, relationshipStart.monthIndex, relationshipStart.day);
+  return (Date.UTC(year, monthIndex, day) - start) / 86400000 + 1;
+}
+
+function calendarRelationshipMilestones(year, monthIndex, day) {
+  const markers = [];
+  const days = relationshipDayNumber(year, monthIndex, day);
+  const years = year - relationshipStart.year;
+  if (days > 0 && days % 100 === 0) {
+    markers.push({ type: "hundred", symbol: "✿", label: days + "일" });
+  }
+  if (years > 0 && monthIndex === relationshipStart.monthIndex && day === relationshipStart.day) {
+    markers.push({ type: "year", symbol: "★", label: years + "주년" });
+  }
+  return markers;
+}
+
 function relationshipDays(now = new Date()) {
   const { year, month, day } = seoulDateParts(now);
-  return (
-    Math.floor(
-      (Date.UTC(year, month - 1, day) - Date.UTC(2026, 1, 19)) / 86400000,
-    ) + 1
-  );
+  return relationshipDayNumber(year, month - 1, day);
 }
 function nextRelationshipMilestone(now = new Date()) {
   const days = relationshipDays(now);
   const hundred = (Math.floor(days / 100) + 1) * 100;
   const { year } = seoulDateParts(now);
   let anniversaryYear = year;
-  let anniversaryDays =
-    (Date.UTC(anniversaryYear, 1, 19) - Date.UTC(2026, 1, 19)) / 86400000 + 1;
+  let anniversaryDays = relationshipDayNumber(anniversaryYear, relationshipStart.monthIndex, relationshipStart.day);
   if (anniversaryDays <= days) {
     anniversaryYear++;
-    anniversaryDays =
-      (Date.UTC(anniversaryYear, 1, 19) - Date.UTC(2026, 1, 19)) / 86400000 + 1;
+    anniversaryDays = relationshipDayNumber(anniversaryYear, relationshipStart.monthIndex, relationshipStart.day);
   }
   return hundred <= anniversaryDays
     ? { type: "hundred", day: hundred, remaining: hundred - days }
     : {
         type: "anniversary",
-        years: anniversaryYear - 2026,
+        years: anniversaryYear - relationshipStart.year,
         remaining: anniversaryDays - days,
       };
 }
