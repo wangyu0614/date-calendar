@@ -310,6 +310,44 @@ input[type="file"]::file-selector-button {
 .login-form input {
   min-height: 48px;
 }
+.login-form .login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #6b6265;
+  font-size: 14px;
+}
+.login-form .login-divider::before,
+.login-form .login-divider::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--line);
+}
+#googleLoginButton {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid #747775;
+  border-radius: 12px;
+  background: #fff;
+  color: #1f1f1f;
+  font-size: 14px;
+  font-weight: 500;
+}
+#googleLoginButton:hover:not(:disabled) {
+  background: #f6f8fc;
+}
+#googleLoginButton:focus-visible {
+  outline: 2px solid #1a73e8;
+  outline-offset: 2px;
+}
+#googleLoginButton:disabled {
+  opacity: .55;
+}
 #loginMessage {
   font-size: 12px;
   text-align: center;
@@ -928,7 +966,7 @@ body.photo-viewer-open{overflow:hidden}
 <link rel="manifest" href="./manifest.webmanifest"/><link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=2"/>
 </head>
 <body>
-<main class="login-screen" id="loginBox"><form class="login-form" id="loginForm"><h1 class="brand">Jinny <span>♥</span> Wangyu</h1><label class="sr-only" for="loginEmail">이메일 주소</label><input autocomplete="username" id="loginEmail" placeholder="이메일 주소" required="" type="email" autocapitalize="none" spellcheck="false"/><label class="sr-only" for="loginPassword">Password</label><input autocomplete="current-password" id="loginPassword" placeholder="Password" required="" type="password"/><button class="primary" id="loginButton" type="submit">Login</button><button id="googleLoginButton" type="button">Google로 로그인</button><p aria-live="polite" id="loginMessage" role="status"></p></form>
+<main class="login-screen" id="loginBox"><form class="login-form" id="loginForm"><h1 class="brand">Jinny <span>♥</span> Wangyu</h1><label class="sr-only" for="loginEmail">이메일 주소</label><input autocomplete="username" id="loginEmail" placeholder="이메일 주소" required="" type="email" autocapitalize="none" spellcheck="false"/><label class="sr-only" for="loginPassword">Password</label><input autocomplete="current-password" id="loginPassword" placeholder="Password" required="" type="password"/><button class="primary" id="loginButton" type="submit">Login</button><div class="login-divider" aria-hidden="true">또는</div><button id="googleLoginButton" type="button"><img alt="" width="18" height="18" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"/><span>Google로 로그인</span></button><p aria-live="polite" id="loginMessage" role="status"></p></form>
 </main>
 <!-- 제목 -->
 
