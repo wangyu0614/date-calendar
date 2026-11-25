@@ -971,7 +971,7 @@ body.photo-viewer-open{overflow:hidden}
 <!-- 제목 -->
 
 <!-- 메뉴 -->
-<header hidden="" id="appHeader"><button aria-label="Home" class="icon-button" id="homeButton" onclick="showSection('home')">‹</button><h1 class="brand" id="pageTitle">Jinny <span>♥</span> Wangyu</h1><button aria-controls="mainMenu" aria-expanded="false" aria-label="Open menu" class="icon-button" id="menuButton" onclick="openMenu()">☰</button></header><dialog aria-label="Menu" id="mainMenu"><div class="menu-header"><span class="brand">Jinny <span>♥</span> Wangyu</span><button aria-label="Close menu" class="icon-button" onclick="closeMenu()">×</button></div><nav aria-label="Main navigation"><button onclick="showSection('calendar')">Calendar<span aria-hidden="true">›</span></button><button onclick="showSection('map')">Places<span aria-hidden="true">›</span></button><button onclick="showSection('restaurantMap')">Restaurants<span aria-hidden="true">›</span></button><button onclick="showSection('datePlan')">Date Planner<span aria-hidden="true">›</span></button><button onclick="showSection('watched')">Watched Together<span aria-hidden="true">›</span></button><button onclick="showSection('games')">Mini Games<span aria-hidden="true">›</span></button><button onclick="showSection('photobooth')">Photobooth<span aria-hidden="true">›</span></button><button onclick="showSection('bucket')">Bucket List<span aria-hidden="true">›</span></button><button onclick="showSection('stats')">Monthly Memories<span aria-hidden="true">›</span></button><button onclick="showSection('search')">전체 기록 검색<span aria-hidden="true">›</span></button></nav><button class="settings-link" onclick="showSection('settings')">Settings <span aria-hidden="true">›</span></button></dialog>
+<header hidden="" id="appHeader"><button aria-label="Home" class="icon-button" id="homeButton" onclick="showSection('home')">‹</button><h1 class="brand" id="pageTitle">Jinny <span>♥</span> Wangyu</h1><button aria-controls="mainMenu" aria-expanded="false" aria-label="Open menu" class="icon-button" id="menuButton" onclick="openMenu()">☰</button></header><dialog aria-label="Menu" id="mainMenu"><div class="menu-header"><span class="brand">Jinny <span>♥</span> Wangyu</span><button aria-label="Close menu" class="icon-button" onclick="closeMenu()">×</button></div><nav aria-label="Main navigation"><button onclick="showSection('calendar')">Calendar<span aria-hidden="true">›</span></button><button onclick="showSection('timeline')">추억 타임라인<span aria-hidden="true">›</span></button><button onclick="showSection('map')">Places<span aria-hidden="true">›</span></button><button onclick="showSection('restaurantMap')">Restaurants<span aria-hidden="true">›</span></button><button onclick="showSection('datePlan')">Date Planner<span aria-hidden="true">›</span></button><button onclick="showSection('watched')">Watched Together<span aria-hidden="true">›</span></button><button onclick="showSection('games')">Mini Games<span aria-hidden="true">›</span></button><button onclick="showSection('photobooth')">Photobooth<span aria-hidden="true">›</span></button><button onclick="showSection('bucket')">Bucket List<span aria-hidden="true">›</span></button><button onclick="showSection('stats')">Monthly Memories<span aria-hidden="true">›</span></button><button onclick="showSection('search')">전체 기록 검색<span aria-hidden="true">›</span></button></nav><button class="settings-link" onclick="showSection('settings')">Settings <span aria-hidden="true">›</span></button></dialog>
 <!-- 데이트 플래너 -->
 <div class="page" id="datePlanSection" style="display: none;">
 
@@ -2117,6 +2117,10 @@ function showSection(section) {
 
     document.getElementById("gamesSection").style.display = section === "games" ? "block" : "none";
     if (section === "games") PhotoGames.enter();
+
+    document.getElementById("timelineSection").style.display = section === "timeline" ? "block" : "none";
+    if (section === "timeline") MemoryTimeline.open();
+    else if (MemoryTimeline.active) MemoryTimeline.reset();
 
     // 각 화면 필요한 데이터 불러오기
 
@@ -4098,6 +4102,7 @@ const pageNames = {
   settings: "Settings",
   search: "Search",
   games: "Mini Games",
+  timeline: "추억 타임라인",
 };
 let currentPage = "home";
 let photoboothPreviewUrl = null;
@@ -4152,6 +4157,7 @@ function setAuthenticatedUI(signedIn) {
   document.getElementById("loginBox").hidden = signedIn;
   if (!signedIn) {
     if (typeof PhotoGames !== "undefined") PhotoGames.reset();
+    if (typeof MemoryTimeline !== "undefined") MemoryTimeline.reset();
     if (typeof DraftGuard !== "undefined") DraftGuard.resetSession();
     if (typeof PhotoViewer !== "undefined") { PhotoViewer.close(); PhotoViewer.clear(); }
     if (typeof GlobalSearch !== "undefined") GlobalSearch.reset();
@@ -5535,5 +5541,226 @@ const SharedTaste={user:null,current:null,questionIndex:-1,request:0,revision:0,
 };
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&authenticated&&currentPage==='games'&&PhotoGames.mode==='taste')SharedTaste.refresh();});
 
-</script></body>
+</script>
+<style>
+#timelineList { display: grid; gap: 16px; }
+.timeline-entry { padding: 18px; min-width: 0; }
+.timeline-entry h2 { font-size: 16px; margin: 0 0 8px; }
+.timeline-entry p { white-space: pre-wrap; overflow-wrap: anywhere; margin: 8px 0; }
+.timeline-entry img { display: block; width: 100%; max-height: 340px; object-fit: cover; border-radius: 12px; margin: 12px 0; }
+.timeline-entry details { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 12px; }
+.timeline-entry summary { cursor: pointer; }
+.timeline-comment-form { display: flex; gap: 8px; margin-top: 10px; }
+.timeline-comment-form input { flex: 1; min-width: 0; }
+.timeline-entry button, #timelineMore { min-height: 44px; }
+.timeline-link, .timeline-comment-remove { text-decoration: underline; text-underline-offset: 3px; }
+.timeline-comments { padding-left: 0; list-style: none; max-height: 280px; overflow: auto; }
+.timeline-comments li { border-bottom: 1px solid var(--line); padding: 8px 0; }
+.timeline-comment-meta { font-size: 13px; color: #665c60; }
+#timelineMore { display: block; margin: 16px auto; }
+#timelineMore[hidden] { display: none; }
+</style>
+<section id="timelineSection" class="page" style="display:none" aria-label="추억 타임라인">
+  <p id="timelineStatus" role="status"></p>
+  <div id="timelineList"></div>
+  <button id="timelineMore" type="button" hidden>더 보기</button>
+</section>
+<script>
+const MemoryTimeline = (() => {
+  const list = document.getElementById("timelineList");
+  const status = document.getElementById("timelineStatus");
+  const more = document.getElementById("timelineMore");
+  const photoUrls = new Set();
+  const pageSize = 12;
+  let version = 0;
+  let offset = 0;
+  let active = false;
+
+  function element(tag, text, className) {
+    const node = document.createElement(tag);
+    if (text !== undefined) node.textContent = text;
+    if (className) node.className = className;
+    return node;
+  }
+
+  function isCurrent(request) {
+    return active && authenticated && version === request;
+  }
+
+  function reset() {
+    active = false;
+    version++;
+    offset = 0;
+    list.replaceChildren();
+    status.textContent = "";
+    more.textContent = "더 보기";
+    more.hidden = true;
+    more.disabled = false;
+    for (const url of photoUrls) URL.revokeObjectURL(url);
+    photoUrls.clear();
+  }
+
+  async function showPhoto(path, target, date, request) {
+    if (typeof path !== "string" || !path) return;
+    try {
+      const { data, error } = await supabaseClient.storage.from("photos").download(path);
+      if (!isCurrent(request)) return;
+      if (error || !data) throw error;
+      const url = URL.createObjectURL(data);
+      photoUrls.add(url);
+      const image = element("img");
+      image.src = url;
+      image.alt = date + "의 추억 사진";
+      target.replaceChildren(image);
+    } catch {
+      if (isCurrent(request)) target.textContent = "사진을 불러오지 못했어요.";
+    }
+  }
+
+  function commentPanel(memory, request) {
+    const panel = element("details");
+    const comments = element("ul", undefined, "timeline-comments");
+    const feedback = element("p");
+    feedback.setAttribute("role", "status");
+    const form = element("form", undefined, "timeline-comment-form");
+    const input = element("input");
+    input.type = "text";
+    input.required = true;
+    input.maxLength = 120;
+    input.placeholder = "짧은 댓글 남기기";
+    input.setAttribute("aria-label", "짧은 댓글 (120자까지)");
+    const submit = element("button", "등록");
+    submit.type = "submit";
+    form.append(input, submit);
+    panel.append(element("summary", "댓글"), comments, form, feedback);
+
+    let readVersion = 0;
+    async function loadComments() {
+      const read = ++readVersion;
+      try {
+        const user = await AppAuth.requireUser();
+        if (!isCurrent(request) || read !== readVersion) return;
+        const { data, error } = await supabaseClient.from("memory_comments")
+          .select("id,author_id,body,created_at").eq("memory_id", memory.id)
+          .order("created_at", { ascending: false }).order("id").limit(50);
+        if (!isCurrent(request) || read !== readVersion) return;
+        if (error) throw error;
+        comments.replaceChildren();
+        for (const comment of data) {
+          const mine = comment.author_id === user.id;
+          const item = element("li");
+          const time = new Date(comment.created_at).toLocaleDateString("ko-KR");
+          item.append(element("div", (mine ? "나" : "상대방") + " · " + time, "timeline-comment-meta"),
+            element("p", comment.body));
+          if (mine) {
+            const remove = element("button", "삭제", "timeline-comment-remove");
+            remove.type = "button";
+            remove.onclick = async () => {
+              if (!isCurrent(request) || !confirm("이 댓글을 삭제할까요?")) return;
+              remove.disabled = true;
+              try {
+                const { error: deletionError } = await supabaseClient.from("memory_comments")
+                  .delete().eq("id", comment.id).eq("memory_id", memory.id);
+                if (deletionError) throw deletionError;
+                if (isCurrent(request)) await loadComments();
+              } catch {
+                if (isCurrent(request)) feedback.textContent = "댓글을 삭제하지 못했어요.";
+              } finally {
+                remove.disabled = false;
+              }
+            };
+            item.append(remove);
+          }
+          comments.append(item);
+        }
+        feedback.textContent = data.length ? "" : "아직 댓글이 없어요.";
+      } catch {
+        if (isCurrent(request) && read === readVersion) feedback.textContent = "댓글을 불러오지 못했어요.";
+      }
+    }
+
+    panel.addEventListener("toggle", () => {
+      if (panel.open && isCurrent(request)) loadComments();
+    });
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      const body = input.value.trim();
+      if (!body || submit.disabled || !isCurrent(request)) return;
+      submit.disabled = true;
+      feedback.textContent = "댓글을 저장하는 중…";
+      try {
+        const { error } = await supabaseClient.from("memory_comments")
+          .insert({ memory_id: memory.id, body });
+        if (error) throw error;
+        if (!isCurrent(request)) return;
+        form.reset();
+        await loadComments();
+      } catch {
+        if (isCurrent(request)) feedback.textContent = "댓글을 저장하지 못했어요. 다시 시도해 주세요.";
+      } finally {
+        submit.disabled = false;
+      }
+    });
+    return panel;
+  }
+
+  function render(memory, request) {
+    const card = element("article", undefined, "timeline-entry card");
+    const photos = Array.isArray(memory.photos) ? memory.photos : [];
+    const date = new Date(memory.date + "T12:00:00");
+    card.append(element("h2", Number.isNaN(date.getTime()) ? memory.date : date.toLocaleDateString("ko-KR", {
+      year: "numeric", month: "long", day: "numeric"
+    })));
+    if (memory.heart) card.append(element("p", "♥ 데이트한 날"));
+    if (memory.place_name) card.append(element("p", memory.place_name));
+    if (memory.text) card.append(element("p", memory.text));
+    if (photos.length) {
+      const preview = element("div");
+      card.append(preview);
+      showPhoto(photos[0], preview, memory.date, request);
+    }
+    const link = element("button", photos.length ? "캘린더에서 보기 · 사진 " + photos.length + "장" : "캘린더에서 보기", "timeline-link");
+    link.type = "button";
+    link.onclick = () => moveToDate(memory.date);
+    card.append(link, commentPanel(memory, request));
+    return card;
+  }
+
+  async function load() {
+    if (more.disabled || !active) return;
+    const request = version;
+    more.disabled = true;
+    status.textContent = "추억을 불러오는 중…";
+    try {
+      const { data, error } = await supabaseClient.from("memories")
+        .select("id,date,text,heart,place_name,photos")
+        .order("date", { ascending: false, nullsFirst: false }).order("id", { ascending: false })
+        .range(offset, offset + pageSize);
+      if (!isCurrent(request)) return;
+      if (error) throw error;
+      const rows = data.slice(0, pageSize);
+      for (const row of rows) list.append(render(row, request));
+      offset += rows.length;
+      status.textContent = offset ? "" : "아직 캘린더에 기록된 추억이 없어요.";
+      more.textContent = "더 보기";
+      more.hidden = data.length <= pageSize;
+    } catch {
+      if (!isCurrent(request)) return;
+      status.textContent = "추억을 불러오지 못했어요.";
+      more.textContent = "다시 시도";
+      more.hidden = false;
+    } finally {
+      if (isCurrent(request)) more.disabled = false;
+    }
+  }
+
+  more.addEventListener("click", load);
+  return {
+    get active() { return active; },
+    open() { reset(); active = true; return load(); },
+    reset
+  };
+})();
+</script>
+</body>
 </html>
